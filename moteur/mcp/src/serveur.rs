@@ -14,7 +14,7 @@ use schemars::JsonSchema;
 use serde::Deserialize;
 
 use crate::jeu::{
-    self, ChercherPouvoirParams, CreationParams, LireJournalParams, NoterParams, TestParams,
+    self, AttaqueParams, ChercherPouvoirParams, InitiativeParams, UsagePouvoirParams, CreationParams, LireJournalParams, NoterParams, TestParams,
     TirerPouvoirParams,
 };
 use crate::outils::{self, ActionParams};
@@ -61,6 +61,14 @@ pub struct DeltaParams {
     pub nom: String,
     /// Variation entière : positive ou négative selon l'outil.
     pub delta: i32,
+}
+
+#[derive(Debug, Deserialize, JsonSchema)]
+pub struct SemainesParams {
+    /// Nom du personnage (ou son identifiant).
+    pub nom: String,
+    /// Nombre de semaines de repos total.
+    pub semaines: u32,
 }
 
 #[derive(Debug, Deserialize, JsonSchema)]
@@ -141,6 +149,28 @@ impl ServeurMj {
         self.avec(|c| jeu::conflit_personnages(c, &p.attaquant, &p.defenseur, &mut DesAleatoires::default()))
     }
 
+    #[tool(description = "Résout une attaque physique entre deux personnages enregistrés : jet d'attaque, défense (Esquive par défaut, \
+                          parade avec une arme possible), conflit, puis dommages = unités finales + puissance de l'arme + bonus de Force (contact, FO ≥ 4) \
+                          - protection (armure, pouvoir Armure corporelle). Applique les dommages au défenseur et renvoie son état de santé. \
+                          Unités égales = « arbitrage_mj » : rien n'est appliqué, c'est au MJ de trancher. Les notes du livre sur l'arme sont transmises.")]
+    async fn attaquer(&self, Parameters(p): Parameters<AttaqueParams>) -> Result<String, String> {
+        self.avec(|c| jeu::attaquer(c, &p, &mut DesAleatoires::default()))
+    }
+
+    #[tool(description = "Utilise un pouvoir de la fiche : prélève son coût en PP (déduit du livre, ou `cout_pp` s'il est variable), \
+                          lance le jet avec la caractéristique du pouvoir (Volonté, Précision...) et son niveau, et renvoie la règle du livre à appliquer. \
+                          Avec `cible`, la cible se défend (caractéristique de défense du livre, niveau 0) : conflit résolu, unités comparées. \
+                          Les effets (durée en minutes, distance...) se déduisent des unités : à interpréter par le MJ en suivant la règle renvoyée.")]
+    async fn utiliser_pouvoir(&self, Parameters(p): Parameters<UsagePouvoirParams>) -> Result<String, String> {
+        self.avec(|c| jeu::utiliser_pouvoir(c, &p, &mut DesAleatoires::default()))
+    }
+
+    #[tool(description = "Ordre d'action d'un tour de combat : phase psychique par Volonté décroissante (égalités au D66), \
+                          puis phase physique par Agilité décroissante (mêmes valeurs : simultané). Écarte les inconscients et les morts.")]
+    async fn initiative(&self, Parameters(p): Parameters<InitiativeParams>) -> Result<String, String> {
+        self.avec(|c| jeu::initiative(c, &p, &mut DesAleatoires::default()))
+    }
+
     // ---- Fiches ----
 
     #[tool(description = "Crée un personnage (joueur, partenaire ou PNJ) après contrôle des budgets de création de son espèce \
@@ -171,10 +201,16 @@ impl ServeurMj {
         self.avec(|c| jeu::ajuster_pp(c, &p.nom, p.delta))
     }
 
-    #[tool(description = "Ajuste les points de dommages d'un personnage : delta positif = blessure, négatif = soin (jamais sous 0). \
-                          Les effets des blessures (perte de force, malus) ne sont pas encore appliqués automatiquement.")]
+    #[tool(description = "Inflige (delta > 0) ou soigne (delta < 0) des points de dommages. Renvoie l'état de santé selon l'espèce : Force perdue, \
+                          évanouissement/coma/mort, malus de blessure (humains, soldats, familiers), et tire la durée d'inconscience à la bascule. \
+                          Les malus de blessure sont appliqués automatiquement aux tests ; un inconscient ou un mort ne peut plus agir.")]
     async fn ajuster_dommages(&self, Parameters(p): Parameters<DeltaParams>) -> Result<String, String> {
-        self.avec(|c| jeu::ajuster_dommages(c, &p.nom, p.delta))
+        self.avec(|c| jeu::ajuster_dommages(c, &p.nom, p.delta, &mut DesAleatoires::default()))
+    }
+
+    #[tool(description = "Soins naturels : chaque semaine de repos total rend un point de Force à un personnage (1 à 3 points de dommage selon l'espèce).")]
+    async fn soigner_semaines(&self, Parameters(p): Parameters<SemainesParams>) -> Result<String, String> {
+        self.avec(|c| jeu::soigner_semaines(c, &p.nom, p.semaines))
     }
 
     // ---- Catalogues ----

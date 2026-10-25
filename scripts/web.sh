@@ -47,6 +47,8 @@ demarrer() {
   echo $! >"$PID_FILE"
   for _ in $(seq 1 30); do
     if repond; then
+      # setsid peut créer un processus intermédiaire : on enregistre le vrai PID du serveur.
+      pgrep -x insmv-web | head -n 1 >"$PID_FILE"
       echo "Serveur démarré (PID $(cat "$PID_FILE")) : $URL"
       return 0
     fi

@@ -99,19 +99,23 @@ fn expose_les_outils() {
         [
             "ajuster_dommages",
             "ajuster_pp",
+            "attaquer",
             "chercher_pouvoir",
             "chercher_talent",
             "conflit_personnages",
             "creer_personnage",
+            "initiative",
             "lancer_des",
             "lire_journal",
             "lister_personnages",
             "noter_journal",
             "resoudre_action",
             "resoudre_conflit",
+            "soigner_semaines",
             "supprimer_personnage",
             "tester_personnage",
             "tirer_pouvoir",
+            "utiliser_pouvoir",
             "voir_personnage",
         ]
     );
@@ -212,4 +216,57 @@ fn test_sur_fiche_et_refus_de_budget_via_le_protocole() {
     assert_eq!(reponses[3]["result"]["isError"], true);
     let message = reponses[3]["result"]["content"][0]["text"].as_str().unwrap();
     assert!(message.contains("exception"), "{message}");
+}
+
+fn ange_jean() -> Value {
+    json!({
+        "nom": "Jean", "espece": "ange", "role": "joueur", "patron": "Laurent",
+        "caracteristiques": {"fo":4,"pr":2,"vo":4,"pe":3,"ag":5,"ap":2},
+        "talents": [{"nom":"Arme de contact","niveau":2},{"nom":"Esquive","niveau":1},{"nom":"Corps à corps","niveau":0},{"nom":"Discrétion","niveau":0}],
+        "pouvoirs": [{"code":413},{"code":166},{"code":243},{"code":321},{"code":263},{"code":622}]
+    })
+}
+
+#[test]
+fn combat_complet_via_le_protocole() {
+    let mut r = initialisation();
+    r.push(appel(2, "creer_personnage", ange_jean()));
+    r.push(appel(3, "creer_personnage", json!({
+        "nom": "Zombi", "espece": "humain", "role": "pnj",
+        "caracteristiques": {"fo":2,"pr":1,"vo":2,"pe":2,"ag":2,"ap":1},
+        "talents": [{"nom":"Esquive","niveau":0}]
+    })));
+    r.push(appel(4, "initiative", json!({"personnages": ["Jean", "Zombi"]})));
+    r.push(appel(5, "utiliser_pouvoir", json!({"nom":"Jean","pouvoir":"243"})));
+    r.push(appel(6, "attaquer", json!({
+        "attaquant":"Jean","defenseur":"Zombi","talent":"Arme de contact",
+        "arme":"Epée longue","bonus_puissance":1})));
+    r.push(appel(7, "voir_personnage", json!({"nom":"Zombi"})));
+    r.push(appel(8, "voir_personnage", json!({"nom":"Jean"})));
+    let reponses = echanger(&r, 8);
+    for (i, reponse) in reponses.iter().enumerate().skip(1) {
+        assert_eq!(reponse["result"]["isError"], false, "réponse {i} : {reponse}");
+    }
+
+    // Initiative : Jean (AG 5) agit avant Zombi (AG 2) ; seul Jean a des pouvoirs.
+    let ordre = texte(&reponses[3]);
+    assert_eq!(ordre["physique"][0]["personnages"][0], "Jean");
+    assert_eq!(ordre["psychique"][0]["personnages"][0], "Jean");
+
+    // Pouvoir : 1 PP de coût, texte du livre transmis.
+    let pouvoir = texte(&reponses[4]);
+    assert_eq!((pouvoir["cout_paye"].as_u64(), pouvoir["pp_restants"].as_u64()), (Some(1), Some(9)));
+    assert!(pouvoir["regle"].as_str().unwrap().contains("caractéristique"));
+
+    // Attaque : les dommages annoncés sont ceux qui sont persistés sur la fiche du défenseur.
+    let attaque = texte(&reponses[5]);
+    assert!(attaque["resume"].as_str().unwrap().contains("Jean attaque Zombi"));
+    let annonces = match attaque["dommages"]["total"].as_u64() {
+        Some(total) if attaque["arbitrage_mj"] == false => total,
+        _ => 0,
+    };
+    assert_eq!(texte(&reponses[6])["fiche"]["dommages"].as_u64().unwrap(), annonces);
+    // Jean, lui, n'a pas été blessé et a gardé ses PP.
+    let jean = texte(&reponses[7]);
+    assert_eq!((jean["pp"].as_u64(), jean["fiche"]["dommages"].as_u64()), (Some(9), Some(0)));
 }

@@ -2,6 +2,7 @@
 //! Tout texte provenant des fiches ou du journal passe par [`esc`].
 
 use insmv_campagne::EntreeJournal;
+use insmv_regles::blessures::EtatSante;
 use insmv_regles::catalogue::{self, Livre};
 use insmv_regles::personnage::{Carac, Espece, Personnage, Role};
 use insmv_regles::{Action, Caracteristique, NiveauTalent, Seuil};
@@ -90,6 +91,7 @@ th{font-size:13px;color:var(--discret);font-weight:600}
 tr:last-child td{border-bottom:0}
 .table-defilante{overflow-x:auto}
 .pastille{display:inline-block;padding:1px 8px;border-radius:10px;font-size:12px;background:var(--accent-fond);color:var(--accent);font-weight:600}
+.pastille.alerte{background:transparent;border:1px solid var(--alerte);color:var(--alerte)}
 .pastille.limitation{background:transparent;border:1px solid var(--alerte);color:var(--alerte)}
 .discret{color:var(--discret)}
 .pct{font-variant-numeric:tabular-nums}
@@ -242,10 +244,26 @@ pub fn fiche(p: &Personnage) -> String {
          aria-label=\"Points de pouvoir\"><div style=\"width:{part}%\"></div></div>\
          <div><b>{pp}</b> / {pp_max}</div><div class=\"discret\">{recup}</div></section>"
     ));
+    let sante = p.sante();
+    let (etat, classe) = match sante.etat {
+        EtatSante::Valide => ("Valide", ""),
+        EtatSante::Inconscient => ("Inconscient", " alerte"),
+        EtatSante::Coma => ("Dans le coma", " alerte"),
+        EtatSante::Mort => ("Mort", " alerte"),
+    };
+    let malus = if sante.malus_colonnes > 0 {
+        format!("malus de blessure : -{} colonne(s) sur toutes les actions", sante.malus_colonnes)
+    } else {
+        "aucun malus de blessure".to_string()
+    };
     html.push_str(&format!(
-        "<section class=\"carte\"><strong>Dommages subis</strong><div style=\"font-size:26px\"><b>{}</b></div>\
-         <div class=\"discret\">points non encore guéris</div></section></div>",
-        p.dommages
+        "<section class=\"carte\"><strong>Dommages subis</strong><div style=\"font-size:26px\"><b>{dom}</b></div>\
+         <div class=\"discret\">points non encore guéris</div>\
+         <div>Force {courante} (d'origine {origine}) · <span class=\"pastille{classe}\">{etat}</span></div>\
+         <div class=\"discret\">{malus}</div></section></div>",
+        dom = p.dommages,
+        courante = sante.force_courante,
+        origine = p.caracteristiques.fo,
     ));
 
     // Caractéristiques.
@@ -456,6 +474,27 @@ mod tests {
         serviteur.pouvoirs.truncate(1);
         serviteur.finaliser();
         assert!(fiche(&serviteur).contains("1 PP toutes les 6 h"));
+    }
+
+    #[test]
+    fn la_fiche_affiche_la_sante() {
+        let html = fiche(&jean()); // Ange Force 4, 2 dommages
+        assert!(html.contains("Force 4 (d'origine 4) · <span class=\"pastille\">Valide</span>"));
+        assert!(html.contains("aucun malus de blessure"));
+
+        let mut blesse = jean();
+        blesse.dommages = 9; // 3 points de Force perdus
+        assert!(fiche(&blesse).contains("Force 1 (d'origine 4)"));
+
+        blesse.dommages = 18; // Force -2 : assommé
+        assert!(fiche(&blesse).contains("<span class=\"pastille alerte\">Inconscient</span>"));
+
+        let mut humain = jean();
+        humain.espece = Espece::Soldat;
+        humain.pouvoirs.truncate(1);
+        humain.finaliser();
+        humain.dommages = 3;
+        assert!(fiche(&humain).contains("malus de blessure : -3 colonne(s)"));
     }
 
     #[test]

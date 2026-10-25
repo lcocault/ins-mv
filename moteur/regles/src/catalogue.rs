@@ -29,9 +29,34 @@ pub struct Pouvoir {
     pub defense: Option<String>,
     /// Coût en points de pouvoir, tel qu'imprimé.
     pub cout: Option<String>,
+    /// Caractéristique du jet de pouvoir quand le livre l'indique (ex. « (Volonté) » → VO).
+    #[serde(default)]
+    pub jet: Option<String>,
+    /// Texte de la règle dans le livre (ou introduction de sa catégorie).
+    #[serde(default)]
+    pub description: Option<String>,
 }
 
 impl Pouvoir {
+    /// Coût en PP d'une utilisation quand il est fixe : « 4 », « 2/attaque », « 1/défense ».
+    /// `None` pour un coût variable (« 1, 2 ou 3/att. », « 1/minute », « La moitié... »).
+    /// Un pouvoir sans coût imprimé est gratuit (0).
+    pub fn cout_fixe(&self) -> Option<u32> {
+        let texte = match self.cout.as_deref().map(str::trim) {
+            None | Some("") => return Some(0),
+            Some(t) => t,
+        };
+        let (nombre, suite) = match texte.split_once('/') {
+            Some((n, s)) => (n.trim(), Some(s.trim())),
+            None => (texte, None),
+        };
+        let valeur: u32 = nombre.parse().ok()?;
+        match suite {
+            None | Some("attaque") | Some("att.") | Some("défense") => Some(valeur),
+            _ => None,
+        }
+    }
+
     /// Les pouvoirs 6xx sont des limitations (défauts), qui comptent quand même pour les PP.
     pub fn est_limitation(&self) -> bool {
         self.code.is_some_and(|c| (600..700).contains(&c))
@@ -58,6 +83,75 @@ impl Talent {
             Livre::Ange => self.malus,
         }
     }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum CategorieArme {
+    Contact,
+    Distance,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct NoteArme {
+    pub id: String,
+    pub texte: String,
+}
+
+/// Arme des tableaux de `commun-09-confrontation-armes-combat.md`.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Arme {
+    pub nom: String,
+    pub categorie: CategorieArme,
+    /// Ajustement aux unités pour les dommages ; `None` si « Spécial » ou rafale seule.
+    pub puissance: Option<i32>,
+    pub puissance_speciale: bool,
+    /// Puissance en rafale, par cible touchée.
+    pub puissance_rafale: Option<i32>,
+    /// Ajustement en colonnes du jet de toucher.
+    pub precision: i32,
+    pub portee: Option<u32>,
+    pub coups: Option<String>,
+    pub talent: String,
+    pub notes: Vec<NoteArme>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Protection {
+    pub nom: String,
+    /// Retranchée aux dommages.
+    pub protection: i32,
+    /// Malus en colonnes pour les talents d'agilité du porteur (négatif).
+    pub ajustement: i32,
+    pub notes: Vec<NoteArme>,
+}
+
+static ARMES: OnceLock<Vec<Arme>> = OnceLock::new();
+static PROTECTIONS: OnceLock<Vec<Protection>> = OnceLock::new();
+
+pub fn armes() -> &'static [Arme] {
+    ARMES.get_or_init(|| serde_json::from_str(include_str!("../donnees/armes.json")).expect("armes.json valide"))
+}
+
+pub fn protections() -> &'static [Protection] {
+    PROTECTIONS.get_or_init(|| {
+        serde_json::from_str(include_str!("../donnees/protections.json")).expect("protections.json valide")
+    })
+}
+
+/// Arme par nom (insensible aux accents et à la casse). Deux armes portent le même
+/// nom (« Hachette » au contact et à distance) : `categorie` lève l'ambiguïté.
+pub fn arme_par_nom(nom: &str, categorie: Option<CategorieArme>) -> Vec<&'static Arme> {
+    let cible = normaliser(nom);
+    armes()
+        .iter()
+        .filter(|a| normaliser(&a.nom) == cible && categorie.is_none_or(|c| c == a.categorie))
+        .collect()
+}
+
+pub fn protection_par_nom(nom: &str) -> Option<&'static Protection> {
+    let cible = normaliser(nom);
+    protections().iter().find(|p| normaliser(&p.nom) == cible)
 }
 
 static POUVOIRS: OnceLock<Vec<Pouvoir>> = OnceLock::new();
@@ -192,6 +286,75 @@ mod tests {
         assert_eq!(talent_par_nom("Arme d'épaule").unwrap().malus, Some(-2));
         assert_eq!(talent_par_nom("arme d epaule").unwrap().malus, Some(-2));
         assert!(talent_par_nom("Inexistant").is_none());
+    }
+
+    #[test]
+    fn armes_du_livre() {
+        assert_eq!(armes().len(), 28);
+        let epee = arme_par_nom("epee longue", None);
+        assert_eq!(epee.len(), 1);
+        assert_eq!((epee[0].puissance, epee[0].precision, epee[0].talent.as_str()), (Some(2), 0, "Arme de contact"));
+        // Précision en colonnes : hachette de contact -1, carabine +1.
+        assert_eq!(arme_par_nom("Hachette", Some(CategorieArme::Contact))[0].precision, -1);
+        assert_eq!(arme_par_nom("Hachette", Some(CategorieArme::Distance))[0].puissance, Some(0));
+        assert_eq!(arme_par_nom("Hachette", None).len(), 2, "nom ambigu sans catégorie");
+        assert_eq!(arme_par_nom("carabine", None)[0].precision, 1);
+        assert_eq!(arme_par_nom("carabine", None)[0].portee, Some(100));
+    }
+
+    #[test]
+    fn armes_speciales_et_rafales() {
+        let uzi = &arme_par_nom("Uzi", None)[0];
+        assert_eq!((uzi.puissance, uzi.puissance_rafale), (Some(1), Some(3)));
+        let m60 = &arme_par_nom("M-60", None)[0];
+        assert_eq!((m60.puissance, m60.puissance_rafale), (None, Some(6)));
+        let boule = &arme_par_nom("Coup de boule", None)[0];
+        assert!(boule.puissance_speciale && boule.puissance.is_none());
+        assert_eq!(boule.notes[0].id, "b");
+        assert!(arme_par_nom("Lance-grenade", None)[0].puissance_speciale);
+    }
+
+    #[test]
+    fn protections_du_livre() {
+        assert_eq!(protections().len(), 4);
+        let acier = protection_par_nom("acier").unwrap();
+        assert_eq!((acier.protection, acier.ajustement), (6, -3));
+        assert_eq!(protection_par_nom("Cuir").unwrap().ajustement, 0);
+        let kevlar = protection_par_nom("Kevlar").unwrap();
+        assert_eq!((kevlar.protection, kevlar.ajustement), (2, -1));
+        assert!(kevlar.notes[0].texte.contains("armes à feu"));
+        assert!(protection_par_nom("Plastron en carton").is_none());
+    }
+
+    #[test]
+    fn descriptions_et_caracteristiques_de_jet() {
+        for livre in [Livre::Ange, Livre::Demon] {
+            for p in pouvoirs().iter().filter(|p| p.livre == livre && p.code.is_some()) {
+                assert!(p.description.as_deref().is_some_and(|d| d.len() > 5), "{livre:?} {:?} sans texte", p.code);
+            }
+        }
+        let calme = pouvoir_par_code(Livre::Ange, 166).unwrap();
+        assert_eq!(calme.jet.as_deref(), Some("VO"));
+        assert!(calme.description.as_deref().unwrap().contains("discuter"));
+        // Les augmentations temporaires de caractéristiques se jouent à la Volonté.
+        assert_eq!(pouvoir_par_code(Livre::Ange, 243).unwrap().jet.as_deref(), Some("VO"));
+        assert_eq!(pouvoir_par_code(Livre::Demon, 241).unwrap().jet.as_deref(), Some("VO"));
+        // Variantes de livre résolues : « l'ange » (MV) contre « le Démon » (INS).
+        assert!(pouvoir_par_code(Livre::Ange, 243).unwrap().description.as_deref().unwrap().contains("l'ange"));
+        assert!(pouvoir_par_code(Livre::Demon, 243).unwrap().description.as_deref().unwrap().contains("Démon"));
+    }
+
+    #[test]
+    fn couts_fixes_ou_variables() {
+        let cout = |livre, code| pouvoir_par_code(livre, code).unwrap().cout_fixe();
+        assert_eq!(cout(Livre::Ange, 243), Some(1), "« 1 »");
+        assert_eq!(cout(Livre::Ange, 321), Some(1));
+        assert_eq!(cout(Livre::Ange, 166), Some(1), "« 1/attaque »");
+        assert_eq!(cout(Livre::Ange, 131), Some(4), "« 4/attaque »");
+        assert_eq!(cout(Livre::Ange, 413), Some(0), "pas de coût imprimé");
+        assert_eq!(cout(Livre::Ange, 121), None, "« 1, 2 ou 3/att. »");
+        assert_eq!(cout(Livre::Ange, 113), None, "« 1/minute »");
+        assert_eq!(cout(Livre::Ange, 151), None, "« La moitié (M. 4) »");
     }
 
     #[test]

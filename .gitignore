@@ -1,3 +1,4 @@
 target/
 campagne/
 .run/
+__pycache__/

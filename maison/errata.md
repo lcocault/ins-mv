@@ -44,3 +44,17 @@ par le moteur et le test qui la fige.
   passent qu'avec une exception motivée à la création.
 - **Test :** `personnage::tests::humains_du_livre_et_leurs_depassements_de_budget`.
 - **Statut :** ouvert.
+
+## E-003 — Pouvoir 245 du livre des Anges : « Agilité » ou « Volonté » ?
+
+- **Source :** `livres/commun-07-pouvoirs-communs.md` (liste des pouvoirs 24x) et
+  `livres/ange-17-liste-des-pouvoirs.md`.
+- **Constat :** dans la section « Augmentation temporaire des caractéristiques »,
+  le livre des Anges liste « 243- Agilité » **et** « 245- Agilité ». Le livre des
+  Démons liste « 245- Volonté ». Le tableau récapitulatif du livre des Anges
+  indique « 245 Volonté ».
+- **Analyse :** coquille du texte de la section MV (la caractéristique manquante
+  est la Volonté, comme dans INS et dans le récapitulatif).
+- **Décision :** le catalogue du moteur suit le tableau récapitulatif : 245 =
+  Volonté dans les deux livres.
+- **Statut :** appliqué (aucun test dédié : c'est la donnée générée depuis le récapitulatif).

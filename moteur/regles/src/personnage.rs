@@ -285,6 +285,17 @@ impl Personnage {
 
     /// Construit l'action à résoudre sur la table UM à partir de la fiche.
     pub fn preparer_test(&self, demande: &DemandeTest) -> Result<TestPrepare, String> {
+        let sante = self.sante();
+        match sante.etat {
+            crate::blessures::EtatSante::Valide => {}
+            crate::blessures::EtatSante::Inconscient => {
+                return Err(format!("{} est inconscient et ne peut pas agir", self.nom))
+            }
+            crate::blessures::EtatSante::Coma => {
+                return Err(format!("{} est dans le coma et ne peut pas agir", self.nom))
+            }
+            crate::blessures::EtatSante::Mort => return Err(format!("{} est mort", self.nom)),
+        }
         let carac = Caracteristique::new(self.caracteristiques.get(demande.carac))
             .map_err(|e| e.to_string())?;
         let (base, origine) = match (&demande.talent, &demande.pouvoir) {
@@ -309,10 +320,15 @@ impl Personnage {
             ),
         };
         let action = base
-            .avec_modificateur(demande.modificateur)
+            .avec_modificateur(demande.modificateur - sante.malus_colonnes as i32)
             .avec_malus_volontaire(demande.malus_volontaire);
+        let blessure = if sante.malus_colonnes > 0 {
+            format!(", blessures : -{} colonne(s)", sante.malus_colonnes)
+        } else {
+            String::new()
+        };
         let description = format!(
-            "{} : {} {} ({origine})",
+            "{} : {} {} ({origine}{blessure})",
             self.nom,
             demande.carac.nom(),
             self.caracteristiques.get(demande.carac)
@@ -939,6 +955,40 @@ mod tests {
         let t = p.preparer_test(&seule).unwrap();
         assert_eq!(t.action.niveau, NiveauTalent::FACILE);
         assert!(p.preparer_test(&DemandeTest::caracteristique(Carac::FO, 4)).is_err());
+    }
+
+    fn humain_soldat() -> Personnage {
+        let mut p = fiche(Espece::Soldat, carac(3, 2, 2, 1, 3, 3));
+        p.talents = vec![talent("Arme de poing", 1)];
+        p.finaliser();
+        p
+    }
+
+    #[test]
+    fn un_blesse_subit_un_malus_sur_ses_tests() {
+        let mut p = humain_soldat();
+        let mut d = DemandeTest::caracteristique(Carac::PE, 1);
+        d.talent = Some("Arme de poing".into());
+        assert_eq!(p.preparer_test(&d).unwrap().action.modificateur, 0);
+        p.dommages = 2;
+        let t = p.preparer_test(&d).unwrap();
+        assert_eq!(t.action.modificateur, -2);
+        assert!(t.description.contains("blessures : -2"), "{}", t.description);
+        // Le malus se cumule avec celui du MJ.
+        d.modificateur = -1;
+        assert_eq!(p.preparer_test(&d).unwrap().action.modificateur, -3);
+    }
+
+    #[test]
+    fn un_ange_blesse_n_a_pas_de_malus_mais_un_inconscient_ne_peut_pas_agir() {
+        let mut p = demon_type(); // Démon : pas de malus de blessure
+        p.dommages = 3;
+        let d = DemandeTest::caracteristique(Carac::PE, 1);
+        assert_eq!(p.preparer_test(&d).unwrap().action.modificateur, 0);
+        p.dommages = 12; // Force 3 : -3 → mort (6 points perdus)
+        assert!(p.preparer_test(&d).unwrap_err().contains("mort"));
+        p.dommages = 10; // -2 → assommé
+        assert!(p.preparer_test(&d).unwrap_err().contains("inconscient"));
     }
 
     #[test]

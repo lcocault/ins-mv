@@ -1,0 +1,31 @@
+[
+ {
+  "nom": "Cuir",
+  "protection": 1,
+  "ajustement": 0,
+  "notes": []
+ },
+ {
+  "nom": "Cotte de maille",
+  "protection": 3,
+  "ajustement": -1,
+  "notes": []
+ },
+ {
+  "nom": "Kevlar",
+  "protection": 2,
+  "ajustement": -1,
+  "notes": [
+   {
+    "id": "a",
+    "texte": "Protège de 4 contre les armes à feu."
+   }
+  ]
+ },
+ {
+  "nom": "Acier",
+  "protection": 6,
+  "ajustement": -3,
+  "notes": []
+ }
+]

@@ -1,0 +1,398 @@
+[
+ {
+  "nom": "Coup de poing",
+  "categorie": "contact",
+  "puissance": -3,
+  "puissance_speciale": false,
+  "puissance_rafale": null,
+  "precision": 0,
+  "portee": null,
+  "coups": null,
+  "talent": "Corps à corps",
+  "notes": [
+   {
+    "id": "a",
+    "texte": "Un niveau de Corps à corps supérieur ou égal à +2 rajoute un point de dommage et une partie du corps protégée (bottes ferrées, poing américain) rajoute aussi un point de dommage."
+   }
+  ]
+ },
+ {
+  "nom": "Coup de pied",
+  "categorie": "contact",
+  "puissance": -2,
+  "puissance_speciale": false,
+  "puissance_rafale": null,
+  "precision": -1,
+  "portee": null,
+  "coups": null,
+  "talent": "Corps à corps",
+  "notes": [
+   {
+    "id": "a",
+    "texte": "Un niveau de Corps à corps supérieur ou égal à +2 rajoute un point de dommage et une partie du corps protégée (bottes ferrées, poing américain) rajoute aussi un point de dommage."
+   }
+  ]
+ },
+ {
+  "nom": "Coup de boule",
+  "categorie": "contact",
+  "puissance": null,
+  "puissance_speciale": true,
+  "puissance_rafale": null,
+  "precision": -1,
+  "portee": null,
+  "coups": null,
+  "talent": "Corps à corps",
+  "notes": [
+   {
+    "id": "b",
+    "texte": "Le résultat des dommages donne simplement le nombre de tours durant lesquels le personnage ne peut pas agir (il est sonné). Il ne subit réellement que le tiers de cette valeur en points de dommages (Exemple: Résultat des {MV: dommages:7. ; INS: dommages: 7.} 7 tours sonnés, 2 points de dommages). Si la tête est protégée (avec un casque), la puissance est de +2. Sinon, elle est de 0."
+   }
+  ]
+ },
+ {
+  "nom": "Cran d'arrêt",
+  "categorie": "contact",
+  "puissance": -1,
+  "puissance_speciale": false,
+  "puissance_rafale": null,
+  "precision": 0,
+  "portee": null,
+  "coups": null,
+  "talent": "Arme de contact",
+  "notes": []
+ },
+ {
+  "nom": "Matraque",
+  "categorie": "contact",
+  "puissance": null,
+  "puissance_speciale": true,
+  "puissance_rafale": null,
+  "precision": 0,
+  "portee": null,
+  "coups": null,
+  "talent": "Arme de contact",
+  "notes": [
+   {
+    "id": "c",
+    "texte": "Même procédure que ci-dessus. La puissance est de +1."
+   }
+  ]
+ },
+ {
+  "nom": "Poignard",
+  "categorie": "contact",
+  "puissance": 0,
+  "puissance_speciale": false,
+  "puissance_rafale": null,
+  "precision": 0,
+  "portee": null,
+  "coups": null,
+  "talent": "Arme de contact",
+  "notes": []
+ },
+ {
+  "nom": "Hachette",
+  "categorie": "contact",
+  "puissance": 1,
+  "puissance_speciale": false,
+  "puissance_rafale": null,
+  "precision": -1,
+  "portee": null,
+  "coups": null,
+  "talent": "Arme de contact",
+  "notes": []
+ },
+ {
+  "nom": "Epée courte",
+  "categorie": "contact",
+  "puissance": 1,
+  "puissance_speciale": false,
+  "puissance_rafale": null,
+  "precision": 0,
+  "portee": null,
+  "coups": null,
+  "talent": "Arme de contact",
+  "notes": []
+ },
+ {
+  "nom": "Epée longue",
+  "categorie": "contact",
+  "puissance": 2,
+  "puissance_speciale": false,
+  "puissance_rafale": null,
+  "precision": 0,
+  "portee": null,
+  "coups": null,
+  "talent": "Arme de contact",
+  "notes": []
+ },
+ {
+  "nom": "Hache de bataille",
+  "categorie": "contact",
+  "puissance": 2,
+  "puissance_speciale": false,
+  "puissance_rafale": null,
+  "precision": 0,
+  "portee": null,
+  "coups": null,
+  "talent": "Arme de contact lourde",
+  "notes": []
+ },
+ {
+  "nom": "Hallebarde",
+  "categorie": "contact",
+  "puissance": 2,
+  "puissance_speciale": false,
+  "puissance_rafale": null,
+  "precision": -1,
+  "portee": null,
+  "coups": null,
+  "talent": "Arme de contact lourde",
+  "notes": []
+ },
+ {
+  "nom": "Masse à deux mains",
+  "categorie": "contact",
+  "puissance": 3,
+  "puissance_speciale": false,
+  "puissance_rafale": null,
+  "precision": -2,
+  "portee": null,
+  "coups": null,
+  "talent": "Arme de contact lourde",
+  "notes": []
+ },
+ {
+  "nom": "Epée à deux mains",
+  "categorie": "contact",
+  "puissance": 3,
+  "puissance_speciale": false,
+  "puissance_rafale": null,
+  "precision": -1,
+  "portee": null,
+  "coups": null,
+  "talent": "Arme de contact lourde",
+  "notes": []
+ },
+ {
+  "nom": "Revolver cal.22",
+  "categorie": "distance",
+  "puissance": 0,
+  "puissance_speciale": false,
+  "puissance_rafale": null,
+  "precision": 0,
+  "portee": 10,
+  "coups": "6",
+  "talent": "Arme de poing",
+  "notes": []
+ },
+ {
+  "nom": "Revolver cal.44",
+  "categorie": "distance",
+  "puissance": 1,
+  "puissance_speciale": false,
+  "puissance_rafale": null,
+  "precision": 0,
+  "portee": 15,
+  "coups": "6",
+  "talent": "Arme de poing",
+  "notes": []
+ },
+ {
+  "nom": "Canon scié",
+  "categorie": "distance",
+  "puissance": 3,
+  "puissance_speciale": false,
+  "puissance_rafale": null,
+  "precision": -1,
+  "portee": 3,
+  "coups": "2",
+  "talent": "Arme de poing",
+  "notes": [
+   {
+    "id": "a",
+    "texte": "Cette arme peut toucher jusqu'à trois cibles proches l'une de l'autre avec une puissance de +1 pour chacune."
+   }
+  ]
+ },
+ {
+  "nom": "Uzi",
+  "categorie": "distance",
+  "puissance": 1,
+  "puissance_speciale": false,
+  "puissance_rafale": 3,
+  "precision": 0,
+  "portee": 35,
+  "coups": "30(5)",
+  "talent": "Arme de poing",
+  "notes": [
+   {
+    "id": "b",
+    "texte": "En rafale, cette arme peut toucher jusqu'à cinq cibles proches l'une de l'autre avec une puissance de +1 pour chacune."
+   }
+  ]
+ },
+ {
+  "nom": "Fusil à pompe",
+  "categorie": "distance",
+  "puissance": 2,
+  "puissance_speciale": false,
+  "puissance_rafale": null,
+  "precision": 0,
+  "portee": 25,
+  "coups": "10",
+  "talent": "Arme d'épaule",
+  "notes": []
+ },
+ {
+  "nom": "Carabine",
+  "categorie": "distance",
+  "puissance": 1,
+  "puissance_speciale": false,
+  "puissance_rafale": null,
+  "precision": 1,
+  "portee": 100,
+  "coups": "10",
+  "talent": "Arme d'épaule",
+  "notes": []
+ },
+ {
+  "nom": "M-16",
+  "categorie": "distance",
+  "puissance": 2,
+  "puissance_speciale": false,
+  "puissance_rafale": 4,
+  "precision": 0,
+  "portee": 80,
+  "coups": "30(5)",
+  "talent": "Arme d'épaule",
+  "notes": [
+   {
+    "id": "c",
+    "texte": "En rafale, cette arme peut toucher jusqu'à cinq cibles proches l'une de l'autre avec une puissance de +2 pour chacune."
+   }
+  ]
+ },
+ {
+  "nom": "M-60",
+  "categorie": "distance",
+  "puissance": null,
+  "puissance_speciale": false,
+  "puissance_rafale": 6,
+  "precision": 0,
+  "portee": 200,
+  "coups": "-(20)",
+  "talent": "Mitrailleuse",
+  "notes": [
+   {
+    "id": "d",
+    "texte": "En rafale, cette arme peut toucher jusqu'à huit cibles proches l'une de l'autre avec une puissance de +1 pour chacune, ou quatre cibles avec une puissance de +2."
+   }
+  ]
+ },
+ {
+  "nom": "Lance-grenade",
+  "categorie": "distance",
+  "puissance": null,
+  "puissance_speciale": true,
+  "puissance_rafale": null,
+  "precision": -1,
+  "portee": 20,
+  "coups": "1",
+  "talent": "Lance-grenade",
+  "notes": [
+   {
+    "id": "e",
+    "texte": "Cette arme sert à lancer une grenade à une distance plus grande et en utilisant un autre talent (Lance-grenade)."
+   }
+  ]
+ },
+ {
+  "nom": "Lance-flammes",
+  "categorie": "distance",
+  "puissance": 6,
+  "puissance_speciale": false,
+  "puissance_rafale": null,
+  "precision": -1,
+  "portee": 10,
+  "coups": "5",
+  "talent": "Lance-flammes",
+  "notes": [
+   {
+    "id": "f",
+    "texte": "Cette arme peut toucher jusqu'à cinq cibles proches l'un de l'autre avec une puissance de +6 pour chacune."
+   }
+  ]
+ },
+ {
+  "nom": "Grenade",
+  "categorie": "distance",
+  "puissance": 5,
+  "puissance_speciale": false,
+  "puissance_rafale": null,
+  "precision": -2,
+  "portee": 4,
+  "coups": null,
+  "talent": "Lancer",
+  "notes": [
+   {
+    "id": "g",
+    "texte": "Attaque toutes les cibles dans un rayon de 5 mètres avec une puissance de +5."
+   }
+  ]
+ },
+ {
+  "nom": "Cocktail molotov",
+  "categorie": "distance",
+  "puissance": 2,
+  "puissance_speciale": false,
+  "puissance_rafale": null,
+  "precision": -2,
+  "portee": 4,
+  "coups": null,
+  "talent": "Lancer",
+  "notes": [
+   {
+    "id": "h",
+    "texte": "Attaque toutes les cibles dans un rayon de 1 mètres avec une puissance de +2."
+   }
+  ]
+ },
+ {
+  "nom": "Dague de lancer",
+  "categorie": "distance",
+  "puissance": -1,
+  "puissance_speciale": false,
+  "puissance_rafale": null,
+  "precision": -1,
+  "portee": 2,
+  "coups": null,
+  "talent": "Lancer",
+  "notes": []
+ },
+ {
+  "nom": "Shuriken",
+  "categorie": "distance",
+  "puissance": -2,
+  "puissance_speciale": false,
+  "puissance_rafale": null,
+  "precision": -1,
+  "portee": 2,
+  "coups": null,
+  "talent": "Lancer",
+  "notes": []
+ },
+ {
+  "nom": "Hachette",
+  "categorie": "distance",
+  "puissance": 0,
+  "puissance_speciale": false,
+  "puissance_rafale": null,
+  "precision": 0,
+  "portee": 2,
+  "coups": null,
+  "talent": "Lancer",
+  "notes": []
+ }
+]
