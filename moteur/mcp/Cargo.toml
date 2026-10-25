@@ -6,6 +6,7 @@ description = "Serveur MCP du maître de jeu In Nomine Satanis / Magna Veritas."
 
 [dependencies]
 insmv-regles = { path = "../regles" }
+insmv-campagne = { path = "../campagne" }
 rmcp = { version = "3.7", features = ["server", "transport-io", "macros"] }
 tokio = { version = "1", features = ["macros", "rt-multi-thread", "io-std"] }
 serde = { version = "1", features = ["derive"] }

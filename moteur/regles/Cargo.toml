@@ -8,3 +8,5 @@ description = "Moteur de règles In Nomine Satanis / Magna Veritas (1re édition
 rand = "0.8"
 serde = { version = "1", features = ["derive"] }
 thiserror = "2"
+serde_json = "1"
+schemars = "1"

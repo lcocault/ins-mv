@@ -5,8 +5,36 @@ use std::process::{Command, Stdio};
 
 use serde_json::{json, Value};
 
+/// Base de campagne jetable, supprimée à la fin du test.
+struct BaseTemporaire(std::path::PathBuf);
+
+impl BaseTemporaire {
+    fn nouvelle(nom: &str) -> Self {
+        let dossier = std::env::temp_dir().join(format!("insmv-proto-{}-{nom}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dossier);
+        Self(dossier.join("jeu.sqlite"))
+    }
+}
+
+impl Drop for BaseTemporaire {
+    fn drop(&mut self) {
+        if let Some(dossier) = self.0.parent() {
+            let _ = std::fs::remove_dir_all(dossier);
+        }
+    }
+}
+
 fn echanger(requetes: &[Value], nb_reponses: usize) -> Vec<Value> {
+    // Un nom unique par appel : les tests s'exécutent en parallèle.
+    static COMPTEUR: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(0);
+    let n = COMPTEUR.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+    let base = BaseTemporaire::nouvelle(&format!("jetable-{n}"));
+    echanger_sur(&base, requetes, nb_reponses)
+}
+
+fn echanger_sur(base: &BaseTemporaire, requetes: &[Value], nb_reponses: usize) -> Vec<Value> {
     let mut enfant = Command::new(env!("CARGO_BIN_EXE_insmv-mcp"))
+        .env("INSMV_CAMPAGNE", &base.0)
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::null())
@@ -15,17 +43,21 @@ fn echanger(requetes: &[Value], nb_reponses: usize) -> Vec<Value> {
     let mut entree = enfant.stdin.take().unwrap();
     let mut sortie = BufReader::new(enfant.stdout.take().unwrap());
 
+    // Le serveur traite les requêtes en parallèle : on attend chaque réponse avant
+    // d'envoyer la suivante, pour que les scénarios restent déterministes.
+    let mut reponses = Vec::new();
     for requete in requetes {
         writeln!(entree, "{requete}").unwrap();
-    }
-    let mut reponses = Vec::new();
-    while reponses.len() < nb_reponses {
+        if requete.get("id").is_none() {
+            continue; // notification : pas de réponse
+        }
         let mut ligne = String::new();
         if sortie.read_line(&mut ligne).unwrap() == 0 {
             break;
         }
         reponses.push(serde_json::from_str(&ligne).expect("réponse JSON"));
     }
+    assert_eq!(reponses.len(), nb_reponses, "nombre de réponses reçues");
     drop(entree);
     let _ = enfant.kill();
     reponses
@@ -51,7 +83,7 @@ fn texte(reponse: &Value) -> Value {
 }
 
 #[test]
-fn expose_les_trois_outils() {
+fn expose_les_outils() {
     let mut requetes = initialisation();
     requetes.push(json!({"jsonrpc":"2.0","id":2,"method":"tools/list"}));
     let reponses = echanger(&requetes, 2);
@@ -62,7 +94,27 @@ fn expose_les_trois_outils() {
         .map(|t| t["name"].as_str().unwrap())
         .collect();
     noms.sort();
-    assert_eq!(noms, ["lancer_des", "resoudre_action", "resoudre_conflit"]);
+    assert_eq!(
+        noms,
+        [
+            "ajuster_dommages",
+            "ajuster_pp",
+            "chercher_pouvoir",
+            "chercher_talent",
+            "conflit_personnages",
+            "creer_personnage",
+            "lancer_des",
+            "lire_journal",
+            "lister_personnages",
+            "noter_journal",
+            "resoudre_action",
+            "resoudre_conflit",
+            "supprimer_personnage",
+            "tester_personnage",
+            "tirer_pouvoir",
+            "voir_personnage",
+        ]
+    );
 }
 
 #[test]
@@ -103,4 +155,61 @@ fn conflit_et_des_libres() {
     assert_eq!(conflit["issue"], "conflit_reel");
     let total = texte(&reponses[2])["total"].as_i64().unwrap();
     assert!((5..=15).contains(&total), "2D6+3 hors bornes : {total}");
+}
+
+fn demon(nom: &str) -> Value {
+    json!({
+        "nom": nom, "espece": "demon", "role": "joueur", "patron": "Belial",
+        "caracteristiques": {"fo":3,"pr":3,"vo":4,"pe":3,"ag":3,"ap":2},
+        "talents": [{"nom":"Arme de poing","niveau":2},{"nom":"Esquive","niveau":2},{"nom":"Baratin","niveau":1}],
+        "pouvoirs": [{"code":321},{"code":112},{"code":211},{"code":311}]
+    })
+}
+
+#[test]
+fn la_campagne_persiste_d_une_session_a_l_autre() {
+    let base = BaseTemporaire::nouvelle("persistance");
+
+    // Session 1 : création, dépense de PP, note au journal.
+    let mut r = initialisation();
+    r.push(appel(2, "creer_personnage", demon("Mnofriytkgh")));
+    r.push(appel(3, "ajuster_pp", json!({"nom":"Mnofriytkgh","delta":-3})));
+    r.push(appel(4, "noter_journal", json!({"texte":"Rencontre du concierge","seance":"Séance 1","personnages":["Mnofriytkgh"]})));
+    let reponses = echanger_sur(&base, &r, 4);
+    assert_eq!(texte(&reponses[1])["pp_max"], 8);
+    assert_eq!(texte(&reponses[2])["pp"], 5);
+
+    // Session 2 : tout est retrouvé.
+    let mut r = initialisation();
+    r.push(appel(2, "voir_personnage", json!({"nom":"mnofriytkgh"})));
+    r.push(appel(3, "lire_journal", json!({"personnage":"Mnofriytkgh"})));
+    r.push(appel(4, "lister_personnages", json!({"role":"joueur"})));
+    let reponses = echanger_sur(&base, &r, 4);
+    let fiche = texte(&reponses[1]);
+    assert_eq!((fiche["pp"].as_u64(), fiche["pp_max"].as_u64()), (Some(5), Some(8)));
+    assert_eq!(fiche["fiche"]["pouvoirs"][0]["nom"], "Télépathie");
+    assert_eq!(texte(&reponses[2])[0]["texte"], "Rencontre du concierge");
+    assert_eq!(texte(&reponses[3])[0]["nom"], "Mnofriytkgh");
+}
+
+#[test]
+fn test_sur_fiche_et_refus_de_budget_via_le_protocole() {
+    let mut r = initialisation();
+    r.push(appel(2, "creer_personnage", demon("Paulo")));
+    r.push(appel(3, "tester_personnage", json!({
+        "nom":"Paulo","caracteristique":"PE","talent":"Arme de poing","cout_pp":1})));
+    let mut trop = demon("Gros bill");
+    trop["caracteristiques"] = json!({"fo":5,"pr":5,"vo":5,"pe":5,"ag":5,"ap":5});
+    r.push(appel(4, "creer_personnage", trop));
+    let reponses = echanger(&r, 4);
+
+    let test = texte(&reponses[2]);
+    assert_eq!(test["pp_depenses"], 1);
+    assert_eq!(test["pp_restants"], 7);
+    assert!(test["description"].as_str().unwrap().contains("Arme de poing +2"));
+    assert!(matches!(test["seuil"]["valeur"].as_u64(), Some(62)), "{test}");
+
+    assert_eq!(reponses[3]["result"]["isError"], true);
+    let message = reponses[3]["result"]["content"][0]["text"].as_str().unwrap();
+    assert!(message.contains("exception"), "{message}");
 }

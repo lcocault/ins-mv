@@ -1,0 +1,4522 @@
+[
+ {
+  "livre": "ange",
+  "code": 111,
+  "nom": "L'Unique",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "11- Attaque corporelle",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 112,
+  "nom": "Coup de poing",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "11- Attaque corporelle",
+  "attaque": "FO",
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 113,
+  "nom": "Attaques multiples",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "11- Attaque corporelle",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/minute"
+ },
+ {
+  "livre": "ange",
+  "code": 114,
+  "nom": "Membre blindé",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "11- Attaque corporelle",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/attaque"
+ },
+ {
+  "livre": "ange",
+  "code": 115,
+  "nom": "Esquive acrobatique",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "11- Attaque corporelle",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/attaque au dessus de deux"
+ },
+ {
+  "livre": "ange",
+  "code": 116,
+  "nom": "Assommer",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "11- Attaque corporelle",
+  "attaque": "FO",
+  "defense": "FO",
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 121,
+  "nom": "Eclair",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "12- Attaque à distance",
+  "attaque": "PR",
+  "defense": null,
+  "cout": "1, 2 ou 3/att."
+ },
+ {
+  "livre": "ange",
+  "code": 122,
+  "nom": "Lumière",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "12- Attaque à distance",
+  "attaque": "PR",
+  "defense": null,
+  "cout": "1, 2 ou 3/att."
+ },
+ {
+  "livre": "ange",
+  "code": 123,
+  "nom": "Son",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "12- Attaque à distance",
+  "attaque": "PR",
+  "defense": null,
+  "cout": "1, 2 ou 3/att."
+ },
+ {
+  "livre": "ange",
+  "code": 124,
+  "nom": "Eau bénite",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "12- Attaque à distance",
+  "attaque": "PR",
+  "defense": null,
+  "cout": "1, 2 ou 3/att."
+ },
+ {
+  "livre": "ange",
+  "code": 125,
+  "nom": "Eau du robinet",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "12- Attaque à distance",
+  "attaque": "PR",
+  "defense": null,
+  "cout": "1, 2 ou 3/att."
+ },
+ {
+  "livre": "ange",
+  "code": 126,
+  "nom": "Télékinésie",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "12- Attaque à distance",
+  "attaque": "PR",
+  "defense": null,
+  "cout": "1, 2 ou 3/att."
+ },
+ {
+  "livre": "ange",
+  "code": 131,
+  "nom": "Charme",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "13- Attaque non-létale",
+  "attaque": "AP",
+  "defense": "VO",
+  "cout": "4/attaque"
+ },
+ {
+  "livre": "ange",
+  "code": 132,
+  "nom": "Sommeil",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "13- Attaque non-létale",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "2/attaque"
+ },
+ {
+  "livre": "ange",
+  "code": 133,
+  "nom": "Faiblesse",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "13- Attaque non-létale",
+  "attaque": "VO",
+  "defense": "FO",
+  "cout": "1/attaque"
+ },
+ {
+  "livre": "ange",
+  "code": 134,
+  "nom": "Peur",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "13- Attaque non-létale",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "2/attaque"
+ },
+ {
+  "livre": "ange",
+  "code": 135,
+  "nom": "Paralysie",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "13- Attaque non-létale",
+  "attaque": "VO",
+  "defense": "FO",
+  "cout": "2/attaque"
+ },
+ {
+  "livre": "ange",
+  "code": 136,
+  "nom": "Coma",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "13- Attaque non-létale",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "5/attaque"
+ },
+ {
+  "livre": "ange",
+  "code": 141,
+  "nom": "Volonté",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "14- Absorption",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 142,
+  "nom": "Force",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "14- Absorption",
+  "attaque": "VO",
+  "defense": "FO",
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 143,
+  "nom": "Amour",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "14- Absorption",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 144,
+  "nom": "Gentillesse",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "14- Absorption",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 145,
+  "nom": "Colère",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "14- Absorption",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 146,
+  "nom": "Mal",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "14- Absorption",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 151,
+  "nom": "Guérison de maladies",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "15- Bénédiction",
+  "attaque": "VO",
+  "defense": null,
+  "cout": "La moitié (M. 4)"
+ },
+ {
+  "livre": "ange",
+  "code": 152,
+  "nom": "Fertilité",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "15- Bénédiction",
+  "attaque": "VO",
+  "defense": null,
+  "cout": "La moitié (M. 4)"
+ },
+ {
+  "livre": "ange",
+  "code": 153,
+  "nom": "Rajeunissement",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "15- Bénédiction",
+  "attaque": "VO",
+  "defense": null,
+  "cout": "La moitié (M. 4)"
+ },
+ {
+  "livre": "ange",
+  "code": 154,
+  "nom": "Guérison de folies",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "15- Bénédiction",
+  "attaque": "VO",
+  "defense": null,
+  "cout": "La moitié (M. 4)"
+ },
+ {
+  "livre": "ange",
+  "code": 155,
+  "nom": "Guérison de phobies",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "15- Bénédiction",
+  "attaque": "VO",
+  "defense": null,
+  "cout": "La moitié (M. 4)"
+ },
+ {
+  "livre": "ange",
+  "code": 156,
+  "nom": "Beauté",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "15- Bénédiction",
+  "attaque": "VO",
+  "defense": null,
+  "cout": "La moitié (M. 4)"
+ },
+ {
+  "livre": "ange",
+  "code": 161,
+  "nom": "Charme",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "16- Contact",
+  "attaque": "AP",
+  "defense": "VO",
+  "cout": "4/attaque"
+ },
+ {
+  "livre": "ange",
+  "code": 162,
+  "nom": "Faiblesse",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "16- Contact",
+  "attaque": "VO",
+  "defense": "FO",
+  "cout": "1/attaque"
+ },
+ {
+  "livre": "ange",
+  "code": 163,
+  "nom": "Paralysie",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "16- Contact",
+  "attaque": "VO",
+  "defense": "FO",
+  "cout": "1/attaque"
+ },
+ {
+  "livre": "ange",
+  "code": 164,
+  "nom": "Peur",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "16- Contact",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "2/attaque"
+ },
+ {
+  "livre": "ange",
+  "code": 165,
+  "nom": "Sommeil",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "16- Contact",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "2/attaque"
+ },
+ {
+  "livre": "ange",
+  "code": 166,
+  "nom": "Calme",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "16- Contact",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "1/attaque"
+ },
+ {
+  "livre": "ange",
+  "code": 211,
+  "nom": "Armure corporelle",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "21- Défense permanente",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 212,
+  "nom": "Immunité aux maladies et aux poisons",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "21- Défense permanente",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 213,
+  "nom": "Immunité au feu",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "21- Défense permanente",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 214,
+  "nom": "Immunité au froid",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "21- Défense permanente",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 215,
+  "nom": "Pas de nourriture",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "21- Défense permanente",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 216,
+  "nom": "Anaérobiose",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "21- Défense permanente",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 221,
+  "nom": "Volonté supra-normale",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "22- Défense mentale",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/défense"
+ },
+ {
+  "livre": "ange",
+  "code": 222,
+  "nom": "Non-détection",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "22- Défense mentale",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 223,
+  "nom": "Multiplication",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "22- Défense mentale",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/seconde"
+ },
+ {
+  "livre": "ange",
+  "code": 224,
+  "nom": "Absorption",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "22- Défense mentale",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 225,
+  "nom": "Immunité",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "22- Défense mentale",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 226,
+  "nom": "Régénération",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "22- Défense mentale",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 231,
+  "nom": "Président d'organisation humanitaire",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "23- Couverture",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 232,
+  "nom": "Médecin",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "23- Couverture",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 233,
+  "nom": "Prêtre",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "23- Couverture",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 234,
+  "nom": "Vedette de cinéma",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "23- Couverture",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 235,
+  "nom": "Scientifique",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "23- Couverture",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 236,
+  "nom": "Sportif professionnel",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "23- Couverture",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 241,
+  "nom": "Force",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "24- Augmentation temporaire des caractéristiques",
+  "attaque": "VO",
+  "defense": null,
+  "cout": "1"
+ },
+ {
+  "livre": "ange",
+  "code": 242,
+  "nom": "Précision",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "24- Augmentation temporaire des caractéristiques",
+  "attaque": "VO",
+  "defense": null,
+  "cout": "1"
+ },
+ {
+  "livre": "ange",
+  "code": 243,
+  "nom": "Agilité",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "24- Augmentation temporaire des caractéristiques",
+  "attaque": "VO",
+  "defense": null,
+  "cout": "1"
+ },
+ {
+  "livre": "ange",
+  "code": 244,
+  "nom": "Apparence",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "24- Augmentation temporaire des caractéristiques",
+  "attaque": "VO",
+  "defense": null,
+  "cout": "1"
+ },
+ {
+  "livre": "ange",
+  "code": 245,
+  "nom": "Volonté",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "24- Augmentation temporaire des caractéristiques",
+  "attaque": "VO",
+  "defense": null,
+  "cout": "1"
+ },
+ {
+  "livre": "ange",
+  "code": 246,
+  "nom": "Perception",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "24- Augmentation temporaire des caractéristiques",
+  "attaque": "VO",
+  "defense": null,
+  "cout": "1"
+ },
+ {
+  "livre": "ange",
+  "code": 251,
+  "nom": "Champ de force",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "25- Défense temporaire",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/seconde"
+ },
+ {
+  "livre": "ange",
+  "code": 252,
+  "nom": "Glace",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "25- Défense temporaire",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/deux secondes"
+ },
+ {
+  "livre": "ange",
+  "code": 253,
+  "nom": "Courant d'air",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "25- Défense temporaire",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/seconde"
+ },
+ {
+  "livre": "ange",
+  "code": 254,
+  "nom": "Champ magnétique",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "25- Défense temporaire",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/seconde"
+ },
+ {
+  "livre": "ange",
+  "code": 255,
+  "nom": "Rebond",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "25- Défense temporaire",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/seconde + 2/att."
+ },
+ {
+  "livre": "ange",
+  "code": 256,
+  "nom": "Conversion",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "25- Défense temporaire",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/seconde"
+ },
+ {
+  "livre": "ange",
+  "code": 261,
+  "nom": "Invisibilité",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "26- Camouflage",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/trois secondes"
+ },
+ {
+  "livre": "ange",
+  "code": 262,
+  "nom": "Caméléon",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "26- Camouflage",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 263,
+  "nom": "Forme gazeuse",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "26- Camouflage",
+  "attaque": null,
+  "defense": null,
+  "cout": "4"
+ },
+ {
+  "livre": "ange",
+  "code": 264,
+  "nom": "Electricité",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "26- Camouflage",
+  "attaque": null,
+  "defense": null,
+  "cout": "4"
+ },
+ {
+  "livre": "ange",
+  "code": 265,
+  "nom": "Réduction",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "26- Camouflage",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/heure"
+ },
+ {
+  "livre": "ange",
+  "code": 266,
+  "nom": "Polymorphe",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "26- Camouflage",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/heure"
+ },
+ {
+  "livre": "ange",
+  "code": 311,
+  "nom": "Mal",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "31- Détection",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/seconde"
+ },
+ {
+  "livre": "ange",
+  "code": 312,
+  "nom": "Psychométrie",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "31- Détection",
+  "attaque": "VO",
+  "defense": null,
+  "cout": "4"
+ },
+ {
+  "livre": "ange",
+  "code": 313,
+  "nom": "Invisible",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "31- Détection",
+  "attaque": null,
+  "defense": null,
+  "cout": "1"
+ },
+ {
+  "livre": "ange",
+  "code": 314,
+  "nom": "Futur proche",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "31- Détection",
+  "attaque": null,
+  "defense": null,
+  "cout": "3"
+ },
+ {
+  "livre": "ange",
+  "code": 315,
+  "nom": "Danger",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "31- Détection",
+  "attaque": "PE",
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 316,
+  "nom": "Mensonge",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "31- Détection",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "1/minute"
+ },
+ {
+  "livre": "ange",
+  "code": 321,
+  "nom": "Télépathie",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "32- Communication",
+  "attaque": null,
+  "defense": null,
+  "cout": "1"
+ },
+ {
+  "livre": "ange",
+  "code": 322,
+  "nom": "Dialogue mental",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "32- Communication",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/minute"
+ },
+ {
+  "livre": "ange",
+  "code": 323,
+  "nom": "Lire les pensées",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "32- Communication",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "3"
+ },
+ {
+  "livre": "ange",
+  "code": 324,
+  "nom": "Lire les sentiments",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "32- Communication",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "1"
+ },
+ {
+  "livre": "ange",
+  "code": 325,
+  "nom": "Rêve",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "32- Communication",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "5"
+ },
+ {
+  "livre": "ange",
+  "code": 326,
+  "nom": "Projection de pouvoir",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "32- Communication",
+  "attaque": null,
+  "defense": null,
+  "cout": "4"
+ },
+ {
+  "livre": "ange",
+  "code": 331,
+  "nom": "Téléportation",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "33- Déplacement",
+  "attaque": null,
+  "defense": null,
+  "cout": "5"
+ },
+ {
+  "livre": "ange",
+  "code": 332,
+  "nom": "Vol",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "33- Déplacement",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/minute"
+ },
+ {
+  "livre": "ange",
+  "code": 333,
+  "nom": "Bond",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "33- Déplacement",
+  "attaque": null,
+  "defense": null,
+  "cout": "1"
+ },
+ {
+  "livre": "ange",
+  "code": 334,
+  "nom": "Vitesse",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "33- Déplacement",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/minute"
+ },
+ {
+  "livre": "ange",
+  "code": 335,
+  "nom": "Passe muraille",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "33- Déplacement",
+  "attaque": null,
+  "defense": null,
+  "cout": "3/cinq secondes"
+ },
+ {
+  "livre": "ange",
+  "code": 336,
+  "nom": "Déplacement temporel",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "33- Déplacement",
+  "attaque": null,
+  "defense": null,
+  "cout": "5"
+ },
+ {
+  "livre": "ange",
+  "code": 341,
+  "nom": "Physique",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "34- Talent",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 342,
+  "nom": "Artistique",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "34- Talent",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 343,
+  "nom": "Scientifique",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "34- Talent",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 344,
+  "nom": "Communication",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "34- Talent",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 345,
+  "nom": "Ruse",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "34- Talent",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 346,
+  "nom": "Combat",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "34- Talent",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 351,
+  "nom": "Force",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "35- Augmentation permanente des caractéristiques",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 352,
+  "nom": "Précision",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "35- Augmentation permanente des caractéristiques",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 353,
+  "nom": "Volonté",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "35- Augmentation permanente des caractéristiques",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 354,
+  "nom": "Apparence",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "35- Augmentation permanente des caractéristiques",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 355,
+  "nom": "Agilité",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "35- Augmentation permanente des caractéristiques",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 356,
+  "nom": "Perception",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "35- Augmentation permanente des caractéristiques",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 361,
+  "nom": "Humains",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "36- Contrôle",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "2"
+ },
+ {
+  "livre": "ange",
+  "code": 362,
+  "nom": "Reptiles et batraciens",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "36- Contrôle",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "2"
+ },
+ {
+  "livre": "ange",
+  "code": 363,
+  "nom": "Oiseaux",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "36- Contrôle",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "2"
+ },
+ {
+  "livre": "ange",
+  "code": 364,
+  "nom": "Insectes et arachnides",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "36- Contrôle",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "2"
+ },
+ {
+  "livre": "ange",
+  "code": 365,
+  "nom": "Mammifères et marsupiaux",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "36- Contrôle",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "2"
+ },
+ {
+  "livre": "ange",
+  "code": 366,
+  "nom": "Poissons et mollusques",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "36- Contrôle",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "2"
+ },
+ {
+  "livre": "ange",
+  "code": 411,
+  "nom": "Arme de contact bénite",
+  "famille": "4- Objet",
+  "categorie": "41- Arme",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 412,
+  "nom": "Arme à distance bénite",
+  "famille": "4- Objet",
+  "categorie": "41- Arme",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 413,
+  "nom": "Arme de contact intelligente",
+  "famille": "4- Objet",
+  "categorie": "41- Arme",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 414,
+  "nom": "Arme à distance intelligente",
+  "famille": "4- Objet",
+  "categorie": "41- Arme",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 415,
+  "nom": "Arme de contact mobile",
+  "famille": "4- Objet",
+  "categorie": "41- Arme",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 416,
+  "nom": "Arme à distance mobile",
+  "famille": "4- Objet",
+  "categorie": "41- Arme",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 421,
+  "nom": "Croix",
+  "famille": "4- Objet",
+  "categorie": "42- Objet magique",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 422,
+  "nom": "Bracelet",
+  "famille": "4- Objet",
+  "categorie": "42- Objet magique",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 423,
+  "nom": "Rameau",
+  "famille": "4- Objet",
+  "categorie": "42- Objet magique",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 424,
+  "nom": "Perle",
+  "famille": "4- Objet",
+  "categorie": "42- Objet magique",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 425,
+  "nom": "Diadème",
+  "famille": "4- Objet",
+  "categorie": "42- Objet magique",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 426,
+  "nom": "Anneau",
+  "famille": "4- Objet",
+  "categorie": "42- Objet magique",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 431,
+  "nom": "Château",
+  "famille": "4- Objet",
+  "categorie": "43- Locaux",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 432,
+  "nom": "Ecole",
+  "famille": "4- Objet",
+  "categorie": "43- Locaux",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 433,
+  "nom": "Immeuble",
+  "famille": "4- Objet",
+  "categorie": "43- Locaux",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 434,
+  "nom": "Armée du salut",
+  "famille": "4- Objet",
+  "categorie": "43- Locaux",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 435,
+  "nom": "Laboratoire",
+  "famille": "4- Objet",
+  "categorie": "43- Locaux",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 436,
+  "nom": "Eglise",
+  "famille": "4- Objet",
+  "categorie": "43- Locaux",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 441,
+  "nom": "Monument historique",
+  "famille": "4- Objet",
+  "categorie": "44- Lieux de réunion",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 442,
+  "nom": "Ambassade",
+  "famille": "4- Objet",
+  "categorie": "44- Lieux de réunion",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 443,
+  "nom": "Parc",
+  "famille": "4- Objet",
+  "categorie": "44- Lieux de réunion",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 444,
+  "nom": "Musée",
+  "famille": "4- Objet",
+  "categorie": "44- Lieux de réunion",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 445,
+  "nom": "Petite maison",
+  "famille": "4- Objet",
+  "categorie": "44- Lieux de réunion",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 446,
+  "nom": "Salle de concert",
+  "famille": "4- Objet",
+  "categorie": "44- Lieux de réunion",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 451,
+  "nom": "Greenpeace",
+  "famille": "4- Objet",
+  "categorie": "45- Association",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 452,
+  "nom": "Médecins du monde",
+  "famille": "4- Objet",
+  "categorie": "45- Association",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 453,
+  "nom": "ONU",
+  "famille": "4- Objet",
+  "categorie": "45- Association",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 454,
+  "nom": "UNICEF",
+  "famille": "4- Objet",
+  "categorie": "45- Association",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 455,
+  "nom": "Ligue contre le cancer",
+  "famille": "4- Objet",
+  "categorie": "45- Association",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 456,
+  "nom": "Scouts",
+  "famille": "4- Objet",
+  "categorie": "45- Association",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 461,
+  "nom": "Restaurant",
+  "famille": "4- Objet",
+  "categorie": "46- Etablissement",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 462,
+  "nom": "Hôtel",
+  "famille": "4- Objet",
+  "categorie": "46- Etablissement",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 463,
+  "nom": "Université",
+  "famille": "4- Objet",
+  "categorie": "46- Etablissement",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 464,
+  "nom": "Casino",
+  "famille": "4- Objet",
+  "categorie": "46- Etablissement",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 465,
+  "nom": "Station balnéaire",
+  "famille": "4- Objet",
+  "categorie": "46- Etablissement",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 466,
+  "nom": "Boutique de luxe",
+  "famille": "4- Objet",
+  "categorie": "46- Etablissement",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 511,
+  "nom": "Investigateur",
+  "famille": "5- Serviteur",
+  "categorie": "51- Serviteur de Dieu",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 512,
+  "nom": "Escouade anti mort-vivants",
+  "famille": "5- Serviteur",
+  "categorie": "51- Serviteur de Dieu",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 513,
+  "nom": "2 escouades anti mort-vivants",
+  "famille": "5- Serviteur",
+  "categorie": "51- Serviteur de Dieu",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 514,
+  "nom": "Escouade anti-familiers",
+  "famille": "5- Serviteur",
+  "categorie": "51- Serviteur de Dieu",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 515,
+  "nom": "2 escouades anti-familiers",
+  "famille": "5- Serviteur",
+  "categorie": "51- Serviteur de Dieu",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 516,
+  "nom": "Escouade multi-rôles",
+  "famille": "5- Serviteur",
+  "categorie": "51- Serviteur de Dieu",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 521,
+  "nom": "Informaticien",
+  "famille": "5- Serviteur",
+  "categorie": "52- Serviteur de Dieu spécialisé",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 522,
+  "nom": "Avocat",
+  "famille": "5- Serviteur",
+  "categorie": "52- Serviteur de Dieu spécialisé",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 523,
+  "nom": "Comptable",
+  "famille": "5- Serviteur",
+  "categorie": "52- Serviteur de Dieu spécialisé",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 524,
+  "nom": "Commissaire de police",
+  "famille": "5- Serviteur",
+  "categorie": "52- Serviteur de Dieu spécialisé",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 525,
+  "nom": "Militaire",
+  "famille": "5- Serviteur",
+  "categorie": "52- Serviteur de Dieu spécialisé",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 526,
+  "nom": "Editeur",
+  "famille": "5- Serviteur",
+  "categorie": "52- Serviteur de Dieu spécialisé",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 531,
+  "nom": "Petite section d'enquête",
+  "famille": "5- Serviteur",
+  "categorie": "53- Soldats de Dieu",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 532,
+  "nom": "Section d'enquête",
+  "famille": "5- Serviteur",
+  "categorie": "53- Soldats de Dieu",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 533,
+  "nom": "Section de combat multi-rôle",
+  "famille": "5- Serviteur",
+  "categorie": "53- Soldats de Dieu",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 534,
+  "nom": "2 sections de combat multi-rôle",
+  "famille": "5- Serviteur",
+  "categorie": "53- Soldats de Dieu",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 535,
+  "nom": "Section lourde",
+  "famille": "5- Serviteur",
+  "categorie": "53- Soldats de Dieu",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 536,
+  "nom": "Section lourde et véhicule de combat",
+  "famille": "5- Serviteur",
+  "categorie": "53- Soldats de Dieu",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 541,
+  "nom": "Informaticien",
+  "famille": "5- Serviteur",
+  "categorie": "54- Soldats de Dieu spécialisés",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 542,
+  "nom": "Avocat",
+  "famille": "5- Serviteur",
+  "categorie": "54- Soldats de Dieu spécialisés",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 543,
+  "nom": "Comptable",
+  "famille": "5- Serviteur",
+  "categorie": "54- Soldats de Dieu spécialisés",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 544,
+  "nom": "Commissaire de police",
+  "famille": "5- Serviteur",
+  "categorie": "54- Soldats de Dieu spécialisés",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 545,
+  "nom": "Militaire",
+  "famille": "5- Serviteur",
+  "categorie": "54- Soldats de Dieu spécialisés",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 546,
+  "nom": "Journaliste",
+  "famille": "5- Serviteur",
+  "categorie": "54- Soldats de Dieu spécialisés",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 551,
+  "nom": "Scouts",
+  "famille": "5- Serviteur",
+  "categorie": "55- Groupe allié non-affilié",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 552,
+  "nom": "Service d'ordre",
+  "famille": "5- Serviteur",
+  "categorie": "55- Groupe allié non-affilié",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 553,
+  "nom": "Skinheads",
+  "famille": "5- Serviteur",
+  "categorie": "55- Groupe allié non-affilié",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 554,
+  "nom": "Milices",
+  "famille": "5- Serviteur",
+  "categorie": "55- Groupe allié non-affilié",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 555,
+  "nom": "Police municipale",
+  "famille": "5- Serviteur",
+  "categorie": "55- Groupe allié non-affilié",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 556,
+  "nom": "Royalistes",
+  "famille": "5- Serviteur",
+  "categorie": "55- Groupe allié non-affilié",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 561,
+  "nom": "Commissaire de police",
+  "famille": "5- Serviteur",
+  "categorie": "56- Relations",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 562,
+  "nom": "Procureur",
+  "famille": "5- Serviteur",
+  "categorie": "56- Relations",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 563,
+  "nom": "Politicien",
+  "famille": "5- Serviteur",
+  "categorie": "56- Relations",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 564,
+  "nom": "Journaliste",
+  "famille": "5- Serviteur",
+  "categorie": "56- Relations",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 565,
+  "nom": "Militaire",
+  "famille": "5- Serviteur",
+  "categorie": "56- Relations",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 566,
+  "nom": "Présentateur TV",
+  "famille": "5- Serviteur",
+  "categorie": "56- Relations",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 611,
+  "nom": "Sens éliminé",
+  "famille": "6- Limitations",
+  "categorie": "61- Défaut physique naturel",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 612,
+  "nom": "Membre coupé",
+  "famille": "6- Limitations",
+  "categorie": "61- Défaut physique naturel",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 613,
+  "nom": "Cicatrice",
+  "famille": "6- Limitations",
+  "categorie": "61- Défaut physique naturel",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 614,
+  "nom": "Gras",
+  "famille": "6- Limitations",
+  "categorie": "61- Défaut physique naturel",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 615,
+  "nom": "Restriction vestimentaire",
+  "famille": "6- Limitations",
+  "categorie": "61- Défaut physique naturel",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 616,
+  "nom": "Tic",
+  "famille": "6- Limitations",
+  "categorie": "61- Défaut physique naturel",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 621,
+  "nom": "Aura",
+  "famille": "6- Limitations",
+  "categorie": "62- Défaut physique surnaturel",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 622,
+  "nom": "Couleur de la peau",
+  "famille": "6- Limitations",
+  "categorie": "62- Défaut physique surnaturel",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 623,
+  "nom": "Couleur des cheveux",
+  "famille": "6- Limitations",
+  "categorie": "62- Défaut physique surnaturel",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 624,
+  "nom": "Couleur des yeux",
+  "famille": "6- Limitations",
+  "categorie": "62- Défaut physique surnaturel",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 625,
+  "nom": "Ailes",
+  "famille": "6- Limitations",
+  "categorie": "62- Défaut physique surnaturel",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 626,
+  "nom": "Asexué",
+  "famille": "6- Limitations",
+  "categorie": "62- Défaut physique surnaturel",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 631,
+  "nom": "Paranoïa",
+  "famille": "6- Limitations",
+  "categorie": "63- Folie",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 632,
+  "nom": "Mythomane",
+  "famille": "6- Limitations",
+  "categorie": "63- Folie",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 633,
+  "nom": "Mégalomanie",
+  "famille": "6- Limitations",
+  "categorie": "63- Folie",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 634,
+  "nom": "Monomaniaque",
+  "famille": "6- Limitations",
+  "categorie": "63- Folie",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 635,
+  "nom": "Schizophrénie",
+  "famille": "6- Limitations",
+  "categorie": "63- Folie",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 636,
+  "nom": "Kleptomanie",
+  "famille": "6- Limitations",
+  "categorie": "63- Folie",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 641,
+  "nom": "Cadavres",
+  "famille": "6- Limitations",
+  "categorie": "64- Phobie",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 642,
+  "nom": "Monstres",
+  "famille": "6- Limitations",
+  "categorie": "64- Phobie",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 643,
+  "nom": "Armes blanches",
+  "famille": "6- Limitations",
+  "categorie": "64- Phobie",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 644,
+  "nom": "Nuit",
+  "famille": "6- Limitations",
+  "categorie": "64- Phobie",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 645,
+  "nom": "Espaces fermés",
+  "famille": "6- Limitations",
+  "categorie": "64- Phobie",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 646,
+  "nom": "Technologie",
+  "famille": "6- Limitations",
+  "categorie": "64- Phobie",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 651,
+  "nom": "Acte sexuel",
+  "famille": "6- Limitations",
+  "categorie": "65- Interdits",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 652,
+  "nom": "Nourriture",
+  "famille": "6- Limitations",
+  "categorie": "65- Interdits",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 653,
+  "nom": "Sommeil",
+  "famille": "6- Limitations",
+  "categorie": "65- Interdits",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 654,
+  "nom": "Musique",
+  "famille": "6- Limitations",
+  "categorie": "65- Interdits",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 655,
+  "nom": "Armes à distance",
+  "famille": "6- Limitations",
+  "categorie": "65- Interdits",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 656,
+  "nom": "Intégrisme",
+  "famille": "6- Limitations",
+  "categorie": "65- Interdits",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 661,
+  "nom": "Paresse",
+  "famille": "6- Limitations",
+  "categorie": "66- Péchés",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 662,
+  "nom": "Lâcheté",
+  "famille": "6- Limitations",
+  "categorie": "66- Péchés",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 663,
+  "nom": "Luxure",
+  "famille": "6- Limitations",
+  "categorie": "66- Péchés",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 664,
+  "nom": "Gourmandise",
+  "famille": "6- Limitations",
+  "categorie": "66- Péchés",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 665,
+  "nom": "Accès de colère",
+  "famille": "6- Limitations",
+  "categorie": "66- Péchés",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": 666,
+  "nom": "Besoin de tuer",
+  "famille": "6- Limitations",
+  "categorie": "66- Péchés",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": null,
+  "nom": "Appel des animaux",
+  "famille": "6- Limitations",
+  "categorie": "Spécial",
+  "attaque": null,
+  "defense": null,
+  "cout": "2"
+ },
+ {
+  "livre": "ange",
+  "code": null,
+  "nom": "Générateur",
+  "famille": "6- Limitations",
+  "categorie": "Spécial",
+  "attaque": "FO",
+  "defense": null,
+  "cout": "1, 2 ou 3/att."
+ },
+ {
+  "livre": "ange",
+  "code": null,
+  "nom": "Juste-lame de Laurent",
+  "famille": "6- Limitations",
+  "categorie": "Spécial",
+  "attaque": null,
+  "defense": null,
+  "cout": "3"
+ },
+ {
+  "livre": "ange",
+  "code": null,
+  "nom": "Pollen",
+  "famille": "6- Limitations",
+  "categorie": "Spécial",
+  "attaque": null,
+  "defense": null,
+  "cout": "Variable (M. 1)"
+ },
+ {
+  "livre": "ange",
+  "code": null,
+  "nom": "Chance",
+  "famille": "6- Limitations",
+  "categorie": "Spécial",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": null,
+  "nom": "Jugement",
+  "famille": "6- Limitations",
+  "categorie": "Spécial",
+  "attaque": null,
+  "defense": null,
+  "cout": "4/combat"
+ },
+ {
+  "livre": "ange",
+  "code": null,
+  "nom": "Chair en pierre",
+  "famille": "6- Limitations",
+  "categorie": "Spécial",
+  "attaque": "VO",
+  "defense": "FO",
+  "cout": "6"
+ },
+ {
+  "livre": "ange",
+  "code": null,
+  "nom": "Rêve divin",
+  "famille": "6- Limitations",
+  "categorie": "Spécial",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "10"
+ },
+ {
+  "livre": "ange",
+  "code": null,
+  "nom": "Ouverture",
+  "famille": "6- Limitations",
+  "categorie": "Spécial",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "ange",
+  "code": null,
+  "nom": "Philosophie",
+  "famille": "6- Limitations",
+  "categorie": "Spécial",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "3"
+ },
+ {
+  "livre": "demon",
+  "code": 111,
+  "nom": "Dents",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "11- Attaque corporelle",
+  "attaque": "AG",
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 112,
+  "nom": "Langue",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "11- Attaque corporelle",
+  "attaque": "AG",
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 113,
+  "nom": "Griffes",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "11- Attaque corporelle",
+  "attaque": "AG",
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 114,
+  "nom": "Pattes",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "11- Attaque corporelle",
+  "attaque": "FO",
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 115,
+  "nom": "Queue",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "11- Attaque corporelle",
+  "attaque": "AG",
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 116,
+  "nom": "Cornes",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "11- Attaque corporelle",
+  "attaque": "FO",
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 121,
+  "nom": "Feu",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "12- Attaque à distance",
+  "attaque": "PR",
+  "defense": null,
+  "cout": "1, 2 ou 3/att."
+ },
+ {
+  "livre": "demon",
+  "code": 122,
+  "nom": "Glace",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "12- Attaque à distance",
+  "attaque": "PR",
+  "defense": null,
+  "cout": "1, 2 ou 3/att."
+ },
+ {
+  "livre": "demon",
+  "code": 123,
+  "nom": "Energie",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "12- Attaque à distance",
+  "attaque": "PR",
+  "defense": null,
+  "cout": "1, 2 ou 3/att."
+ },
+ {
+  "livre": "demon",
+  "code": 124,
+  "nom": "Onde de choc",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "12- Attaque à distance",
+  "attaque": "PR",
+  "defense": null,
+  "cout": "1, 2 ou 3/att."
+ },
+ {
+  "livre": "demon",
+  "code": 125,
+  "nom": "Télékinésie",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "12- Attaque à distance",
+  "attaque": "PR",
+  "defense": null,
+  "cout": "1, 2 ou 3/att."
+ },
+ {
+  "livre": "demon",
+  "code": 126,
+  "nom": "Acide",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "12- Attaque à distance",
+  "attaque": "PR",
+  "defense": null,
+  "cout": "1, 2 ou 3/att."
+ },
+ {
+  "livre": "demon",
+  "code": 131,
+  "nom": "Charme",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "13- Attaque non-létale",
+  "attaque": "AP",
+  "defense": "VO",
+  "cout": "4/attaque"
+ },
+ {
+  "livre": "demon",
+  "code": 132,
+  "nom": "Sommeil",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "13- Attaque non-létale",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "2/attaque"
+ },
+ {
+  "livre": "demon",
+  "code": 133,
+  "nom": "Faiblesse",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "13- Attaque non-létale",
+  "attaque": "VO",
+  "defense": "FO",
+  "cout": "1/attaque"
+ },
+ {
+  "livre": "demon",
+  "code": 134,
+  "nom": "Peur",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "13- Attaque non-létale",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "2/attaque"
+ },
+ {
+  "livre": "demon",
+  "code": 135,
+  "nom": "Paralysie",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "13- Attaque non-létale",
+  "attaque": "VO",
+  "defense": "FO",
+  "cout": "2/attaque"
+ },
+ {
+  "livre": "demon",
+  "code": 136,
+  "nom": "Coma",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "13- Attaque non-létale",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "5/attaque"
+ },
+ {
+  "livre": "demon",
+  "code": 141,
+  "nom": "Volonté",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "14- Absorption",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 142,
+  "nom": "Force",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "14- Absorption",
+  "attaque": "VO",
+  "defense": "FO",
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 143,
+  "nom": "Energie sexuelle",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "14- Absorption",
+  "attaque": "AP",
+  "defense": "VO",
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 144,
+  "nom": "Douleur",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "14- Absorption",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 145,
+  "nom": "Violence",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "14- Absorption",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 146,
+  "nom": "Apparence",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "14- Absorption",
+  "attaque": "AP",
+  "defense": "VO",
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 151,
+  "nom": "Maladie",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "15- Malédiction",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "Tous-1 (M. 4)"
+ },
+ {
+  "livre": "demon",
+  "code": 152,
+  "nom": "Stérilité",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "15- Malédiction",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "Tous-1 (M. 4)"
+ },
+ {
+  "livre": "demon",
+  "code": 153,
+  "nom": "Vieillissement",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "15- Malédiction",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "Tous-1 (M. 4)"
+ },
+ {
+  "livre": "demon",
+  "code": 154,
+  "nom": "Folie",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "15- Malédiction",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "Tous-1 (M. 4)"
+ },
+ {
+  "livre": "demon",
+  "code": 155,
+  "nom": "Phobie",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "15- Malédiction",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "Tous-1 (M. 4)"
+ },
+ {
+  "livre": "demon",
+  "code": 156,
+  "nom": "Laideur",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "15- Malédiction",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "Tous-1 (M. 4)"
+ },
+ {
+  "livre": "demon",
+  "code": 161,
+  "nom": "Poison",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "16- Contact",
+  "attaque": "FO",
+  "defense": "FO",
+  "cout": "1/attaque"
+ },
+ {
+  "livre": "demon",
+  "code": 162,
+  "nom": "Maladie",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "16- Contact",
+  "attaque": "FO",
+  "defense": "FO",
+  "cout": "1/attaque"
+ },
+ {
+  "livre": "demon",
+  "code": 163,
+  "nom": "Paralysie",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "16- Contact",
+  "attaque": "FO",
+  "defense": "FO",
+  "cout": "1/attaque"
+ },
+ {
+  "livre": "demon",
+  "code": 164,
+  "nom": "Peur",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "16- Contact",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "1/attaque"
+ },
+ {
+  "livre": "demon",
+  "code": 165,
+  "nom": "Acide",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "16- Contact",
+  "attaque": "FO",
+  "defense": "FO",
+  "cout": "1/attaque"
+ },
+ {
+  "livre": "demon",
+  "code": 166,
+  "nom": "Douleur",
+  "famille": "1- Pouvoir offensif",
+  "categorie": "16- Contact",
+  "attaque": "FO",
+  "defense": "FO",
+  "cout": "1/attaque"
+ },
+ {
+  "livre": "demon",
+  "code": 211,
+  "nom": "Armure corporelle",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "21- Défense permanente",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 212,
+  "nom": "Immunité aux maladies et aux poisons",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "21- Défense permanente",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 213,
+  "nom": "Immunité au feu",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "21- Défense permanente",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 214,
+  "nom": "Immunité au froid",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "21- Défense permanente",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 215,
+  "nom": "Pas de nourriture",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "21- Défense permanente",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 216,
+  "nom": "Anaérobiose",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "21- Défense permanente",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 221,
+  "nom": "Volonté supra-normale",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "22- Défense mentale",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/défense"
+ },
+ {
+  "livre": "demon",
+  "code": 222,
+  "nom": "Non-détection",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "22- Défense mentale",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 223,
+  "nom": "Multiplication",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "22- Défense mentale",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/seconde"
+ },
+ {
+  "livre": "demon",
+  "code": 224,
+  "nom": "Boomerang",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "22- Défense mentale",
+  "attaque": "VO",
+  "defense": null,
+  "cout": "2/att. renv."
+ },
+ {
+  "livre": "demon",
+  "code": 225,
+  "nom": "Immunité",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "22- Défense mentale",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 226,
+  "nom": "Régénération",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "22- Défense mentale",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 231,
+  "nom": "Chef d'entreprise",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "23- Couverture",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 232,
+  "nom": "Rock-Star",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "23- Couverture",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 233,
+  "nom": "Présentateur TV",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "23- Couverture",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 234,
+  "nom": "Vedette de cinéma",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "23- Couverture",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 235,
+  "nom": "Politicien",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "23- Couverture",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 236,
+  "nom": "Sportif professionnel",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "23- Couverture",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 241,
+  "nom": "Force",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "24- Augmentation temporaire des caractéristiques",
+  "attaque": "VO",
+  "defense": null,
+  "cout": "1"
+ },
+ {
+  "livre": "demon",
+  "code": 242,
+  "nom": "Précision",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "24- Augmentation temporaire des caractéristiques",
+  "attaque": "VO",
+  "defense": null,
+  "cout": "1"
+ },
+ {
+  "livre": "demon",
+  "code": 243,
+  "nom": "Agilité",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "24- Augmentation temporaire des caractéristiques",
+  "attaque": "VO",
+  "defense": null,
+  "cout": "1"
+ },
+ {
+  "livre": "demon",
+  "code": 244,
+  "nom": "Apparence",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "24- Augmentation temporaire des caractéristiques",
+  "attaque": "VO",
+  "defense": null,
+  "cout": "1"
+ },
+ {
+  "livre": "demon",
+  "code": 245,
+  "nom": "Volonté",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "24- Augmentation temporaire des caractéristiques",
+  "attaque": "VO",
+  "defense": null,
+  "cout": "1"
+ },
+ {
+  "livre": "demon",
+  "code": 246,
+  "nom": "Perception",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "24- Augmentation temporaire des caractéristiques",
+  "attaque": "VO",
+  "defense": null,
+  "cout": "1"
+ },
+ {
+  "livre": "demon",
+  "code": 251,
+  "nom": "Champ de force",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "25- Défense temporaire",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/seconde"
+ },
+ {
+  "livre": "demon",
+  "code": 252,
+  "nom": "Glace",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "25- Défense temporaire",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/deux sec."
+ },
+ {
+  "livre": "demon",
+  "code": 253,
+  "nom": "Feu",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "25- Défense temporaire",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/deux sec."
+ },
+ {
+  "livre": "demon",
+  "code": 254,
+  "nom": "Champ magnétique",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "25- Défense temporaire",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/seconde"
+ },
+ {
+  "livre": "demon",
+  "code": 255,
+  "nom": "Rebond",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "25- Défense temporaire",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/sec. + 2/att."
+ },
+ {
+  "livre": "demon",
+  "code": 256,
+  "nom": "Conversion",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "25- Défense temporaire",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/seconde"
+ },
+ {
+  "livre": "demon",
+  "code": 261,
+  "nom": "Invisibilité",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "26- Camouflage",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/trois sec."
+ },
+ {
+  "livre": "demon",
+  "code": 262,
+  "nom": "Caméléon",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "26- Camouflage",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 263,
+  "nom": "Forme gazeuse",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "26- Camouflage",
+  "attaque": null,
+  "defense": null,
+  "cout": "4"
+ },
+ {
+  "livre": "demon",
+  "code": 264,
+  "nom": "Liquéfaction",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "26- Camouflage",
+  "attaque": null,
+  "defense": null,
+  "cout": "4"
+ },
+ {
+  "livre": "demon",
+  "code": 265,
+  "nom": "Réduction",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "26- Camouflage",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/heure"
+ },
+ {
+  "livre": "demon",
+  "code": 266,
+  "nom": "Polymorphe",
+  "famille": "2- Pouvoir défensif",
+  "categorie": "26- Camouflage",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/heure"
+ },
+ {
+  "livre": "demon",
+  "code": 311,
+  "nom": "Bien",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "31- Détection",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/seconde"
+ },
+ {
+  "livre": "demon",
+  "code": 312,
+  "nom": "Ennemis",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "31- Détection",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/seconde"
+ },
+ {
+  "livre": "demon",
+  "code": 313,
+  "nom": "Invisible",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "31- Détection",
+  "attaque": null,
+  "defense": null,
+  "cout": "1"
+ },
+ {
+  "livre": "demon",
+  "code": 314,
+  "nom": "Futur proche",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "31- Détection",
+  "attaque": null,
+  "defense": null,
+  "cout": "3"
+ },
+ {
+  "livre": "demon",
+  "code": 315,
+  "nom": "Danger",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "31- Détection",
+  "attaque": "PE",
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 316,
+  "nom": "Vérité",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "31- Détection",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "1/minute"
+ },
+ {
+  "livre": "demon",
+  "code": 321,
+  "nom": "Télépathie",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "32- Communication",
+  "attaque": null,
+  "defense": null,
+  "cout": "1"
+ },
+ {
+  "livre": "demon",
+  "code": 322,
+  "nom": "Dialogue mental",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "32- Communication",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/minute"
+ },
+ {
+  "livre": "demon",
+  "code": 323,
+  "nom": "Lire les pensées",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "32- Communication",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "3"
+ },
+ {
+  "livre": "demon",
+  "code": 324,
+  "nom": "Lire les sentiments",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "32- Communication",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "1"
+ },
+ {
+  "livre": "demon",
+  "code": 325,
+  "nom": "Dialogue multiple",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "32- Communication",
+  "attaque": null,
+  "defense": null,
+  "cout": "2/min. + 1/per."
+ },
+ {
+  "livre": "demon",
+  "code": 326,
+  "nom": "Cauchemar",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "32- Communication",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "3"
+ },
+ {
+  "livre": "demon",
+  "code": 331,
+  "nom": "Téléportation",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "33- Déplacement",
+  "attaque": null,
+  "defense": null,
+  "cout": "5"
+ },
+ {
+  "livre": "demon",
+  "code": 332,
+  "nom": "Vol",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "33- Déplacement",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/minute"
+ },
+ {
+  "livre": "demon",
+  "code": 333,
+  "nom": "Bond",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "33- Déplacement",
+  "attaque": null,
+  "defense": null,
+  "cout": "1"
+ },
+ {
+  "livre": "demon",
+  "code": 334,
+  "nom": "Vitesse",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "33- Déplacement",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/minute"
+ },
+ {
+  "livre": "demon",
+  "code": 335,
+  "nom": "Forme gazeuse",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "33- Déplacement",
+  "attaque": null,
+  "defense": null,
+  "cout": "2/minute"
+ },
+ {
+  "livre": "demon",
+  "code": 336,
+  "nom": "Déplacement temporel",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "33- Déplacement",
+  "attaque": null,
+  "defense": null,
+  "cout": "5"
+ },
+ {
+  "livre": "demon",
+  "code": 341,
+  "nom": "Physique",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "34- Talent",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 342,
+  "nom": "Artistique",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "34- Talent",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 343,
+  "nom": "Scientifique",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "34- Talent",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 344,
+  "nom": "Communication",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "34- Talent",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 345,
+  "nom": "Ruse",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "34- Talent",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 346,
+  "nom": "Combat",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "34- Talent",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 351,
+  "nom": "Force",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "35- Augmentation permanente des caractéristiques",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 352,
+  "nom": "Précision",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "35- Augmentation permanente des caractéristiques",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 353,
+  "nom": "Volonté",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "35- Augmentation permanente des caractéristiques",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 354,
+  "nom": "Apparence",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "35- Augmentation permanente des caractéristiques",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 355,
+  "nom": "Agilité",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "35- Augmentation permanente des caractéristiques",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 356,
+  "nom": "Perception",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "35- Augmentation permanente des caractéristiques",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 361,
+  "nom": "Humains",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "36- Contrôle",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "2"
+ },
+ {
+  "livre": "demon",
+  "code": 362,
+  "nom": "Reptiles et batraciens",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "36- Contrôle",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "2"
+ },
+ {
+  "livre": "demon",
+  "code": 363,
+  "nom": "Oiseaux",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "36- Contrôle",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "2"
+ },
+ {
+  "livre": "demon",
+  "code": 364,
+  "nom": "Insectes et arachnides",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "36- Contrôle",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "2"
+ },
+ {
+  "livre": "demon",
+  "code": 365,
+  "nom": "Mammifères et marsupiaux",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "36- Contrôle",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "2"
+ },
+ {
+  "livre": "demon",
+  "code": 366,
+  "nom": "Poissons et mollusques",
+  "famille": "3- Pouvoir utilitaire",
+  "categorie": "36- Contrôle",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "2"
+ },
+ {
+  "livre": "demon",
+  "code": 411,
+  "nom": "Arme de contact maudite",
+  "famille": "4- Objet",
+  "categorie": "41- Arme",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 412,
+  "nom": "Arme à distance maudite",
+  "famille": "4- Objet",
+  "categorie": "41- Arme",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 413,
+  "nom": "Arme de contact intelligente",
+  "famille": "4- Objet",
+  "categorie": "41- Arme",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 414,
+  "nom": "Arme à distance intelligente",
+  "famille": "4- Objet",
+  "categorie": "41- Arme",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 415,
+  "nom": "Arme de contact mobile",
+  "famille": "4- Objet",
+  "categorie": "41- Arme",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 416,
+  "nom": "Arme à distance mobile",
+  "famille": "4- Objet",
+  "categorie": "41- Arme",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 421,
+  "nom": "Croix",
+  "famille": "4- Objet",
+  "categorie": "42- Objet magique",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 422,
+  "nom": "Sceptre",
+  "famille": "4- Objet",
+  "categorie": "42- Objet magique",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 423,
+  "nom": "Crâne",
+  "famille": "4- Objet",
+  "categorie": "42- Objet magique",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 424,
+  "nom": "Pierre précieuse montée en bague",
+  "famille": "4- Objet",
+  "categorie": "42- Objet magique",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 425,
+  "nom": "Dague de sacrifice",
+  "famille": "4- Objet",
+  "categorie": "42- Objet magique",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 426,
+  "nom": "N'importe quoi de baroque",
+  "famille": "4- Objet",
+  "categorie": "42- Objet magique",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 431,
+  "nom": "Morgue",
+  "famille": "4- Objet",
+  "categorie": "43- Locaux",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 432,
+  "nom": "Cimetière",
+  "famille": "4- Objet",
+  "categorie": "43- Locaux",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 433,
+  "nom": "Immeuble",
+  "famille": "4- Objet",
+  "categorie": "43- Locaux",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 434,
+  "nom": "Hôpital",
+  "famille": "4- Objet",
+  "categorie": "43- Locaux",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 435,
+  "nom": "Laboratoire",
+  "famille": "4- Objet",
+  "categorie": "43- Locaux",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 436,
+  "nom": "Eglise",
+  "famille": "4- Objet",
+  "categorie": "43- Locaux",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 441,
+  "nom": "Caveau",
+  "famille": "4- Objet",
+  "categorie": "44- Planque",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 442,
+  "nom": "Catacombes",
+  "famille": "4- Objet",
+  "categorie": "44- Planque",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 443,
+  "nom": "Egouts",
+  "famille": "4- Objet",
+  "categorie": "44- Planque",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 444,
+  "nom": "Métro",
+  "famille": "4- Objet",
+  "categorie": "44- Planque",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 445,
+  "nom": "Squatt",
+  "famille": "4- Objet",
+  "categorie": "44- Planque",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 446,
+  "nom": "Hangar",
+  "famille": "4- Objet",
+  "categorie": "44- Planque",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 451,
+  "nom": "Yacht",
+  "famille": "4- Objet",
+  "categorie": "45- Signe extérieur de richesse",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 452,
+  "nom": "Chevaux de course",
+  "famille": "4- Objet",
+  "categorie": "45- Signe extérieur de richesse",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 453,
+  "nom": "Voitures de course",
+  "famille": "4- Objet",
+  "categorie": "45- Signe extérieur de richesse",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 454,
+  "nom": "Jet privé",
+  "famille": "4- Objet",
+  "categorie": "45- Signe extérieur de richesse",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 455,
+  "nom": "Ile déserte",
+  "famille": "4- Objet",
+  "categorie": "45- Signe extérieur de richesse",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 456,
+  "nom": "Résidence secondaire",
+  "famille": "4- Objet",
+  "categorie": "45- Signe extérieur de richesse",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 461,
+  "nom": "Restaurant",
+  "famille": "4- Objet",
+  "categorie": "46- Etablissement",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 462,
+  "nom": "Hôtel",
+  "famille": "4- Objet",
+  "categorie": "46- Etablissement",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 463,
+  "nom": "Industrie",
+  "famille": "4- Objet",
+  "categorie": "46- Etablissement",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 464,
+  "nom": "Boite de nuit",
+  "famille": "4- Objet",
+  "categorie": "46- Etablissement",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 465,
+  "nom": "Casino",
+  "famille": "4- Objet",
+  "categorie": "46- Etablissement",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 466,
+  "nom": "Boutique de luxe",
+  "famille": "4- Objet",
+  "categorie": "46- Etablissement",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 511,
+  "nom": "Zombis (2D6)",
+  "famille": "5- Serviteur",
+  "categorie": "51- Mort-vivants",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 512,
+  "nom": "Zombis (5D6)",
+  "famille": "5- Serviteur",
+  "categorie": "51- Mort-vivants",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 513,
+  "nom": "Squelettes (1D6)",
+  "famille": "5- Serviteur",
+  "categorie": "51- Mort-vivants",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 514,
+  "nom": "Squelettes (2D6)",
+  "famille": "5- Serviteur",
+  "categorie": "51- Mort-vivants",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 515,
+  "nom": "Goules (D6)",
+  "famille": "5- Serviteur",
+  "categorie": "51- Mort-vivants",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 516,
+  "nom": "Goules (2D6)",
+  "famille": "5- Serviteur",
+  "categorie": "51- Mort-vivants",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 521,
+  "nom": "Vampire",
+  "famille": "5- Serviteur",
+  "categorie": "52- Mort-vivant intelligent",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 522,
+  "nom": "Momie",
+  "famille": "5- Serviteur",
+  "categorie": "52- Mort-vivant intelligent",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 523,
+  "nom": "Fantôme",
+  "famille": "5- Serviteur",
+  "categorie": "52- Mort-vivant intelligent",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 524,
+  "nom": "Poltergeist (nommé « Esprit frappeur » dans le corps du texte)",
+  "famille": "5- Serviteur",
+  "categorie": "52- Mort-vivant intelligent",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 525,
+  "nom": "Pseudo-Démon",
+  "famille": "5- Serviteur",
+  "categorie": "52- Mort-vivant intelligent",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 526,
+  "nom": "Animal mort-vivant",
+  "famille": "5- Serviteur",
+  "categorie": "52- Mort-vivant intelligent",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 531,
+  "nom": "Rat",
+  "famille": "5- Serviteur",
+  "categorie": "53- Familier (animal)",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 532,
+  "nom": "Chat",
+  "famille": "5- Serviteur",
+  "categorie": "53- Familier (animal)",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 533,
+  "nom": "Serpent",
+  "famille": "5- Serviteur",
+  "categorie": "53- Familier (animal)",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 534,
+  "nom": "Araignée",
+  "famille": "5- Serviteur",
+  "categorie": "53- Familier (animal)",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 535,
+  "nom": "Corbeau",
+  "famille": "5- Serviteur",
+  "categorie": "53- Familier (animal)",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 536,
+  "nom": "Gecko",
+  "famille": "5- Serviteur",
+  "categorie": "53- Familier (animal)",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 541,
+  "nom": "Serviteur classe",
+  "famille": "5- Serviteur",
+  "categorie": "54- Familier (être humain)",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 542,
+  "nom": "Trasher",
+  "famille": "5- Serviteur",
+  "categorie": "54- Familier (être humain)",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 543,
+  "nom": "Grosse brute",
+  "famille": "5- Serviteur",
+  "categorie": "54- Familier (être humain)",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 544,
+  "nom": "Punk",
+  "famille": "5- Serviteur",
+  "categorie": "54- Familier (être humain)",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 545,
+  "nom": "Tueur psychopathe",
+  "famille": "5- Serviteur",
+  "categorie": "54- Familier (être humain)",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 546,
+  "nom": "Call-girl",
+  "famille": "5- Serviteur",
+  "categorie": "54- Familier (être humain)",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 551,
+  "nom": "Poupée",
+  "famille": "5- Serviteur",
+  "categorie": "55- Familier (divers)",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 552,
+  "nom": "Bébé",
+  "famille": "5- Serviteur",
+  "categorie": "55- Familier (divers)",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 553,
+  "nom": "Diablotin",
+  "famille": "5- Serviteur",
+  "categorie": "55- Familier (divers)",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 554,
+  "nom": "Véhicule",
+  "famille": "5- Serviteur",
+  "categorie": "55- Familier (divers)",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 555,
+  "nom": "Maison",
+  "famille": "5- Serviteur",
+  "categorie": "55- Familier (divers)",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 556,
+  "nom": "Jouet",
+  "famille": "5- Serviteur",
+  "categorie": "55- Familier (divers)",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 561,
+  "nom": "Démon",
+  "famille": "5- Serviteur",
+  "categorie": "56- Relations",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 562,
+  "nom": "Prince-Démon",
+  "famille": "5- Serviteur",
+  "categorie": "56- Relations",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 563,
+  "nom": "Politicien",
+  "famille": "5- Serviteur",
+  "categorie": "56- Relations",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 564,
+  "nom": "Mafiosi",
+  "famille": "5- Serviteur",
+  "categorie": "56- Relations",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 565,
+  "nom": "Avocat",
+  "famille": "5- Serviteur",
+  "categorie": "56- Relations",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 566,
+  "nom": "Hacker",
+  "famille": "5- Serviteur",
+  "categorie": "56- Relations",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 611,
+  "nom": "Etat cadavérique",
+  "famille": "6- Limitations",
+  "categorie": "61- Défaut physique naturel",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 612,
+  "nom": "Membre coupé",
+  "famille": "6- Limitations",
+  "categorie": "61- Défaut physique naturel",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 613,
+  "nom": "Cicatrice",
+  "famille": "6- Limitations",
+  "categorie": "61- Défaut physique naturel",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 614,
+  "nom": "Dandy",
+  "famille": "6- Limitations",
+  "categorie": "61- Défaut physique naturel",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 615,
+  "nom": "Ancienne mode",
+  "famille": "6- Limitations",
+  "categorie": "61- Défaut physique naturel",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 616,
+  "nom": "Tic",
+  "famille": "6- Limitations",
+  "categorie": "61- Défaut physique naturel",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 621,
+  "nom": "Odeur suspecte",
+  "famille": "6- Limitations",
+  "categorie": "62- Défaut physique surnaturel",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 622,
+  "nom": "Couleur de la peau",
+  "famille": "6- Limitations",
+  "categorie": "62- Défaut physique surnaturel",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 623,
+  "nom": "Cornes",
+  "famille": "6- Limitations",
+  "categorie": "62- Défaut physique surnaturel",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 624,
+  "nom": "Couleur des yeux",
+  "famille": "6- Limitations",
+  "categorie": "62- Défaut physique surnaturel",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 625,
+  "nom": "Ailes",
+  "famille": "6- Limitations",
+  "categorie": "62- Défaut physique surnaturel",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 626,
+  "nom": "Queue",
+  "famille": "6- Limitations",
+  "categorie": "62- Défaut physique surnaturel",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 631,
+  "nom": "Paranoïa",
+  "famille": "6- Limitations",
+  "categorie": "63- Folie",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 632,
+  "nom": "Pyromane",
+  "famille": "6- Limitations",
+  "categorie": "63- Folie",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 633,
+  "nom": "Mégalomanie",
+  "famille": "6- Limitations",
+  "categorie": "63- Folie",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 634,
+  "nom": "Monomaniaque",
+  "famille": "6- Limitations",
+  "categorie": "63- Folie",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 635,
+  "nom": "Tueur psychopathe",
+  "famille": "6- Limitations",
+  "categorie": "63- Folie",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 636,
+  "nom": "Kleptomanie",
+  "famille": "6- Limitations",
+  "categorie": "63- Folie",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 641,
+  "nom": "Croix",
+  "famille": "6- Limitations",
+  "categorie": "64- Phobie",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 642,
+  "nom": "Enfants",
+  "famille": "6- Limitations",
+  "categorie": "64- Phobie",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 643,
+  "nom": "Armes à feu",
+  "famille": "6- Limitations",
+  "categorie": "64- Phobie",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 644,
+  "nom": "Lumière",
+  "famille": "6- Limitations",
+  "categorie": "64- Phobie",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 645,
+  "nom": "Grands espaces",
+  "famille": "6- Limitations",
+  "categorie": "64- Phobie",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 646,
+  "nom": "Technologie",
+  "famille": "6- Limitations",
+  "categorie": "64- Phobie",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 651,
+  "nom": "Sang",
+  "famille": "6- Limitations",
+  "categorie": "65- Besoin",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 652,
+  "nom": "Acte sexuel",
+  "famille": "6- Limitations",
+  "categorie": "65- Besoin",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 653,
+  "nom": "Douleur",
+  "famille": "6- Limitations",
+  "categorie": "65- Besoin",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 654,
+  "nom": "Violence",
+  "famille": "6- Limitations",
+  "categorie": "65- Besoin",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 655,
+  "nom": "Jeunesse",
+  "famille": "6- Limitations",
+  "categorie": "65- Besoin",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 656,
+  "nom": "Perversion",
+  "famille": "6- Limitations",
+  "categorie": "65- Besoin",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 661,
+  "nom": "Loyauté",
+  "famille": "6- Limitations",
+  "categorie": "66- Bonté",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 662,
+  "nom": "Gentillesse",
+  "famille": "6- Limitations",
+  "categorie": "66- Bonté",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 663,
+  "nom": "Pitié",
+  "famille": "6- Limitations",
+  "categorie": "66- Bonté",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 664,
+  "nom": "Timidité",
+  "famille": "6- Limitations",
+  "categorie": "66- Bonté",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 665,
+  "nom": "Naïveté",
+  "famille": "6- Limitations",
+  "categorie": "66- Bonté",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": 666,
+  "nom": "Le chiffre de la bête",
+  "famille": "6- Limitations",
+  "categorie": "66- Bonté",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": null,
+  "nom": "Incendie",
+  "famille": "6- Limitations",
+  "categorie": "Spécial",
+  "attaque": null,
+  "defense": null,
+  "cout": "2"
+ },
+ {
+  "livre": "demon",
+  "code": null,
+  "nom": "Froid",
+  "famille": "6- Limitations",
+  "categorie": "Spécial",
+  "attaque": "FO",
+  "defense": null,
+  "cout": "1"
+ },
+ {
+  "livre": "demon",
+  "code": null,
+  "nom": "Infection",
+  "famille": "6- Limitations",
+  "categorie": "Spécial",
+  "attaque": "FO",
+  "defense": "FO",
+  "cout": "1/100kg ou 1/10000 l."
+ },
+ {
+  "livre": "demon",
+  "code": null,
+  "nom": "Cauchemar mortel",
+  "famille": "6- Limitations",
+  "categorie": "Spécial",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "3/attaque"
+ },
+ {
+  "livre": "demon",
+  "code": null,
+  "nom": "Orgasme mortel",
+  "famille": "6- Limitations",
+  "categorie": "Spécial",
+  "attaque": "AP",
+  "defense": "VO",
+  "cout": "3/attaque"
+ },
+ {
+  "livre": "demon",
+  "code": null,
+  "nom": "Vie subaquatique",
+  "famille": "6- Limitations",
+  "categorie": "Spécial",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": null,
+  "nom": "Humanité",
+  "famille": "6- Limitations",
+  "categorie": "Spécial",
+  "attaque": null,
+  "defense": null,
+  "cout": "1/défense"
+ },
+ {
+  "livre": "demon",
+  "code": null,
+  "nom": "Ouverture",
+  "famille": "6- Limitations",
+  "categorie": "Spécial",
+  "attaque": null,
+  "defense": null,
+  "cout": null
+ },
+ {
+  "livre": "demon",
+  "code": null,
+  "nom": "Discorde",
+  "famille": "6- Limitations",
+  "categorie": "Spécial",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "2/discorde"
+ },
+ {
+  "livre": "demon",
+  "code": null,
+  "nom": "Résurrection",
+  "famille": "6- Limitations",
+  "categorie": "Spécial",
+  "attaque": "VO",
+  "defense": "VO",
+  "cout": "4/zombi"
+ }
+]

@@ -19,3 +19,28 @@ par le moteur et le test qui la fige.
 - **Test :** `table_um::tests::erratum_boka_force5_moyen_vaut_66_selon_la_table`.
 - **Statut :** `livres/` n'est pas modifié, par respect de son statut de
   référence immuable ; cet erratum fait foi pour le moteur.
+
+## E-002 — Humains d'exemple qui dépassent le budget de création
+
+- **Source :** `livres/commun-06-creation-personnages-humains.md`, tableau
+  « Quelques êtres humains ».
+- **Règle :** un humain adulte a 10 points de caractéristiques (maximum 3) et
+  6 points de talents (niveau 0 = 1 point, +1 = 2 points, +2 = 4 points).
+- **Constat :** quatre des huit profils d'exemple dépassent ce budget.
+
+  | Profil | Caractéristiques | Talents |
+  |---|---|---|
+  | Scientifique | 10 | **7** (Scientifique+2, Scientifique, Discussion+1) |
+  | Militaire | **11** | **7** (Arme+2, Arme, Tactique+1) |
+  | Policier | **11** | 6 |
+  | Truand | **11** | 6 |
+
+  Les quatre autres (Normal, Skinhead, Chrétien, Loubard) respectent le budget.
+- **Analyse :** soit ces profils sont des exceptions assumées (« il existe bien
+  sûr des exceptions aux valeurs indiquées »), soit des erreurs d'impression.
+  Dans les deux cas, leur sommet est d'un point au-dessus du budget.
+- **Décision :** en attente d'arbitrage du joueur. En attendant, le moteur
+  applique le budget : ces profils sont signalés comme dépassements et ne
+  passent qu'avec une exception motivée à la création.
+- **Test :** `personnage::tests::humains_du_livre_et_leurs_depassements_de_budget`.
+- **Statut :** ouvert.

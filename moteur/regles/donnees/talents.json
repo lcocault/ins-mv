@@ -1,0 +1,320 @@
+[
+ {
+  "nom": "Acrobatie",
+  "categorie": "Physique",
+  "malus": -3,
+  "caracteristiques": [
+   "AG",
+   "FO"
+  ]
+ },
+ {
+  "nom": "Grimpé",
+  "categorie": "Physique",
+  "malus": -2,
+  "caracteristiques": [
+   "AG",
+   "PE"
+  ]
+ },
+ {
+  "nom": "Nage",
+  "categorie": "Physique",
+  "malus": -1,
+  "caracteristiques": [
+   "FO"
+  ]
+ },
+ {
+  "nom": "Esquive",
+  "categorie": "Physique",
+  "malus": -1,
+  "caracteristiques": [
+   "AG"
+  ]
+ },
+ {
+  "nom": "Course",
+  "categorie": "Physique",
+  "malus": -1,
+  "caracteristiques": [
+   "FO"
+  ]
+ },
+ {
+  "nom": "Moto",
+  "categorie": "Physique",
+  "malus": -2,
+  "caracteristiques": [
+   "PE",
+   "PR"
+  ]
+ },
+ {
+  "nom": "Voiture",
+  "categorie": "Physique",
+  "malus": -2,
+  "caracteristiques": [
+   "PE",
+   "PR"
+  ]
+ },
+ {
+  "nom": "Camion",
+  "categorie": "Physique",
+  "malus": -2,
+  "caracteristiques": [
+   "PE",
+   "PR"
+  ]
+ },
+ {
+  "nom": "Hélicoptère",
+  "categorie": "Physique",
+  "malus": -4,
+  "caracteristiques": [
+   "PR",
+   "VO"
+  ]
+ },
+ {
+  "nom": "Spécialisation",
+  "categorie": "Physique",
+  "malus": null,
+  "caracteristiques": []
+ },
+ {
+  "nom": "Survie",
+  "categorie": "Physique",
+  "malus": -2,
+  "caracteristiques": [
+   "AG",
+   "PE"
+  ]
+ },
+ {
+  "nom": "Danse",
+  "categorie": "Artistique",
+  "malus": -4,
+  "caracteristiques": [
+   "AG"
+  ]
+ },
+ {
+  "nom": "Peinture",
+  "categorie": "Artistique",
+  "malus": -2,
+  "caracteristiques": [
+   "PE"
+  ]
+ },
+ {
+  "nom": "Sculpture",
+  "categorie": "Artistique",
+  "malus": -4,
+  "caracteristiques": [
+   "PE"
+  ]
+ },
+ {
+  "nom": "Chant",
+  "categorie": "Artistique",
+  "malus": -3,
+  "caracteristiques": [
+   "PE"
+  ]
+ },
+ {
+  "nom": "Médecine",
+  "categorie": "Scientifique",
+  "malus": -4,
+  "caracteristiques": [
+   "PR",
+   "VO"
+  ]
+ },
+ {
+  "nom": "Chimie",
+  "categorie": "Scientifique",
+  "malus": -6,
+  "caracteristiques": [
+   "PR",
+   "VO"
+  ]
+ },
+ {
+  "nom": "Mécanique",
+  "categorie": "Scientifique",
+  "malus": -3,
+  "caracteristiques": [
+   "PR",
+   "VO"
+  ]
+ },
+ {
+  "nom": "Electronique",
+  "categorie": "Scientifique",
+  "malus": -6,
+  "caracteristiques": [
+   "VO"
+  ]
+ },
+ {
+  "nom": "Informatique",
+  "categorie": "Scientifique",
+  "malus": -5,
+  "caracteristiques": [
+   "VO"
+  ]
+ },
+ {
+  "nom": "Baratin",
+  "categorie": "Communication",
+  "malus": -1,
+  "caracteristiques": [
+   "PE"
+  ]
+ },
+ {
+  "nom": "Discussion",
+  "categorie": "Communication",
+  "malus": -2,
+  "caracteristiques": [
+   "VO"
+  ]
+ },
+ {
+  "nom": "Tactique",
+  "categorie": "Communication",
+  "malus": -2,
+  "caracteristiques": [
+   "VO"
+  ]
+ },
+ {
+  "nom": "Stratégie",
+  "categorie": "Communication",
+  "malus": -3,
+  "caracteristiques": [
+   "VO"
+  ]
+ },
+ {
+  "nom": "Langues",
+  "categorie": "Communication",
+  "malus": -8,
+  "caracteristiques": [
+   "VO"
+  ]
+ },
+ {
+  "nom": "Séduction",
+  "categorie": "Communication",
+  "malus": -1,
+  "caracteristiques": [
+   "AP"
+  ]
+ },
+ {
+  "nom": "Savoir-faire",
+  "categorie": "Communication",
+  "malus": -4,
+  "caracteristiques": [
+   "VO"
+  ]
+ },
+ {
+  "nom": "Discrétion",
+  "categorie": "Ruse",
+  "malus": -1,
+  "caracteristiques": [
+   "AG",
+   "PE"
+  ]
+ },
+ {
+  "nom": "Crochetage",
+  "categorie": "Ruse",
+  "malus": -3,
+  "caracteristiques": [
+   "PR"
+  ]
+ },
+ {
+  "nom": "Manipulation",
+  "categorie": "Ruse",
+  "malus": -2,
+  "caracteristiques": [
+   "AG",
+   "PR"
+  ]
+ },
+ {
+  "nom": "Arme de poing",
+  "categorie": "Combat",
+  "malus": -3,
+  "caracteristiques": [
+   "PE",
+   "PR"
+  ]
+ },
+ {
+  "nom": "Arme d'épaule",
+  "categorie": "Combat",
+  "malus": -2,
+  "caracteristiques": [
+   "PE",
+   "PR"
+  ]
+ },
+ {
+  "nom": "Arme lourde",
+  "categorie": "Combat",
+  "malus": -3,
+  "caracteristiques": [
+   "PE",
+   "PR"
+  ]
+ },
+ {
+  "nom": "Lancer",
+  "categorie": "Combat",
+  "malus": -1,
+  "caracteristiques": [
+   "PR"
+  ]
+ },
+ {
+  "nom": "Arme de contact",
+  "categorie": "Combat",
+  "malus": -2,
+  "caracteristiques": [
+   "AG"
+  ]
+ },
+ {
+  "nom": "Arme de contact lourde",
+  "categorie": "Combat",
+  "malus": -3,
+  "caracteristiques": [
+   "FO"
+  ]
+ },
+ {
+  "nom": "Corps à corps",
+  "categorie": "Combat",
+  "malus": -1,
+  "caracteristiques": [
+   "AG"
+  ]
+ },
+ {
+  "nom": "Comédie",
+  "categorie": "Artistique",
+  "malus": -3,
+  "malus_demon": -4,
+  "caracteristiques": [
+   "VO"
+  ]
+ }
+]

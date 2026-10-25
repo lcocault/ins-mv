@@ -71,7 +71,7 @@ pub fn resoudre_action(
     Ok(decrire_action(evaluer(&action, D666::tirer(source))))
 }
 
-fn decrire_action(jet: ResultatJet) -> SortieAction {
+pub fn decrire_action(jet: ResultatJet) -> SortieAction {
     let verdict = if jet.reussi { "RÉUSSI" } else { "RATÉ" };
     let resume = format!(
         "D666 = {} (xy = {}, z = {}) contre {} : {verdict}, unités = {}",
@@ -111,7 +111,12 @@ pub fn resoudre_conflit(
     let a = resoudre_action(attaquant, source)?;
     let d = resoudre_action(defenseur, source)?;
     let issue = insmv_regles::resoudre_conflit(&a.jet, &d.jet);
-    let resume = match issue {
+    let resume = decrire_issue(&issue);
+    Ok(SortieConflit { attaquant: a, defenseur: d, issue, resume })
+}
+
+pub fn decrire_issue(issue: &Issue) -> String {
+    match *issue {
         Issue::RienNeSePasse => "L'attaquant rate : rien ne se passe.".to_string(),
         Issue::DefenseSansEffet { unites } => {
             format!("L'attaquant réussit, la défense échoue : action réussie, unités = {unites}.")
@@ -125,8 +130,7 @@ pub fn resoudre_conflit(
         Issue::ConflitReel { vainqueur: Vainqueur::ArbitrageMj, .. } => {
             "Conflit réel à unités égales : le maître de jeu doit trancher.".to_string()
         }
-    };
-    Ok(SortieConflit { attaquant: a, defenseur: d, issue, resume })
+    }
 }
 
 #[cfg(test)]

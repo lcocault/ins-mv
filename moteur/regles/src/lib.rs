@@ -4,9 +4,11 @@
 //! injecté via [`des::SourceDes`], ce qui rend chaque comportement testable.
 //! Les références renvoient à `livres/commun-05-table-um.md`.
 
+pub mod catalogue;
 pub mod conflit;
 pub mod des;
 pub mod notation;
+pub mod personnage;
 pub mod table_um;
 
 pub use conflit::{resoudre_conflit, Issue, Vainqueur};
