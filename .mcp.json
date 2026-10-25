@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "mj": {
+      "command": "cargo",
+      "args": ["run", "--quiet", "--manifest-path", "moteur/Cargo.toml", "-p", "insmv-mcp"]
+    }
+  }
+}
