@@ -27,8 +27,13 @@ python3 -I outils/generer_catalogues.py        # régénère regles/donnees/*.js
 ## Interface Web (lecture seule)
 
 ```bash
-cargo run -p insmv-web          # http://localhost:8787 (INSMV_WEB_PORT pour changer le port)
+scripts/web.sh start            # compile si besoin, démarre en arrière-plan : http://localhost:8787
+scripts/web.sh stop | restart | status | logs
 ```
+
+Depuis Windows, double-cliquer sur `scripts/web-start.cmd`, `web-stop.cmd` ou `web-status.cmd`
+(ils appellent le script dans WSL). `INSMV_WEB_PORT` change le port ; le PID et le journal
+sont dans `.run/` (ignoré par git).
 
 Liste des personnages, fiche (PP, dommages, caractéristiques, talents et pouvoirs avec seuil
 et chances de réussite sur la table UM) et journal filtrable. Elle lit la base en lecture seule :
