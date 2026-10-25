@@ -2,7 +2,7 @@
 //!
 //! Ce crate est pur : aucune entrée/sortie, aucun état global. Le hasard est
 //! injecté via [`des::SourceDes`], ce qui rend chaque comportement testable.
-//! Les références renvoient à `livres/commun-05-table-um.md`.
+//! Les références renvoient à `regles/commun-05-table-um.md`.
 
 pub mod blessures;
 pub mod catalogue;

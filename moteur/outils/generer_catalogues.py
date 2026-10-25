@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Génère les catalogues de pouvoirs et de talents à partir de livres/ (lecture seule).
+"""Génère les catalogues de pouvoirs et de talents à partir de regles/ (lecture seule).
 
 Usage : python3 -I moteur/outils/generer_catalogues.py
-Écrit moteur/regles/donnees/{pouvoirs,talents}.json. À relancer si livres/ change.
+Écrit moteur/regles/donnees/{pouvoirs,talents}.json. À relancer si regles/ change.
 """
 import json
 import re
@@ -15,7 +15,7 @@ SORTIE = RACINE / "moteur" / "regles" / "donnees"
 def pouvoirs(livre: str, fichier: str):
     famille = categorie = ""
     resultat = []
-    for ligne in (RACINE / "livres" / fichier).read_text(encoding="utf-8").splitlines():
+    for ligne in (RACINE / "regles" / fichier).read_text(encoding="utf-8").splitlines():
         if ligne.startswith("## "):
             famille = ligne[3:].strip()
         elif ligne.startswith("### "):
@@ -71,7 +71,7 @@ def descriptions(livre):
     categorie, courant = None, None
     for fichier in FICHIERS_POUVOIRS[livre]:
         actif, vu_contenu = "tous", False
-        for ligne in (RACINE / "livres" / f"{fichier}.md").read_text(encoding="utf-8").splitlines():
+        for ligne in (RACINE / "regles" / f"{fichier}.md").read_text(encoding="utf-8").splitlines():
             marque = re.fullmatch(r"\*\*\[(MV|INS)\]\*\*", ligne.strip())
             if marque:
                 actif, vu_contenu = marque.group(1), False
@@ -123,7 +123,7 @@ def descriptions(livre):
 
 
 def talents():
-    texte = (RACINE / "livres" / "commun-04-talents.md").read_text(encoding="utf-8")
+    texte = (RACINE / "regles" / "commun-04-talents.md").read_text(encoding="utf-8")
     categorie = ""
     vus, resultat = set(), []
     caracs = {"Force": "FO", "Précision": "PR", "Volonté": "VO",
@@ -164,7 +164,7 @@ def entier(texte):
 
 def armes_et_protections():
     """Tables d'armes, de protections et notes de commun-09-confrontation-armes-combat.md."""
-    texte = (RACINE / "livres" / "commun-09-confrontation-armes-combat.md").read_text(encoding="utf-8")
+    texte = (RACINE / "regles" / "commun-09-confrontation-armes-combat.md").read_text(encoding="utf-8")
     armes, protections = [], []
     mode, notes = None, {}
 

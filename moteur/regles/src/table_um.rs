@@ -1,4 +1,4 @@
-//! La table unique multiple (`livres/commun-05-table-um.md`).
+//! La table unique multiple (`regles/commun-05-table-um.md`).
 //!
 //! La table a 18 colonnes : les six caractéristiques y occupent des positions
 //! inégales (les autres colonnes, notées « - », servent aux décalages) et les

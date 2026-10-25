@@ -1,12 +1,12 @@
 # Errata et décisions de règles
 
-Registre des écarts constatés dans les règles de base (`livres/`, immuables) et
+Registre des écarts constatés dans les règles de base (`regles/`, immuables) et
 des décisions prises pour le moteur. Chaque entrée indique la règle appliquée
 par le moteur et le test qui la fige.
 
 ## E-001 — Porte enfoncée par BOKA (Force 5, difficulté moyenne)
 
-- **Source :** `livres/commun-05-table-um.md`, exemple [MV] « Autre exemple »
+- **Source :** `regles/commun-05-table-um.md`, exemple [MV] « Autre exemple »
   de l'utilisation des caractéristiques (MV p.9).
 - **Constat :** le texte annonce « Force de 5, difficulté moyenne (+1) → jet
   inférieur ou égal à 54 ». La table UM donne **66** pour la colonne Force 5 à
@@ -17,12 +17,12 @@ par le moteur et le test qui la fige.
   restent inchangées : la narration n'est pas affectée.
 - **Décision :** le moteur applique la **table** (66).
 - **Test :** `table_um::tests::erratum_boka_force5_moyen_vaut_66_selon_la_table`.
-- **Statut :** `livres/` n'est pas modifié, par respect de son statut de
+- **Statut :** `regles/` n'est pas modifié, par respect de son statut de
   référence immuable ; cet erratum fait foi pour le moteur.
 
 ## E-002 — Humains d'exemple qui dépassent le budget de création
 
-- **Source :** `livres/commun-06-creation-personnages-humains.md`, tableau
+- **Source :** `regles/commun-06-creation-personnages-humains.md`, tableau
   « Quelques êtres humains ».
 - **Règle :** un humain adulte a 10 points de caractéristiques (maximum 3) et
   6 points de talents (niveau 0 = 1 point, +1 = 2 points, +2 = 4 points).
@@ -47,8 +47,8 @@ par le moteur et le test qui la fige.
 
 ## E-003 — Pouvoir 245 du livre des Anges : « Agilité » ou « Volonté » ?
 
-- **Source :** `livres/commun-07-pouvoirs-communs.md` (liste des pouvoirs 24x) et
-  `livres/ange-17-liste-des-pouvoirs.md`.
+- **Source :** `regles/commun-07-pouvoirs-communs.md` (liste des pouvoirs 24x) et
+  `regles/ange-17-liste-des-pouvoirs.md`.
 - **Constat :** dans la section « Augmentation temporaire des caractéristiques »,
   le livre des Anges liste « 243- Agilité » **et** « 245- Agilité ». Le livre des
   Démons liste « 245- Volonté ». Le tableau récapitulatif du livre des Anges

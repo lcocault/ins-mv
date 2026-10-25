@@ -12,14 +12,14 @@ Workspace Rust (toolchain épinglé dans `rust-toolchain.toml`).
 
 ```bash
 cargo test                                     # toute la suite
-python3 -I outils/generer_catalogues.py        # régénère regles/donnees/*.json (pouvoirs, talents, armes, protections) depuis livres/
+python3 -I outils/generer_catalogues.py        # régénère regles/donnees/*.json (pouvoirs, talents, armes, protections) depuis regles/
 ```
 
 ## Données
 
 - La campagne vit dans `campagne/jeu.sqlite` à la racine du dépôt (ignorée par git).
   `INSMV_CAMPAGNE=/chemin/jeu.sqlite` la déplace.
-- `regles/donnees/{pouvoirs,talents,armes,protections}.json` sont générés depuis `livres/` ;
+- `regles/donnees/{pouvoirs,talents,armes,protections}.json` sont générés depuis `regles/` ;
   ne pas les éditer à la main.
 - Les écarts du livre sont dans `../maison/errata.md`, les interprétations du moteur dans
   `../maison/decisions.md` ; chacun est figé par un test.

@@ -1,4 +1,4 @@
-//! Catalogues des pouvoirs et des talents, générés depuis `livres/` par
+//! Catalogues des pouvoirs et des talents, générés depuis `regles/` par
 //! `moteur/outils/generer_catalogues.py` (données dans `donnees/`).
 
 use std::sync::OnceLock;

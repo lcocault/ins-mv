@@ -1,4 +1,4 @@
-//! Résolution des conflits (`livres/commun-05-table-um.md`).
+//! Résolution des conflits (`regles/commun-05-table-um.md`).
 //!
 //! Lorsqu'un défenseur s'oppose à l'action d'un attaquant, les deux jets sont
 //! confrontés. S'il y a conflit réel, le plus grand nombre d'unités l'emporte.

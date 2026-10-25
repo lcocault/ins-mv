@@ -36,6 +36,15 @@ Dans les fichiers communs :
 
 Chaque fichier `ange-*` / `demon-*` renvoie par une ligne « ↪ *Section commune* » vers le fichier commun à lire à cet endroit du livre.
 
+### Compléments issus des scénarios
+
+Les fichiers `scenarios-*.md` ne viennent pas des livres de base mais du recueil de scénarios *Maleficarum Daemonis et autres histoires…* (dossier [`../scenarios/`](../scenarios/)). Ils regroupent les sections de ces scénarios qui **complètent les règles** ; chacun renvoie au scénario d'origine.
+
+- [scenarios-01-monde-du-sommeil.md](scenarios-01-monde-du-sommeil.md) — Rêves et cauchemars : entrée, déplacement, combat, potentiel de création
+- [scenarios-02-troisieme-force.md](scenarios-02-troisieme-force.md) — Talent *Bouclier* et pouvoirs de la « troisième force » (berserker, totem, arme magique…)
+- [scenarios-03-nouveaux-princes.md](scenarios-03-nouveaux-princes.md) — Les Princes-Démons Kronos et Furfur
+- [scenarios-04-pentacles-de-protection.md](scenarios-04-pentacles-de-protection.md) — Pentacles de protection
+
 ## Ordre de lecture — livre des Anges (*Magna Veritas*)
 
 Fichiers dans l'ordre où ils apparaissent dans le livre (les passages communs sont à lire au fil du texte, là où un fichier spécifique renvoie vers un fichier `commun-*`) :

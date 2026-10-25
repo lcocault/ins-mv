@@ -1,4 +1,4 @@
-//! Effets des blessures (`livres/ange-12-blessures.md`, `livres/demon-12-blessures.md`).
+//! Effets des blessures (`regles/ange-12-blessures.md`, `regles/demon-12-blessures.md`).
 //!
 //! Les dommages s'accumulent sur la fiche (`Personnage::dommages`). Selon l'espèce,
 //! un certain nombre de points de dommage retire un point de Force ; la Force

@@ -1,4 +1,4 @@
-//! Fiche de personnage et règles de création (`livres/commun-06-…`, `ange-03-…`, `demon-03-…`).
+//! Fiche de personnage et règles de création (`regles/commun-06-…`, `ange-03-…`, `demon-03-…`).
 //!
 //! Les budgets de création sont ceux des tableaux « Résumé » des deux livres.
 //! Les exceptions (« il existe bien sûr des exceptions aux valeurs indiquées »)

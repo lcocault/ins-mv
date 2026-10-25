@@ -1,4 +1,4 @@
-//! Notation des jets (`1D6`, `2D6+3`, `D66`, `D666`) — `livres/commun-02-des.md`.
+//! Notation des jets (`1D6`, `2D6+3`, `D66`, `D666`) — `regles/commun-02-des.md`.
 
 use serde::Serialize;
 

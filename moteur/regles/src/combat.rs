@@ -1,4 +1,4 @@
-//! Combat physique (`livres/commun-09-confrontation-armes-combat.md`).
+//! Combat physique (`regles/commun-09-confrontation-armes-combat.md`).
 //!
 //! Une attaque est un conflit entre le talent d'attaque et un talent de défense. Les
 //! dommages sont : unités finales du conflit + puissance de l'arme - protection

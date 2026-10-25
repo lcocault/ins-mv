@@ -1,4 +1,4 @@
-//! Les dés : D6, D66 et D666 (`livres/commun-02-des.md`).
+//! Les dés : D6, D66 et D666 (`regles/commun-02-des.md`).
 
 use rand::Rng;
 use serde::{Deserialize, Serialize};
