@@ -79,6 +79,25 @@ pub enum Seuil {
     ReussiteAutomatique,
 }
 
+impl Seuil {
+    /// Nombre de résultats favorables sur les 36 combinaisons du D66 formé par x et y.
+    pub fn cas_favorables(self) -> u8 {
+        match self {
+            Seuil::EchecAutomatique => 0,
+            Seuil::ReussiteAutomatique => 36,
+            Seuil::Valeur(max) => (1..=6u8)
+                .flat_map(|x| (1..=6u8).map(move |y| x * 10 + y))
+                .filter(|&xy| xy <= max)
+                .count() as u8,
+        }
+    }
+
+    /// Chances de réussite, en pourcentage arrondi.
+    pub fn pourcentage(self) -> u8 {
+        ((u16::from(self.cas_favorables()) * 100 + 18) / 36) as u8
+    }
+}
+
 /// Lit le seuil pour une colonne (éventuellement hors table) et un niveau.
 pub fn seuil(colonne: i32, niveau: NiveauTalent) -> Seuil {
     if colonne < 0 {
@@ -124,6 +143,11 @@ impl Action {
     pub fn avec_malus_volontaire(mut self, colonnes: u8) -> Self {
         self.malus_volontaire = colonnes;
         self
+    }
+
+    /// Seuil de réussite de l'action (colonne finale lue sur la table).
+    pub fn seuil(&self) -> Seuil {
+        seuil(self.colonne(), self.niveau)
     }
 
     /// Colonne finale sur la table, avant lecture.
@@ -312,6 +336,24 @@ mod tests {
         assert_eq!(r.seuil, Seuil::Valeur(43));
         assert!(r.reussi);
         assert_eq!(r.unites, 8);
+    }
+
+    #[test]
+    fn chances_de_reussite_sur_le_d66() {
+        let favorables = |s: u8| Seuil::Valeur(s).cas_favorables();
+        assert_eq!(favorables(11), 1);
+        assert_eq!(favorables(16), 6);
+        assert_eq!(favorables(21), 7);
+        assert_eq!(favorables(24), 10);
+        assert_eq!(favorables(32), 14);
+        assert_eq!(favorables(43), 21);
+        assert_eq!(favorables(66), 36);
+        assert_eq!(Seuil::EchecAutomatique.cas_favorables(), 0);
+        assert_eq!(Seuil::ReussiteAutomatique.cas_favorables(), 36);
+        // Pourcentages arrondis annoncés au joueur : VO 3, 4, 5 à la ligne 0.
+        let pct = |c: u8| Action::new(carac(c), niveau(0)).seuil().pourcentage();
+        assert_eq!((pct(3), pct(4), pct(5)), (28, 39, 58));
+        assert_eq!(Action::new(carac(5), niveau(1)).seuil().pourcentage(), 100);
     }
 
     // ---- erratum : porte enfoncée par BOKA --------------------------------

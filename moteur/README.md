@@ -23,3 +23,14 @@ python3 -I outils/generer_catalogues.py        # régénère regles/donnees/*.js
   ne pas les éditer à la main.
 - Les écarts du livre et les décisions de règles sont dans `../maison/errata.md`,
   chacun figé par un test.
+
+## Interface Web (lecture seule)
+
+```bash
+cargo run -p insmv-web          # http://localhost:8787 (INSMV_WEB_PORT pour changer le port)
+```
+
+Liste des personnages, fiche (PP, dommages, caractéristiques, talents et pouvoirs avec seuil
+et chances de réussite sur la table UM) et journal filtrable. Elle lit la base en lecture seule :
+les changements faits par le serveur MCP apparaissent à l'actualisation (case « Actualiser
+toutes les 5 s »). Elle n'écoute que sur 127.0.0.1 : aucune authentification.

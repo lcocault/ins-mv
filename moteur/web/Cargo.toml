@@ -1,0 +1,16 @@
+[package]
+name = "insmv-web"
+version.workspace = true
+edition.workspace = true
+description = "Interface Web en lecture seule : fiches de personnages et journal de campagne."
+
+[dependencies]
+insmv-regles = { path = "../regles" }
+insmv-campagne = { path = "../campagne" }
+axum = "0.8"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "net"] }
+serde = { version = "1", features = ["derive"] }
+
+[dev-dependencies]
+tower = { version = "0.5", features = ["util"] }
+http-body-util = "0.1"

@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["regles", "campagne", "mcp"]
+members = ["regles", "campagne", "mcp", "web"]
 
 [workspace.package]
 edition = "2021"
