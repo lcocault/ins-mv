@@ -3,7 +3,7 @@
 use axum::body::Body;
 use axum::http::{Request, StatusCode};
 use http_body_util::BodyExt;
-use insmv_campagne::{Campagne, EntreeJournal};
+use insmv_campagne::{ActionCombat, Campagne, EntreeJournal, Evenement};
 use insmv_regles::personnage::{Caracteristiques, Espece, Personnage, PouvoirPossede, Role, TalentPossede};
 use insmv_web::{routeur, Etat};
 use tower::ServiceExt;
@@ -151,4 +151,41 @@ async fn routes_inconnues_et_ecritures_refusees() {
         .await
         .unwrap();
     assert_eq!(reponse.status(), StatusCode::METHOD_NOT_ALLOWED);
+}
+
+#[tokio::test]
+async fn partie_suit_les_evenements_du_serveur_principal() {
+    let (base, campagne) = base_avec_jean("partie");
+    let (statut, vide) = get(&base, "/partie").await;
+    assert_eq!(statut, StatusCode::OK);
+    assert!(vide.contains("Aucun jet pour l'instant") && vide.contains("Aucun combat en cours"));
+
+    let action = insmv_regles::Action::new(
+        insmv_regles::Caracteristique::new(5).unwrap(),
+        insmv_regles::NiveauTalent::new(2).unwrap(),
+    );
+    campagne.emettre(&Evenement::Attente { libelle: "Jean : Arme de contact".into(), action }).unwrap();
+    let (_, attente) = get(&base, "/partie").await;
+    assert!(attente.contains("En attente du décalage") && attente.contains("Jean : Arme de contact"));
+
+    campagne
+        .emettre(&Evenement::Action(ActionCombat { acteur: "Jean De Lavenue".into(), cible: None, resume: "Jean frappe".into() }))
+        .unwrap();
+    let (_, combat) = get(&base, "/partie").await;
+    assert!(combat.contains("Jean frappe") && combat.contains("Initiative non tirée"));
+
+    campagne.emettre(&Evenement::Fin).unwrap();
+    let (_, fini) = get(&base, "/partie").await;
+    assert!(fini.contains("Aucun combat en cours"));
+}
+
+#[tokio::test]
+async fn partie_sur_une_ancienne_base_sans_evenements() {
+    let base = BaseTemporaire::nouvelle("ancienne");
+    std::fs::create_dir_all(base.0.parent().unwrap()).unwrap();
+    // Base créée avant l'ajout de la table d'événements.
+    drop(Campagne::ouvrir(&base.0).unwrap());
+    let (statut, html) = get(&base, "/partie").await;
+    assert_eq!(statut, StatusCode::OK);
+    assert!(html.contains("Aucun combat en cours"));
 }

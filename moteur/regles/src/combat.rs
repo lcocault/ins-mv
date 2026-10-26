@@ -13,7 +13,7 @@ use crate::catalogue::{self, Arme, CategorieArme, Protection};
 use crate::conflit::{resoudre_conflit, Issue};
 use crate::des::{SourceDes, D666};
 use crate::personnage::{Carac, DemandeTest, Personnage};
-use crate::table_um::{evaluer, ResultatJet};
+use crate::table_um::{evaluer, Action, ResultatJet};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "snake_case")]
@@ -190,6 +190,8 @@ pub struct ParamsAttaque {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct DetailJet {
     pub description: String,
+    /// L'action lue sur la table UM (ligne, colonne de base et décalages).
+    pub action: Action,
     pub jet: ResultatJet,
 }
 
@@ -311,7 +313,7 @@ pub fn resoudre_attaque(
     };
     let prepare_att = att.preparer_test(&demande_att)?;
     let jet_att = evaluer(&prepare_att.action, D666::tirer(source));
-    let attaque = DetailJet { description: prepare_att.description, jet: jet_att };
+    let attaque = DetailJet { description: prepare_att.description, action: prepare_att.action, jet: jet_att };
 
     // Défense.
     let raison = if p.defense_impossible {
@@ -352,7 +354,7 @@ pub fn resoudre_attaque(
         let mut jet_def = evaluer(&prepare_def.action, D666::tirer(source));
         // La puissance de l'arme de parade s'ajoute aux unités de la défense.
         jet_def.unites = jet_def.unites.saturating_add_signed(puissance_parade as i8);
-        defense = Some(DetailJet { description: prepare_def.description, jet: jet_def });
+        defense = Some(DetailJet { description: prepare_def.description, action: prepare_def.action, jet: jet_def });
     }
 
     let issue = match &defense {
@@ -394,13 +396,13 @@ pub fn resoudre_attaque(
 // ---- Initiative ------------------------------------------------------------------
 
 /// Un rang d'initiative : les personnages d'un même rang agissent simultanément.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Rang {
     pub valeur: u8,
     pub personnages: Vec<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Initiative {
     /// Phase 1 : pouvoirs psychiques, par Volonté décroissante (égalités départagées au D66).
     pub psychique: Vec<Rang>,

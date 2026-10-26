@@ -99,6 +99,7 @@ fn expose_les_outils() {
         [
             "ajuster_dommages",
             "ajuster_pp",
+            "annoncer_action",
             "attaquer",
             "chercher_pouvoir",
             "chercher_talent",
@@ -113,6 +114,7 @@ fn expose_les_outils() {
             "resoudre_conflit",
             "soigner_semaines",
             "supprimer_personnage",
+            "terminer_combat",
             "tester_personnage",
             "tirer_pouvoir",
             "utiliser_pouvoir",

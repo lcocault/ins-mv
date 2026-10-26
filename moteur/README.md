@@ -35,6 +35,12 @@ Depuis Windows, double-cliquer sur `scripts/web-start.cmd`, `web-stop.cmd` ou `w
 (ils appellent le script dans WSL). `INSMV_WEB_PORT` change le port ; le PID et le journal
 sont dans `.run/` (ignoré par git).
 
+Page **Partie** (`/partie`) : table UM avec la ligne et la colonne de la dernière action (ou de l'action
+annoncée, avec les seuils pour chaque décalage de -3 à +3), jets récents, et combat en cours (ordre
+d'action du tour, qui a déjà agi, état des participants, fil des actions). Elle lit les événements que le
+serveur MCP écrit dans la table `evenement` (`annoncer_action`, tests, conflits, attaques, `initiative`,
+`terminer_combat`).
+
 Liste des personnages, fiche (PP, dommages, caractéristiques, talents et pouvoirs avec seuil
 et chances de réussite sur la table UM) et journal filtrable. Elle lit la base en lecture seule :
 les changements faits par le serveur MCP apparaissent à l'actualisation (case « Actualiser

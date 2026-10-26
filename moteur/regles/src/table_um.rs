@@ -9,7 +9,8 @@ use serde::{Deserialize, Serialize};
 use crate::des::{SourceDes, D666};
 use crate::ErreurRegle;
 
-const NB_COLONNES: i32 = 18;
+/// Nombre de colonnes de la table.
+pub const NB_COLONNES: i32 = 18;
 
 /// Seuils de la table UM. Ligne = niveau de talent (0 à 3).
 const TABLE: [[u8; NB_COLONNES as usize]; 4] = [
@@ -18,6 +19,17 @@ const TABLE: [[u8; NB_COLONNES as usize]; 4] = [
     [16, 24, 43, 46, 54, 62, 63, 64, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66],
     [31, 43, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66],
 ];
+
+/// Seuils de la table, ligne par ligne (niveau de talent 0 à 3), pour l'affichage.
+pub fn lignes() -> &'static [[u8; NB_COLONNES as usize]; 4] {
+    &TABLE
+}
+
+/// Caractéristique (1 à 6) imprimée en tête de la colonne, ou `None` pour une colonne « - »
+/// (qui ne sert qu'aux décalages).
+pub fn caracteristique_de_la_colonne(colonne: usize) -> Option<u8> {
+    COLONNE_CARACTERISTIQUE.iter().position(|&c| c as usize == colonne).map(|i| i as u8 + 1)
+}
 
 /// Position de chaque caractéristique (1 à 6) dans l'en-tête de la table.
 const COLONNE_CARACTERISTIQUE: [i32; 6] = [1, 2, 5, 8, 13, 17];
@@ -152,7 +164,12 @@ impl Action {
 
     /// Colonne finale sur la table, avant lecture.
     pub fn colonne(&self) -> i32 {
-        self.caracteristique.colonne() + self.modificateur - i32::from(self.malus_volontaire)
+        self.colonne_base() + self.modificateur - i32::from(self.malus_volontaire)
+    }
+
+    /// Colonne de la caractéristique, avant tout décalage.
+    pub fn colonne_base(&self) -> i32 {
+        self.caracteristique.colonne()
     }
 }
 

@@ -49,6 +49,7 @@ fn interne(e: ErreurCampagne) -> (StatusCode, Html<String>) {
 pub fn routeur(etat: Etat) -> Router {
     Router::new()
         .route("/", get(accueil))
+        .route("/partie", get(partie))
         .route("/personnage/{id}", get(personnage))
         .route("/journal", get(journal))
         .with_state(etat)
@@ -69,6 +70,18 @@ async fn personnage(State(etat): State<Etat>, Path(id): Path<String>) -> Reponse
         )),
         Err(e) => Err(interne(e)),
     }
+}
+
+/// Jets récents listés sous la table UM.
+const JETS_RECENTS: usize = 6;
+
+async fn partie(State(etat): State<Etat>) -> Reponse {
+    let campagne = etat.campagne()?;
+    let resolution = campagne.derniere_resolution().map_err(interne)?;
+    let jets = campagne.derniers_jets(JETS_RECENTS).map_err(interne)?;
+    let combat = campagne.combat_en_cours().map_err(interne)?;
+    let personnages = campagne.lister(None).map_err(interne)?;
+    Ok(Html(rendu::partie(resolution.as_ref(), &jets, combat.as_ref(), &personnages)))
 }
 
 #[derive(Debug, Default, Deserialize)]

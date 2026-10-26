@@ -3,7 +3,7 @@
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 
-use insmv_campagne::Campagne;
+use insmv_campagne::{Campagne, JetUm};
 use insmv_regles::personnage::Role;
 use insmv_regles::DesAleatoires;
 use rmcp::{
@@ -123,14 +123,33 @@ impl ServeurMj {
                           lit le seuil selon la caractéristique, le niveau de talent et les décalages de colonnes, \
                           et renvoie réussite/échec et unités. Pour un personnage enregistré, préférer tester_personnage.")]
     async fn resoudre_action(&self, Parameters(p): Parameters<ActionParams>) -> Result<String, String> {
-        en_json(outils::resoudre_action(&p, &mut DesAleatoires::default()))
+        let sortie = outils::resoudre_action(&p, &mut DesAleatoires::default())?;
+        let action = p.vers_action().map_err(|e| e.to_string())?;
+        self.avec(|c| {
+            jeu::afficher_jets(c, vec![JetUm { libelle: "Jet sans fiche".into(), action, jet: sortie.jet }]);
+            Ok(&sortie)
+        })
     }
 
     #[tool(description = "Résout un conflit ad hoc entre un attaquant et un défenseur, sans fiche : deux jets sur la table UM, \
                           puis comparaison des unités si les deux réussissent. En cas d'unités égales, \
                           l'issue est « arbitrage_mj » : le maître de jeu doit trancher.")]
     async fn resoudre_conflit(&self, Parameters(p): Parameters<ConflitParams>) -> Result<String, String> {
-        en_json(outils::resoudre_conflit(&p.attaquant, &p.defenseur, &mut DesAleatoires::default()))
+        let sortie = outils::resoudre_conflit(&p.attaquant, &p.defenseur, &mut DesAleatoires::default())?;
+        let (action_a, action_d) = (
+            p.attaquant.vers_action().map_err(|e| e.to_string())?,
+            p.defenseur.vers_action().map_err(|e| e.to_string())?,
+        );
+        self.avec(|c| {
+            jeu::afficher_jets(
+                c,
+                vec![
+                    JetUm { libelle: "Attaquant (sans fiche)".into(), action: action_a, jet: sortie.attaquant.jet },
+                    JetUm { libelle: "Défenseur (sans fiche)".into(), action: action_d, jet: sortie.defenseur.jet },
+                ],
+            );
+            Ok(&sortie)
+        })
     }
 
     #[tool(description = "Teste un personnage enregistré sur la table UM à partir de sa fiche : caractéristique + talent ou pouvoir \
@@ -169,6 +188,20 @@ impl ServeurMj {
                           puis phase physique par Agilité décroissante (mêmes valeurs : simultané). Écarte les inconscients et les morts.")]
     async fn initiative(&self, Parameters(p): Parameters<InitiativeParams>) -> Result<String, String> {
         self.avec(|c| jeu::initiative(c, &p, &mut DesAleatoires::default()))
+    }
+
+    #[tool(description = "Annonce une action sans la lancer : la table UM de l'interface Web montre la ligne et la colonne applicables, \
+                          et ce que donnerait chaque décalage de -3 à +3 colonnes (seuil et chances de réussite). À appeler avant \
+                          tester_personnage quand le joueur doit décider d'un décalage de colonnes (malus volontaire, circonstances). \
+                          Mêmes paramètres que tester_personnage ; ne prélève rien et ne lance aucun dé.")]
+    async fn annoncer_action(&self, Parameters(p): Parameters<TestParams>) -> Result<String, String> {
+        self.avec(|c| jeu::annoncer_action(c, &p))
+    }
+
+    #[tool(description = "Termine le combat affiché dans l'interface Web (ordre d'action et fil des actions). \
+                          À appeler quand le combat est fini : le prochain appel d'initiative ouvre un nouveau combat au tour 1.")]
+    async fn terminer_combat(&self) -> Result<String, String> {
+        self.avec(jeu::terminer_combat)
     }
 
     // ---- Fiches ----

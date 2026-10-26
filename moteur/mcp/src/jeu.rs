@@ -1,7 +1,7 @@
 //! Outils de campagne : fiches, état des personnages, tests sur fiche, catalogues, journal.
 //! Comme [`crate::outils`], cette couche est indépendante du protocole MCP.
 
-use insmv_campagne::{Campagne, EntreeJournal, ErreurCampagne, FiltreJournal};
+use insmv_campagne::{ActionCombat, Campagne, EntreeJournal, ErreurCampagne, Evenement, FiltreJournal, JetUm};
 use insmv_regles::catalogue::{self, Livre, Pouvoir, Talent};
 use insmv_regles::blessures::{EtatSante, Sante};
 use insmv_regles::personnage::{
@@ -20,6 +20,17 @@ use crate::outils::{decrire_action, decrire_issue, SortieAction};
 
 fn erreur(e: ErreurCampagne) -> String {
     e.to_string()
+}
+
+/// Trace un événement pour l'interface Web. L'action de jeu a déjà eu lieu et son résultat est
+/// en base : un échec d'affichage ne doit pas la faire passer pour ratée.
+fn emettre(c: &Campagne, evenement: Evenement) {
+    let _ = c.emettre(&evenement);
+}
+
+/// Affiche des jets (déjà tirés) sur la table UM de l'interface Web.
+pub fn afficher_jets(c: &Campagne, jets: Vec<JetUm>) {
+    emettre(c, Evenement::Jets { jets });
 }
 
 // ---- Création -----------------------------------------------------------------
@@ -373,8 +384,9 @@ pub fn tester_personnage(
 ) -> Result<SortieTest, String> {
     let (action, description) = preparer(c, t)?;
     let (pp_depenses, pp_restants) = prelever_pp(c, t)?;
-    let action = decrire_action(evaluer(&action, D666::tirer(source)));
-    Ok(SortieTest { description, pp_depenses, pp_restants, action })
+    let jet = evaluer(&action, D666::tirer(source));
+    afficher_jets(c, vec![JetUm { libelle: format!("{} : {description}", t.nom), action, jet }]);
+    Ok(SortieTest { description, pp_depenses, pp_restants, action: decrire_action(jet) })
 }
 
 #[derive(Debug, Serialize)]
@@ -396,11 +408,14 @@ pub fn conflit_personnages(
     let (action_a, desc_a) = preparer(c, attaquant)?;
     let (action_d, desc_d) = preparer(c, defenseur)?;
     let mut sorties = Vec::new();
+    let mut jets_affiches = Vec::new();
     for (t, action, description) in [(attaquant, action_a, desc_a), (defenseur, action_d, desc_d)] {
         let (pp_depenses, pp_restants) = prelever_pp(c, t)?;
-        let jet = decrire_action(evaluer(&action, D666::tirer(source)));
-        sorties.push(SortieTest { description, pp_depenses, pp_restants, action: jet });
+        let jet = evaluer(&action, D666::tirer(source));
+        jets_affiches.push(JetUm { libelle: format!("{} : {description}", t.nom), action, jet });
+        sorties.push(SortieTest { description, pp_depenses, pp_restants, action: decrire_action(jet) });
     }
+    afficher_jets(c, jets_affiches);
     let defenseur = sorties.pop().expect("deux sorties");
     let attaquant = sorties.pop().expect("deux sorties");
     let issue = arbitrer(&attaquant.action.jet, &defenseur.action.jet);
@@ -527,12 +542,30 @@ pub fn utiliser_pouvoir(
         };
         let conflit = conflit_personnages(c, &attaque, &defense, source)?;
         let pp_restants = conflit.attaquant.pp_restants;
+        tracer_pouvoir(c, &perso.nom, Some(cible), &nom, cout, &conflit.resume);
         Ok(SortieUsagePouvoir { pouvoir: nom, code, regle, cout_paye: cout, pp_restants, test: None, conflit: Some(conflit) })
     } else {
         let test = tester_personnage(c, &attaque, source)?;
         let pp_restants = test.pp_restants;
+        tracer_pouvoir(c, &perso.nom, None, &nom, cout, &test.action.resume);
         Ok(SortieUsagePouvoir { pouvoir: nom, code, regle, cout_paye: cout, pp_restants, test: Some(test), conflit: None })
     }
+}
+
+/// Un pouvoir utilisé pendant un combat figure dans le fil des actions ; hors combat, il ne
+/// doit pas en ouvrir un.
+fn tracer_pouvoir(c: &Campagne, acteur: &str, cible: Option<&str>, pouvoir: &str, cout: u32, resultat: &str) {
+    if c.combat_en_cours().ok().flatten().is_none() {
+        return;
+    }
+    emettre(
+        c,
+        Evenement::Action(ActionCombat {
+            acteur: acteur.to_string(),
+            cible: cible.map(str::to_string),
+            resume: format!("{acteur} utilise {pouvoir} ({cout} PP) : {resultat}"),
+        }),
+    );
 }
 
 // ---- Combat ---------------------------------------------------------------------------------
@@ -666,6 +699,10 @@ fn resume_attaque(r: &ResultatAttaque, att: &str, def: &str) -> String {
     lignes.join("\n")
 }
 
+fn jet_um(nom: &str, detail: &insmv_regles::combat::DetailJet) -> JetUm {
+    JetUm { libelle: format!("{nom} : {}", detail.description), action: detail.action, jet: detail.jet }
+}
+
 pub fn attaquer(
     c: &Campagne,
     p: &AttaqueParams,
@@ -718,6 +755,17 @@ pub fn attaquer(
     } else {
         None
     };
+    let mut jets = vec![jet_um(&att.nom, &resultat.attaque)];
+    jets.extend(resultat.defense.as_ref().map(|d| jet_um(&def.nom, d)));
+    afficher_jets(c, jets);
+    emettre(
+        c,
+        Evenement::Action(ActionCombat {
+            acteur: att.nom.clone(),
+            cible: Some(def.nom.clone()),
+            resume: resume.clone(),
+        }),
+    );
     Ok(SortieAttaque { attaquant: att.nom, defenseur: def.nom, resultat, resume, etat_defenseur })
 }
 
@@ -740,7 +788,77 @@ pub fn initiative(
     if fiches.len() < 2 {
         return Err("l'initiative demande au moins deux personnages".into());
     }
-    Ok(ordre_initiative(&fiches, source))
+    let ordre = ordre_initiative(&fiches, source);
+    let numero = match c.combat_en_cours().map_err(erreur)? {
+        Some(combat) => combat.tours.iter().map(|t| t.numero).max().unwrap_or(0) + 1,
+        None => 1,
+    };
+    emettre(c, Evenement::Tour { numero, initiative: ordre.clone() });
+    Ok(ordre)
+}
+
+#[derive(Debug, Serialize)]
+pub struct SortieFinCombat {
+    pub resume: String,
+}
+
+/// Clôt le combat affiché : le prochain `initiative` ouvre un nouveau combat au tour 1.
+pub fn terminer_combat(c: &Campagne) -> Result<SortieFinCombat, String> {
+    let en_cours = c.combat_en_cours().map_err(erreur)?;
+    c.emettre(&Evenement::Fin).map_err(erreur)?;
+    Ok(SortieFinCombat {
+        resume: match en_cours {
+            Some(combat) => format!("Combat terminé après {} tour(s).", combat.tours.iter().filter(|t| t.numero > 0).count()),
+            None => "Aucun combat en cours.".to_string(),
+        },
+    })
+}
+
+/// Colonnes de décalage proposées au joueur : de -3 à +3 autour de la colonne de base.
+const DECALAGES_PROPOSES: std::ops::RangeInclusive<i32> = -3..=3;
+
+#[derive(Debug, Serialize)]
+pub struct SeuilDecale {
+    pub decalage: i32,
+    pub colonne: i32,
+    pub seuil: insmv_regles::Seuil,
+    pub chances_pct: u8,
+}
+
+#[derive(Debug, Serialize)]
+pub struct SortieAnnonce {
+    pub description: String,
+    pub colonne_base: i32,
+    pub niveau: u8,
+    pub seuils: Vec<SeuilDecale>,
+    pub resume: String,
+}
+
+/// Annonce une action sans la lancer : la table UM de l'interface Web montre la colonne de base
+/// et ce que donnerait chaque décalage, pour que le joueur puisse en décider.
+pub fn annoncer_action(c: &Campagne, t: &TestParams) -> Result<SortieAnnonce, String> {
+    let (action, description) = preparer(c, t)?;
+    let seuils: Vec<SeuilDecale> = DECALAGES_PROPOSES
+        .map(|d| {
+            let decale = action.avec_modificateur(d);
+            let seuil = decale.seuil();
+            SeuilDecale { decalage: d, colonne: decale.colonne(), seuil, chances_pct: seuil.pourcentage() }
+        })
+        .collect();
+    emettre(c, Evenement::Attente { libelle: format!("{} : {description}", t.nom), action });
+    let resume = format!(
+        "{description} : colonne {}, ligne {}. Avec décalage : {}.",
+        action.colonne(),
+        action.niveau.valeur(),
+        seuils.iter().map(|s| format!("{:+} → {} %", s.decalage, s.chances_pct)).collect::<Vec<_>>().join(", ")
+    );
+    Ok(SortieAnnonce {
+        description,
+        colonne_base: action.colonne(),
+        niveau: action.niveau.valeur(),
+        seuils,
+        resume,
+    })
 }
 
 // ---- Catalogues ---------------------------------------------------------------------------
@@ -1382,6 +1500,87 @@ mod tests {
         assert_eq!(i.psychique.len(), 1, "seul Jean a des pouvoirs");
         let seul = InitiativeParams { personnages: vec!["Jean".into()] };
         assert!(initiative(&c, &seul, &mut SequenceDes::new([])).is_err());
+    }
+
+    // ---- affichage Web ----
+
+    #[test]
+    fn annoncer_une_action_n_affiche_que_l_attente() {
+        let c = campagne_de_combat();
+        let mut t = test("Jean", "AG");
+        t.talent = Some("Esquive".into());
+        let a = annoncer_action(&c, &t).unwrap();
+        // AG 5 → colonne 13, ligne +1.
+        assert_eq!((a.colonne_base, a.niveau), (13, 1));
+        assert_eq!(a.seuils.len(), 7);
+        assert_eq!((a.seuils[0].decalage, a.seuils[0].colonne), (-3, 10));
+        assert_eq!(a.seuils[3].chances_pct, 100);
+        assert!(matches!(c.derniere_resolution().unwrap().unwrap().evenement, Evenement::Attente { .. }));
+        assert!(c.derniers_jets(5).unwrap().is_empty(), "aucun dé lancé");
+        assert_eq!(c.charger("Jean").unwrap().pp_courants(), 10, "rien prélevé");
+    }
+
+    #[test]
+    fn un_test_remplace_l_attente_par_son_jet() {
+        let c = campagne_de_combat();
+        let mut t = test("Jean", "AG");
+        t.talent = Some("Esquive".into());
+        annoncer_action(&c, &t).unwrap();
+        t.modificateur = -2;
+        tester_personnage(&c, &t, &mut SequenceDes::new([2, 3, 4])).unwrap();
+        let Evenement::Jets { jets } = c.derniere_resolution().unwrap().unwrap().evenement else {
+            panic!("le jet doit remplacer l'attente");
+        };
+        assert_eq!(jets.len(), 1);
+        assert_eq!((jets[0].action.colonne_base(), jets[0].jet.colonne), (13, 11));
+        assert!(jets[0].libelle.starts_with("Jean"), "{}", jets[0].libelle);
+    }
+
+    #[test]
+    fn un_conflit_affiche_deux_jets_et_une_attaque_les_deux_plus_une_action() {
+        let c = campagne_de_combat();
+        let mut a = test("Jean", "AG");
+        a.talent = Some("Esquive".into());
+        let mut d = test("Zombi", "AG");
+        d.difficulte = 1;
+        conflit_personnages(&c, &a, &d, &mut SequenceDes::new([1, 1, 1, 1, 1, 1])).unwrap();
+        let Evenement::Jets { jets } = c.derniere_resolution().unwrap().unwrap().evenement else { panic!() };
+        assert_eq!(jets.len(), 2);
+        assert!(c.combat_en_cours().unwrap().is_none(), "un conflit n'ouvre pas de combat");
+
+        attaquer(&c, &coup_d_epee(), &mut SequenceDes::new([4, 3, 5, 6, 6, 6])).unwrap();
+        let Evenement::Jets { jets } = c.derniere_resolution().unwrap().unwrap().evenement else { panic!() };
+        assert_eq!(jets.len(), 2, "attaque et défense");
+        let combat = c.combat_en_cours().unwrap().unwrap();
+        assert_eq!(combat.tours[0].actions[0].acteur, "Jean");
+        assert_eq!(combat.tours[0].actions[0].cible.as_deref(), Some("Zombi"));
+    }
+
+    #[test]
+    fn initiative_numerote_les_tours_et_terminer_combat_repart_de_zero() {
+        let c = campagne_de_combat();
+        let p = InitiativeParams { personnages: vec!["Jean".into(), "Zombi".into()] };
+        initiative(&c, &p, &mut SequenceDes::new([])).unwrap();
+        initiative(&c, &p, &mut SequenceDes::new([])).unwrap();
+        let numeros: Vec<u32> = c.combat_en_cours().unwrap().unwrap().tours.iter().map(|t| t.numero).collect();
+        assert_eq!(numeros, [1, 2]);
+        assert!(terminer_combat(&c).unwrap().resume.contains("2 tour(s)"));
+        assert!(c.combat_en_cours().unwrap().is_none());
+        assert!(terminer_combat(&c).unwrap().resume.contains("Aucun combat"));
+        initiative(&c, &p, &mut SequenceDes::new([])).unwrap();
+        assert_eq!(c.combat_en_cours().unwrap().unwrap().tours[0].numero, 1);
+    }
+
+    #[test]
+    fn un_pouvoir_n_entre_dans_le_fil_que_pendant_un_combat() {
+        let c = campagne_de_combat();
+        utiliser_pouvoir(&c, &usage("Jean", "243"), &mut SequenceDes::new([1, 1, 1])).unwrap();
+        assert!(c.combat_en_cours().unwrap().is_none());
+        let p = InitiativeParams { personnages: vec!["Jean".into(), "Zombi".into()] };
+        initiative(&c, &p, &mut SequenceDes::new([])).unwrap();
+        utiliser_pouvoir(&c, &usage("Jean", "243"), &mut SequenceDes::new([1, 1, 1])).unwrap();
+        let tour = &c.combat_en_cours().unwrap().unwrap().tours[0];
+        assert!(tour.actions[0].resume.contains("Jean utilise"), "{}", tour.actions[0].resume);
     }
 
     // ---- pouvoirs ----

@@ -1,10 +1,12 @@
 //! Rendu HTML des pages. Fonctions pures : données en entrée, texte en sortie.
 //! Tout texte provenant des fiches ou du journal passe par [`esc`].
 
-use insmv_campagne::EntreeJournal;
+use insmv_campagne::{Combat, EntreeJournal, Evenement, EvenementDate, JetUm, TourDeCombat};
 use insmv_regles::blessures::EtatSante;
 use insmv_regles::catalogue::{self, Livre};
+use insmv_regles::combat::Rang;
 use insmv_regles::personnage::{Carac, Espece, Personnage, Role};
+use insmv_regles::table_um::{caracteristique_de_la_colonne, lignes, NB_COLONNES};
 use insmv_regles::{Action, Caracteristique, NiveauTalent, Seuil};
 
 /// Échappe le texte pour l'insérer dans du HTML (contenu et attributs).
@@ -103,6 +105,26 @@ form.filtres{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 16px}
 form.filtres input,form.filtres select,form.filtres button{font:inherit;padding:6px 8px;border:1px solid var(--bord);border-radius:6px;background:var(--carte);color:var(--texte)}
 .entree{margin:0 0 10px}
 .entree .meta{color:var(--discret);font-size:13px}
+.um{min-width:640px;text-align:center;font-variant-numeric:tabular-nums}
+.um th,.um td{text-align:center;padding:4px 6px}
+.um th.rang{text-align:left;color:var(--discret)}
+.um .col-base{box-shadow:inset 2px 0 0 var(--discret),inset -2px 0 0 var(--discret)}
+.um .col-fin,.um tr.ligne>*{background:var(--accent-fond)}
+.um td.lu{background:var(--accent);color:var(--carte);font-weight:700}
+.um th.col-fin{color:var(--accent);font-weight:700}
+.decalages td,.decalages th{text-align:center;padding:4px 8px}
+.decalages td.actuel{background:var(--accent-fond);font-weight:700}
+.verdict{font-weight:700}
+.verdict.reussi{color:var(--ok)}
+.verdict.rate{color:var(--alerte)}
+.jet-compact{display:flex;flex-wrap:wrap;gap:4px 12px;border-bottom:1px solid var(--bord);padding:6px 0;font-size:14px}
+.jet-compact:last-child{border-bottom:0}
+.ordre{margin:0 0 12px;padding-left:20px}
+.ordre li{margin:2px 0}
+.fait{color:var(--ok);font-weight:700}
+.acte{border-left:3px solid var(--accent);padding:2px 0 2px 10px;margin:0 0 8px;white-space:pre-line}
+details.tour-passe{margin:8px 0}
+details.tour-passe summary{cursor:pointer;color:var(--discret)}
 @media (max-width:520px){main{padding:12px}h1{font-size:24px}}
 "#;
 
@@ -137,7 +159,7 @@ pub fn page(titre: &str, contenu: &str) -> String {
 </head>
 <body>
 <header class="site">
-<nav><a href="/">Personnages</a><a href="/journal">Journal</a></nav>
+<nav><a href="/partie">Partie</a><a href="/">Personnages</a><a href="/journal">Journal</a></nav>
 <label><input type="checkbox" id="auto"> Actualiser toutes les 5 s</label>
 </header>
 <main>
@@ -405,6 +427,258 @@ pub fn journal(
     page("Journal", &html)
 }
 
+// ---- Partie : table UM et combat -----------------------------------------------
+
+fn texte_seuil(seuil: Seuil) -> String {
+    match seuil {
+        Seuil::Valeur(v) => format!("≤ {v}"),
+        Seuil::EchecAutomatique => "échec automatique".to_string(),
+        Seuil::ReussiteAutomatique => "réussite automatique".to_string(),
+    }
+}
+
+/// La table UM entière. La colonne de caractéristique est cernée, la colonne finale et la ligne
+/// du niveau sont colorées, et la case lue ressort.
+fn table_um(action: &Action) -> String {
+    let (base, fin) = (action.colonne_base(), action.colonne());
+    let niveau = usize::from(action.niveau.valeur());
+    let classes = |c: i32, lu: bool| -> String {
+        let mut cls = Vec::new();
+        if c == base {
+            cls.push("col-base");
+        }
+        if c == fin {
+            cls.push("col-fin");
+        }
+        if lu {
+            cls.push("lu");
+        }
+        if cls.is_empty() { String::new() } else { format!(" class=\"{}\"", cls.join(" ")) }
+    };
+    let mut html = String::from(
+        "<div class=\"table-defilante\"><table class=\"um\"><thead><tr><th class=\"rang\">Niveau</th>",
+    );
+    for c in 0..NB_COLONNES {
+        let etiquette = caracteristique_de_la_colonne(c as usize).map_or("-".to_string(), |v| v.to_string());
+        html.push_str(&format!("<th{}>{etiquette}</th>", classes(c, false)));
+    }
+    html.push_str("</tr></thead><tbody>");
+    for (n, ligne) in lignes().iter().enumerate() {
+        html.push_str(&format!(
+            "<tr{}><th class=\"rang\">{}</th>",
+            if n == niveau { " class=\"ligne\"" } else { "" },
+            niveau_texte(n as u8)
+        ));
+        for (c, valeur) in ligne.iter().enumerate() {
+            html.push_str(&format!("<td{}>{valeur}</td>", classes(c as i32, n == niveau && c as i32 == fin)));
+        }
+        html.push_str("</tr>");
+    }
+    html.push_str("</tbody></table></div>");
+    html
+}
+
+/// « colonne de base 8 → colonne 6 (décalage -2) ».
+fn texte_colonnes(action: &Action) -> String {
+    let (base, fin) = (action.colonne_base(), action.colonne());
+    if base == fin {
+        format!("colonne {base}")
+    } else {
+        format!("colonne de base {base} → colonne {fin} (décalage {:+})", fin - base)
+    }
+}
+
+fn jet_detaille(j: &JetUm) -> String {
+    let r = &j.jet;
+    let verdict = if r.reussi {
+        "<span class=\"verdict reussi\">RÉUSSI</span>"
+    } else {
+        "<span class=\"verdict rate\">RATÉ</span>"
+    };
+    let mut html = format!(
+        "<section class=\"carte\"><strong>{}</strong><div class=\"discret\">{} · ligne {}</div>",
+        esc(&j.libelle),
+        texte_colonnes(&j.action),
+        niveau_texte(j.action.niveau.valeur()),
+    );
+    html.push_str(&table_um(&j.action));
+    html.push_str(&format!(
+        "<div>D666 = <b>{}</b> (xy {}, z {}) contre {} : {verdict} · unités <b>{}</b></div>",
+        r.jet.valeur(),
+        r.jet.xy(),
+        r.jet.z,
+        texte_seuil(r.seuil),
+        r.unites,
+    ));
+    if !matches!(r.seuil, Seuil::Valeur(_)) {
+        html.push_str("<div class=\"discret\">Colonne hors de la table : aucun jet ne compte.</div>");
+    }
+    html.push_str("</section>");
+    html
+}
+
+/// Ce que donnerait chaque décalage autour de l'action annoncée.
+fn tableau_decalages(action: &Action) -> String {
+    let mut entete = String::from("<th>Décalage</th>");
+    let (mut colonnes, mut seuils, mut chances) = (String::from("<th>Colonne</th>"), String::from("<th>Seuil</th>"), String::from("<th>Chances</th>"));
+    for d in -3..=3 {
+        let decale = action.avec_modificateur(d);
+        let cls = if d == 0 { " class=\"actuel\"" } else { "" };
+        let etiquette = if d == 0 { "0".to_string() } else { format!("{d:+}") };
+        entete.push_str(&format!("<th{cls}>{etiquette}</th>"));
+        colonnes.push_str(&format!("<td{cls}>{}</td>", decale.colonne()));
+        seuils.push_str(&format!("<td{cls}>{}</td>", texte_seuil(decale.seuil())));
+        chances.push_str(&format!("<td{cls}>{} %</td>", decale.seuil().pourcentage()));
+    }
+    format!(
+        "<div class=\"table-defilante\"><table class=\"decalages\"><thead><tr>{entete}</tr></thead>\
+         <tbody><tr>{colonnes}</tr><tr>{seuils}</tr><tr>{chances}</tr></tbody></table></div>"
+    )
+}
+
+fn etat_du_personnage(p: &Personnage) -> String {
+    let (etat, classe) = match p.sante().etat {
+        EtatSante::Valide => ("Valide", ""),
+        EtatSante::Inconscient => ("Inconscient", " alerte"),
+        EtatSante::Coma => ("Dans le coma", " alerte"),
+        EtatSante::Mort => ("Mort", " alerte"),
+    };
+    format!(
+        "<span class=\"discret\">PP {}/{} · dommages {}</span> <span class=\"pastille{classe}\">{etat}</span>",
+        p.pp_courants(),
+        p.pp_max(),
+        p.dommages
+    )
+}
+
+/// Un nom du tour, avec son état actuel et une coche s'il a déjà agi.
+fn participant(nom: &str, personnages: &[Personnage], a_agi: &dyn Fn(&str) -> bool) -> String {
+    let coche = if a_agi(nom) { " <span class=\"fait\" title=\"a déjà agi ce tour\">✓</span>" } else { "" };
+    let etat = personnages
+        .iter()
+        .find(|p| p.nom == nom)
+        .map(|p| format!(" {}", etat_du_personnage(p)))
+        .unwrap_or_default();
+    format!("<b>{}</b>{coche}{etat}", esc(nom))
+}
+
+fn liste_rangs(titre: &str, rangs: &[Rang], personnages: &[Personnage], a_agi: &dyn Fn(&str) -> bool) -> String {
+    if rangs.is_empty() {
+        return String::new();
+    }
+    let mut html = format!("<h3>{titre}</h3><ol class=\"ordre\">");
+    for r in rangs {
+        let noms: Vec<String> = r.personnages.iter().map(|n| participant(n, personnages, a_agi)).collect();
+        let simultane = if noms.len() > 1 { " <span class=\"discret\">(simultanés)</span>" } else { "" };
+        html.push_str(&format!("<li><span class=\"discret\">{}</span> · {}{simultane}</li>", r.valeur, noms.join(" ; ")));
+    }
+    html.push_str("</ol>");
+    html
+}
+
+fn actions_du_tour(tour: &TourDeCombat) -> String {
+    if tour.actions.is_empty() {
+        return "<p class=\"discret\">Aucune action résolue pour l'instant.</p>".to_string();
+    }
+    tour.actions.iter().map(|a| format!("<div class=\"acte\">{}</div>", esc(&a.resume))).collect()
+}
+
+fn combat(combat: &Combat, personnages: &[Personnage]) -> String {
+    let dernier = combat.tours.last().expect("un combat a au moins un tour");
+    let a_agi = |nom: &str| dernier.actions.iter().any(|a| a.acteur == nom);
+    let mut html = String::from("<h2>Combat</h2>");
+    match &dernier.initiative {
+        Some(init) => {
+            html.push_str(&format!("<p class=\"sous-titre\">Tour {}</p>", dernier.numero));
+            html.push_str(&liste_rangs("Phase psychique (Volonté)", &init.psychique, personnages, &a_agi));
+            html.push_str(&liste_rangs("Phase physique (Agilité)", &init.physique, personnages, &a_agi));
+            if !init.hors_combat.is_empty() {
+                let noms: Vec<String> = init.hors_combat.iter().map(|n| participant(n, personnages, &|_| false)).collect();
+                html.push_str(&format!("<p class=\"discret\">Hors d'état d'agir : {}</p>", noms.join(", ")));
+            }
+            if !init.departages.is_empty() {
+                let d: Vec<String> = init.departages.iter().map(|(n, v)| format!("{} {v}", esc(n))).collect();
+                html.push_str(&format!("<p class=\"discret\">Égalités de Volonté départagées au D66 : {}</p>", d.join(", ")));
+            }
+        }
+        None => html.push_str("<p class=\"sous-titre\">Initiative non tirée</p>"),
+    }
+    html.push_str("<h3>Actions du tour</h3>");
+    html.push_str(&actions_du_tour(dernier));
+    let passes: Vec<&TourDeCombat> = combat.tours.iter().rev().skip(1).collect();
+    for tour in passes {
+        let titre = if tour.initiative.is_some() { format!("Tour {}", tour.numero) } else { "Avant l'initiative".to_string() };
+        html.push_str(&format!(
+            "<details class=\"tour-passe\"><summary>{titre} · {} action(s)</summary>{}</details>",
+            tour.actions.len(),
+            actions_du_tour(tour)
+        ));
+    }
+    html
+}
+
+/// La page de jeu : table UM (action en attente ou dernier jet) et combat en cours.
+pub fn partie(
+    resolution: Option<&EvenementDate>,
+    jets_recents: &[EvenementDate],
+    combat_en_cours: Option<&Combat>,
+    personnages: &[Personnage],
+) -> String {
+    let mut html = String::from("<h1>Partie</h1><h2>Table UM</h2>");
+    match resolution.map(|e| &e.evenement) {
+        Some(Evenement::Attente { libelle, action }) => {
+            html.push_str(&format!(
+                "<section class=\"carte\"><strong>{}</strong>\
+                 <div><span class=\"pastille\">En attente du décalage</span> <span class=\"discret\">{} · ligne {}</span></div>",
+                esc(libelle),
+                texte_colonnes(action),
+                niveau_texte(action.niveau.valeur()),
+            ));
+            html.push_str(&table_um(action));
+            html.push_str("<p class=\"discret\">Annoncer le décalage de colonnes dans le chat avant le jet :</p>");
+            html.push_str(&tableau_decalages(action));
+            html.push_str("</section>");
+        }
+        Some(Evenement::Jets { jets }) => {
+            html.push_str("<div class=\"grille\" style=\"grid-template-columns:1fr\">");
+            for j in jets {
+                html.push_str(&jet_detaille(j));
+            }
+            html.push_str("</div>");
+        }
+        _ => html.push_str("<p class=\"discret\">Aucun jet pour l'instant.</p>"),
+    }
+
+    if jets_recents.len() > 1 {
+        html.push_str("<h3>Jets récents</h3><div class=\"carte\">");
+        for e in jets_recents.iter().rev() {
+            if let Evenement::Jets { jets } = &e.evenement {
+                for j in jets {
+                    let r = &j.jet;
+                    html.push_str(&format!(
+                        "<div class=\"jet-compact\"><span>{}</span><span class=\"discret\">{}</span>\
+                         <span>D666 {} ({})</span><span class=\"verdict {}\">{}</span><span>unités {}</span></div>",
+                        esc(&j.libelle),
+                        texte_colonnes(&j.action),
+                        r.jet.valeur(),
+                        texte_seuil(r.seuil),
+                        if r.reussi { "reussi" } else { "rate" },
+                        if r.reussi { "réussi" } else { "raté" },
+                        r.unites,
+                    ));
+                }
+            }
+        }
+        html.push_str("</div>");
+    }
+
+    match combat_en_cours {
+        Some(c) => html.push_str(&combat(c, personnages)),
+        None => html.push_str("<h2>Combat</h2><p class=\"discret\">Aucun combat en cours.</p>"),
+    }
+    page("Partie", &html)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -533,6 +807,104 @@ mod tests {
         assert!(html.contains("Second &lt;b&gt;"));
         assert!(html.contains("<a href=\"/personnage/jean-de-lavenue\">Jean De Lavenue</a>"));
         assert!(html.contains("2026-10-25"));
+    }
+
+    fn action_ag5_niveau1(decalage: i32) -> Action {
+        Action::new(Caracteristique::new(5).unwrap(), NiveauTalent::new(1).unwrap()).avec_modificateur(decalage)
+    }
+
+    #[test]
+    fn la_table_um_met_en_evidence_la_ligne_la_colonne_et_la_case() {
+        let html = table_um(&action_ag5_niveau1(-2)); // base 13, finale 11
+        assert_eq!(html.matches("lu\">").count(), 1, "une seule case lue");
+        assert!(html.contains("<td class=\"col-fin lu\">62</td>"), "ligne +1, colonne 11 : {html}");
+        assert!(html.contains("<th class=\"col-base\">5</th>"), "colonne de la caractéristique");
+        assert!(html.contains("<tr class=\"ligne\"><th class=\"rang\">+1</th>"));
+        assert_eq!(html.matches("<tr class=\"ligne\">").count(), 1);
+        assert_eq!(texte_colonnes(&action_ag5_niveau1(-2)), "colonne de base 13 → colonne 11 (décalage -2)");
+        assert_eq!(texte_colonnes(&action_ag5_niveau1(0)), "colonne 13");
+    }
+
+    #[test]
+    fn une_colonne_hors_table_ne_surligne_aucune_case() {
+        let html = table_um(&action_ag5_niveau1(9)); // colonne 22 : réussite automatique
+        assert!(!html.contains("lu\">") && !html.contains("col-fin"));
+    }
+
+    #[test]
+    fn partie_sans_rien_a_afficher() {
+        let html = partie(None, &[], None, &[]);
+        assert!(html.contains("Aucun jet pour l'instant") && html.contains("Aucun combat en cours"));
+    }
+
+    #[test]
+    fn partie_action_en_attente_propose_les_decalages() {
+        let attente = EvenementDate {
+            id: 1,
+            horodatage: 0,
+            evenement: Evenement::Attente { libelle: "Jean <b>".into(), action: action_ag5_niveau1(0) },
+        };
+        let html = partie(Some(&attente), &[], None, &[]);
+        assert!(html.contains("En attente du décalage"));
+        assert!(html.contains("Jean &lt;b&gt;"), "libellé échappé");
+        // Colonnes -3 à +3 autour de 13 ; le décalage 0 est marqué.
+        assert!(html.contains("<th class=\"actuel\">0</th>") && html.contains("<th>-3</th>") && html.contains("<th>+3</th>"));
+        assert!(html.contains("<td>10</td>") && html.contains("<td>16</td>"));
+    }
+
+    fn jet(v: u16, decalage: i32) -> JetUm {
+        let action = action_ag5_niveau1(decalage);
+        JetUm {
+            libelle: "Jean : Esquive".into(),
+            action,
+            jet: insmv_regles::evaluer(&action, insmv_regles::D666::depuis_valeur(v).unwrap()),
+        }
+    }
+
+    #[test]
+    fn partie_jet_resolu_et_historique() {
+        let resolu = |id, v| EvenementDate { id, horodatage: 0, evenement: Evenement::Jets { jets: vec![jet(v, -2)] } };
+        let (ancien, recent) = (resolu(1, 666), resolu(2, 111));
+        let html = partie(Some(&recent), &[ancien, recent.clone()], None, &[]);
+        assert!(html.contains("colonne de base 13 → colonne 11 (décalage -2)"));
+        assert!(html.contains("D666 = <b>111</b>") && html.contains("contre ≤ 62"));
+        assert!(html.contains("verdict reussi\">RÉUSSI"));
+        assert!(html.contains("Jets récents") && html.contains("verdict rate\">raté"));
+    }
+
+    #[test]
+    fn partie_combat_ordre_coches_etats_et_tours_passes() {
+        use insmv_campagne::ActionCombat;
+        use insmv_regles::combat::Initiative;
+        let mut blesse = jean();
+        blesse.dommages = 3;
+        let initiative = Initiative {
+            psychique: vec![Rang { valeur: 4, personnages: vec!["Jean De Lavenue".into()] }],
+            physique: vec![
+                Rang { valeur: 5, personnages: vec!["Jean De Lavenue".into()] },
+                Rang { valeur: 2, personnages: vec!["Zombi".into(), "Rat".into()] },
+            ],
+            hors_combat: vec!["Garde".into()],
+            departages: vec![],
+        };
+        let acte = |qui: &str, texte: &str| ActionCombat { acteur: qui.into(), cible: None, resume: texte.into() };
+        let combat_ = Combat {
+            tours: vec![
+                TourDeCombat { numero: 1, initiative: Some(initiative.clone()), actions: vec![acte("Zombi", "tour un <i>")] },
+                TourDeCombat { numero: 2, initiative: Some(initiative), actions: vec![acte("Jean De Lavenue", "Jean frappe")] },
+            ],
+        };
+        let html = partie(None, &[], Some(&combat_), &[blesse]);
+        assert!(html.contains("Tour 2"));
+        assert!(html.contains("Phase psychique") && html.contains("Phase physique"));
+        let jean_ordre = html.find("<b>Jean De Lavenue</b> <span class=\"fait\"").expect("Jean a agi");
+        assert!(jean_ordre < html.find("Zombi").unwrap(), "ordre d'agilité");
+        assert!(html.contains("PP 5/7") || html.contains("dommages 3"), "état courant de la fiche");
+        assert!(html.contains("(simultanés)"));
+        assert!(html.contains("Hors d'état d'agir"));
+        assert!(html.contains("<div class=\"acte\">Jean frappe</div>"));
+        assert!(html.contains("<summary>Tour 1 · 1 action(s)</summary>") && html.contains("tour un &lt;i&gt;"));
+        assert!(!html.contains("Zombi</b> <span class=\"fait\""), "Zombi n'a pas agi au tour 2");
     }
 
     #[test]
