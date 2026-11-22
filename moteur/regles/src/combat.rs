@@ -54,6 +54,9 @@ pub enum Circonstance {
     AttaquantPlusBas,
     /// Attaquant en surplomb : +1 au contact.
     AttaquantPlusHaut,
+    /// Espace confiné (arrière d'une camionnette, couloir étroit) : -1 au contact, -1 de plus
+    /// pour une arme de contact lourde. Règle maison D-018, sans effet à distance.
+    EspaceConfine,
 }
 
 impl Circonstance {
@@ -77,6 +80,7 @@ impl Circonstance {
             (Voiture, Distance) => 2,
             (AttaquantPlusBas, Contact) => -1,
             (AttaquantPlusHaut, Contact) => 1,
+            (EspaceConfine, Contact) => -1,
             _ => 0,
         }
     }
@@ -185,6 +189,11 @@ pub struct ParamsAttaque {
     pub armure_defenseur: Option<String>,
     /// Protection supplémentaire (bouclier, pouvoir...), en points.
     pub protection_supplementaire: i32,
+    /// Le joueur déclare vouloir tuer : pas de neutralisation (D-017).
+    pub tuer: bool,
+    /// Niveau du pouvoir Invisibilité (261) de la cible quand elle est invisible mais localisée :
+    /// malus de 1 + niveau colonnes à l'attaquant (D-018, livre).
+    pub invisibilite: Option<u8>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -204,6 +213,11 @@ pub struct DetailDommages {
     pub protection: i32,
     /// Dommages infligés, jamais négatifs.
     pub total: u32,
+    /// Vrai si l'attaque est neutralisante (D-017) : les dommages appliqués sont plafonnés à
+    /// l'évanouissement, jamais coma ni mort.
+    pub neutralise: bool,
+    /// Dommages réellement appliqués (égaux à `total` sauf neutralisation).
+    pub appliques: u32,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -228,7 +242,7 @@ impl ResultatAttaque {
         if self.arbitrage_mj {
             0
         } else {
-            self.dommages.as_ref().map_or(0, |d| d.total)
+            self.dommages.as_ref().map_or(0, |d| d.appliques)
         }
     }
 }
@@ -254,6 +268,24 @@ fn ajustement_armure(armure: Option<&Protection>, carac: Carac) -> i32 {
         (Some(p), Carac::AG) => p.ajustement,
         _ => 0,
     }
+}
+
+/// Règle maison « neutraliser » (D-017) : un Ange ou son partenaire qui frappe une cible à table
+/// de blessures humaine (humain, Serviteur, Soldat) sans vouloir la tuer l'assomme au plus.
+/// Les créatures surnaturelles et les attaques d'un PNJ ennemi prennent des dommages normaux.
+pub fn neutralisante(att: &Personnage, def: &Personnage, tuer: bool) -> bool {
+    use crate::personnage::{Espece, Role};
+    !tuer
+        && matches!(att.role, Role::Joueur | Role::Partenaire)
+        && matches!(def.espece, Espece::Humain | Espece::Serviteur | Espece::Soldat)
+}
+
+/// Dommages qu'une cible peut encore subir avant d'être assommée (0 si elle l'est déjà).
+pub fn marge_avant_evanouissement(def: &Personnage) -> u32 {
+    let regime = def.espece.regime_blessures();
+    let Some(seuil) = regime.seuil_assomme else { return u32::MAX };
+    let capacite = (i32::from(def.caracteristiques.fo) - seuil) * regime.dommages_par_point_de_force as i32;
+    (capacite - def.dommages as i32).max(0) as u32
 }
 
 pub fn resoudre_attaque(
@@ -299,7 +331,16 @@ pub fn resoudre_attaque(
         .or_else(|| carac_talent_combat(&p.talent))
         .ok_or_else(|| format!("caractéristique de « {} » inconnue : la préciser", p.talent))?;
     let armure_att = armure(&p.armure_attaquant)?;
-    let colonnes_circonstances: i32 = p.circonstances.iter().map(|c| c.colonnes(type_attaque)).sum();
+    let mut colonnes_circonstances: i32 = p.circonstances.iter().map(|c| c.colonnes(type_attaque)).sum();
+    if p.circonstances.contains(&Circonstance::EspaceConfine)
+        && type_attaque == TypeAttaque::Contact
+        && catalogue::normaliser(&p.talent) == "arme de contact lourde"
+    {
+        colonnes_circonstances -= 1;
+    }
+    if let Some(niveau) = p.invisibilite {
+        colonnes_circonstances -= 1 + i32::from(niveau);
+    }
     let modificateur_att =
         colonnes_circonstances + precision + ajustement_armure(armure_att, carac_att) + p.modificateur;
     let demande_att = DemandeTest {
@@ -381,12 +422,11 @@ pub fn resoudre_attaque(
         notes.extend(a.notes.iter().map(|n| format!("{} ({}) : {}", a.nom, n.id, n.texte)));
     }
     let bonus = bonus_force(att.caracteristiques.fo, type_attaque);
-    let dommages = unites_finales.map(|unites| DetailDommages {
-        unites,
-        puissance,
-        bonus_force: bonus,
-        protection,
-        total: (i32::from(unites) + puissance + bonus - protection).max(0) as u32,
+    let neutralise = neutralisante(att, def, p.tuer);
+    let dommages = unites_finales.map(|unites| {
+        let total = (i32::from(unites) + puissance + bonus - protection).max(0) as u32;
+        let appliques = if neutralise { total.min(marge_avant_evanouissement(def)) } else { total };
+        DetailDommages { unites, puissance, bonus_force: bonus, protection, total, neutralise, appliques }
     });
     let arbitrage_mj = issue.action_reussie().is_none();
 
@@ -486,6 +526,7 @@ mod tests {
             pouvoirs: vec![],
             patron: None,
             pp: None,
+            pp_max_scenario: None,
             dommages: 0,
             equipement: vec![],
             notes: String::new(),
@@ -538,6 +579,7 @@ mod tests {
             (Voiture, 1, 2),
             (AttaquantPlusBas, -1, 0),
             (AttaquantPlusHaut, 1, 0),
+            (EspaceConfine, -1, 0),
         ];
         for (c, contact, distance) in attendu {
             assert_eq!((c.colonnes(C), c.colonnes(D)), (contact, distance), "{c:?}");
@@ -826,5 +868,93 @@ mod tests {
         let i = initiative(&[a, b], &mut SequenceDes::new([]));
         assert_eq!(i.hors_combat, ["Mort"]);
         assert_eq!(i.physique.len(), 1);
+    }
+
+    // ---- règle maison « neutraliser » (D-017), invisibilité et espace confiné (D-018) ----
+
+    fn jean_joueur() -> Personnage {
+        let mut j = jean();
+        j.role = Role::Joueur;
+        j
+    }
+
+    /// Touche (116 : 6 unités), défense ratée (666) : 6 + 2 + 1 + 1 = 10 dommages.
+    const COUP_QUI_TUE: [u8; 6] = [1, 1, 6, 6, 6, 6];
+
+    #[test]
+    fn neutraliser_plafonne_a_levanouissement() {
+        let (jean, victime) = (jean_joueur(), victime());
+        let r = lancer(&jean, &victime, &epee(), &COUP_QUI_TUE);
+        let d = r.dommages.clone().unwrap();
+        assert_eq!((d.total, d.appliques, d.neutralise), (10, 2, true), "humain FO2 : assommé à 2 dommages");
+        assert_eq!(r.dommages_a_appliquer(), 2);
+
+        // Intention de tuer déclarée : dommages normaux.
+        let tuer = ParamsAttaque { tuer: true, ..epee() };
+        let d = lancer(&jean, &victime, &tuer, &COUP_QUI_TUE).dommages.unwrap();
+        assert_eq!((d.appliques, d.neutralise), (10, false));
+
+        // Cible déjà assommée : plafond nul.
+        let mut assommee = victime.clone();
+        assommee.dommages = 2;
+        assert_eq!(lancer(&jean, &assommee, &epee(), &COUP_QUI_TUE).dommages.unwrap().appliques, 0);
+        // Un blessé n'a plus que sa marge restante.
+        let mut blessee = victime.clone();
+        blessee.dommages = 1;
+        assert_eq!(lancer(&jean, &blessee, &epee(), &COUP_QUI_TUE).dommages.unwrap().appliques, 1);
+    }
+
+    #[test]
+    fn neutraliser_ne_vise_que_les_humains_et_les_attaquants_de_l_equipe() {
+        let demon = perso("Demon", Espece::Demon, (3, 3, 4, 3, 1, 2), &[("Esquive", 0)]);
+        let d = lancer(&jean_joueur(), &demon, &epee(), &COUP_QUI_TUE).dommages.unwrap();
+        assert!(!d.neutralise && d.appliques == d.total, "surnaturel : dommages normaux");
+
+        // Un PNJ ennemi ne neutralise pas ; un partenaire neutralise.
+        let d = lancer(&jean(), &victime(), &epee(), &COUP_QUI_TUE).dommages.unwrap();
+        assert!(!d.neutralise && d.appliques == 10);
+        let mut partenaire = jean();
+        partenaire.role = Role::Partenaire;
+        assert!(lancer(&partenaire, &victime(), &epee(), &COUP_QUI_TUE).dommages.unwrap().neutralise);
+        for espece in [Espece::Serviteur, Espece::Soldat] {
+            let cible = perso("Cible", espece, (2, 2, 2, 2, 2, 2), &[("Esquive", 0)]);
+            assert!(lancer(&jean_joueur(), &cible, &epee(), &COUP_QUI_TUE).dommages.unwrap().neutralise, "{espece:?}");
+        }
+    }
+
+    #[test]
+    fn invisibilite_malus_1_plus_niveau() {
+        let (jean, victime) = (jean(), victime());
+        let colonne = |p: &ParamsAttaque| lancer(&jean, &victime, p, &COUP_QUI_TUE).attaque.action.colonne();
+        let base = colonne(&epee());
+        assert_eq!(base - colonne(&ParamsAttaque { invisibilite: Some(0), ..epee() }), 1, "niveau 0 : -1");
+        assert_eq!(base - colonne(&ParamsAttaque { invisibilite: Some(1), ..epee() }), 2, "niveau +1 : -2");
+    }
+
+    #[test]
+    fn espace_confine_malus_au_contact_et_plus_pour_les_armes_lourdes() {
+        let (jean, victime) = (jean(), victime());
+        let colonne = |p: &ParamsAttaque| lancer(&jean, &victime, p, &COUP_QUI_TUE).attaque.action.colonne();
+        let confine = vec![Circonstance::EspaceConfine];
+        assert_eq!(colonne(&epee()) - colonne(&ParamsAttaque { circonstances: confine.clone(), ..epee() }), 1);
+        // Arme de contact lourde : -2 au total (Hache à deux mains : même arme, talent lourd).
+        let lourde = ParamsAttaque { talent: "Arme de contact lourde".into(), puissance: Some(3), ..Default::default() };
+        let jean_lourd = perso("Jean", Espece::Ange, (4, 2, 4, 3, 5, 2), &[("Arme de contact lourde", 1)]);
+        let colonne = |p: &ParamsAttaque| lancer(&jean_lourd, &victime, p, &COUP_QUI_TUE).attaque.action.colonne();
+        assert_eq!(colonne(&lourde) - colonne(&ParamsAttaque { circonstances: confine, ..lourde.clone() }), 2);
+        // Sans effet à distance.
+        let tir = ParamsAttaque { talent: "Arme de poing".into(), puissance: Some(1), ..Default::default() };
+        let tireur = perso("Tireur", Espece::Humain, (2, 2, 2, 2, 2, 2), &[("Arme de poing", 1)]);
+        let c = |p: &ParamsAttaque| lancer(&tireur, &victime, p, &COUP_QUI_TUE).attaque.action.colonne();
+        assert_eq!(c(&tir), c(&ParamsAttaque { circonstances: vec![Circonstance::EspaceConfine], ..tir.clone() }));
+    }
+
+    #[test]
+    fn attaque_neutralisante_visible_dans_les_griffes_de_goule_maison() {
+        // Les armes « maison » sont utilisables comme celles du livre.
+        let goule = perso("Goule", Espece::MortVivant, (2, 2, 1, 2, 3, 2), &[("Corps à corps", 2)]);
+        let p = ParamsAttaque { talent: "Corps à corps".into(), arme: Some("Griffes de goule".into()), ..Default::default() };
+        let r = lancer(&goule, &victime(), &p, &COUP_QUI_TUE);
+        assert_eq!(r.dommages.unwrap().puissance, 1);
     }
 }

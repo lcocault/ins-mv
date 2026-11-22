@@ -1,0 +1,69 @@
+{
+ "armes": [
+  {
+   "nom": "Revolver cal.38",
+   "categorie": "distance",
+   "puissance": 1,
+   "puissance_speciale": false,
+   "puissance_rafale": null,
+   "precision": 0,
+   "portee": 12,
+   "coups": "6",
+   "talent": "Arme de poing",
+   "notes": [],
+   "maison": true
+  },
+  {
+   "nom": "Pistolet automatique",
+   "categorie": "distance",
+   "puissance": 1,
+   "puissance_speciale": false,
+   "puissance_rafale": null,
+   "precision": 0,
+   "portee": 15,
+   "coups": "15",
+   "talent": "Arme de poing",
+   "notes": [],
+   "maison": true
+  },
+  {
+   "nom": "Griffes de goule",
+   "categorie": "contact",
+   "puissance": 1,
+   "puissance_speciale": false,
+   "puissance_rafale": null,
+   "precision": 0,
+   "portee": null,
+   "coups": null,
+   "talent": "Corps à corps",
+   "notes": [
+    {
+     "id": "m",
+     "texte": "Puissance imprimée du profil des goules, squelettes et profils du livre : la note a du coup de poing (Corps à corps +2) ne s'y ajoute pas."
+    }
+   ],
+   "maison": true
+  }
+ ],
+ "talents": [
+  {"nom": "Déguisement", "categorie": "Ruse", "malus": -2, "caracteristiques": ["PR"], "maison": true},
+  {"nom": "Intimidation", "categorie": "Communication", "malus": -2, "caracteristiques": ["VO", "FO"], "maison": true},
+  {"nom": "Fouille", "categorie": "Ruse", "malus": -1, "caracteristiques": ["PE"], "maison": true},
+  {"nom": "Observation", "categorie": "Ruse", "malus": -1, "caracteristiques": ["PE"], "maison": true}
+ ],
+ "pouvoirs": [
+  {
+   "livre": "demon",
+   "code": null,
+   "nom": "Suicide",
+   "famille": "Spécial",
+   "categorie": "Spécial (Furfur, Prince du hard-core)",
+   "attaque": "VO",
+   "defense": "VO",
+   "cout": "8",
+   "jet": "VO",
+   "description": "Pouvoir privilégié de Furfur (scénario Hardcore-Holocauste). Pour 8 PP, hypnotise un être humain et lui implante un ordre dont il ne se souviendra pas avant le suicide. Cet ordre doit comporter le suicide de la victime, mais pas obligatoirement toute seule (elle peut, par exemple, se jeter d'une fenêtre avec un autre humain ou se faire sauter avec une bombe ou une grenade). La victime peut tenter de résister avec un jet de Volonté et le résultat des unités du jet d'attaque donne le nombre maximum de jours entre l'hypnose et le suicide.",
+   "maison": true
+  }
+ ]
+}

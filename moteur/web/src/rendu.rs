@@ -1,13 +1,15 @@
 //! Rendu HTML des pages. Fonctions pures : données en entrée, texte en sortie.
 //! Tout texte provenant des fiches ou du journal passe par [`esc`].
 
-use insmv_campagne::{Combat, EntreeJournal, Evenement, EvenementDate, JetUm, TourDeCombat};
+use insmv_campagne::{Combat, Connaissance, EntreeJournal, Evenement, EvenementDate, JetUm, TourDeCombat};
 use insmv_regles::blessures::EtatSante;
 use insmv_regles::catalogue::{self, Livre};
 use insmv_regles::combat::Rang;
 use insmv_regles::personnage::{Carac, Espece, Personnage, Role};
 use insmv_regles::table_um::{caracteristique_de_la_colonne, lignes, NB_COLONNES};
 use insmv_regles::{Action, Caracteristique, NiveauTalent, Seuil};
+
+use crate::vue::{Masque, Vue};
 
 /// Échappe le texte pour l'insérer dans du HTML (contenu et attributs).
 pub fn esc(texte: &str) -> String {
@@ -125,6 +127,10 @@ form.filtres input,form.filtres select,form.filtres button{font:inherit;padding:
 .acte{border-left:3px solid var(--accent);padding:2px 0 2px 10px;margin:0 0 8px;white-space:pre-line}
 details.tour-passe{margin:8px 0}
 details.tour-passe summary{cursor:pointer;color:var(--discret)}
+form.lancer .actions{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+form.lancer button{font:inherit;padding:8px 12px;border:1px solid var(--accent);border-radius:6px;background:var(--accent-fond);color:var(--texte);cursor:pointer;text-align:left}
+form.lancer button:hover{background:var(--accent);color:var(--carte)}
+.de-lance{font-size:20px}
 @media (max-width:520px){main{padding:12px}h1{font-size:24px}}
 "#;
 
@@ -159,7 +165,7 @@ pub fn page(titre: &str, contenu: &str) -> String {
 </head>
 <body>
 <header class="site">
-<nav><a href="/partie">Partie</a><a href="/">Personnages</a><a href="/journal">Journal</a></nav>
+<nav><a href="/partie">Partie</a><a href="/">Personnages</a><a href="/lieux">Lieux</a><a href="/journal">Journal</a></nav>
 <label><input type="checkbox" id="auto"> Actualiser toutes les 5 s</label>
 </header>
 <main>
@@ -179,15 +185,18 @@ pub fn page_erreur(statut: &str, message: &str) -> String {
 
 // ---- Liste ---------------------------------------------------------------------
 
-pub fn liste(personnages: &[Personnage]) -> String {
-    if personnages.is_empty() {
+/// Une personne que le joueur a rencontrée : identifiant, nom connu, nombre de choses apprises.
+pub type Rencontre = (String, String, usize);
+
+pub fn accueil(equipe: &[Personnage], rencontres: &[Rencontre]) -> String {
+    if equipe.is_empty() && rencontres.is_empty() {
         return page(
             "Personnages",
             "<h1>Personnages</h1><p class=\"discret\">Aucun personnage dans la campagne pour l'instant.</p>",
         );
     }
-    let mut html = String::from("<h1>Personnages</h1><ul class=\"liste-persos\">");
-    for p in personnages {
+    let mut html = String::from("<h1>Mon équipe</h1><ul class=\"liste-persos\">");
+    for p in equipe {
         html.push_str(&format!(
             "<li><a class=\"carte\" href=\"/personnage/{id}\"><strong>{nom}</strong>\
              <div class=\"discret\">{espece} · {role}</div>\
@@ -201,8 +210,54 @@ pub fn liste(personnages: &[Personnage]) -> String {
             dom = p.dommages,
         ));
     }
-    html.push_str("</ul>");
+    html.push_str("</ul><h2>Personnes rencontrées</h2>");
+    if rencontres.is_empty() {
+        html.push_str("<p class=\"discret\">Personne pour l'instant.</p>");
+    } else {
+        html.push_str("<ul class=\"liste-persos\">");
+        for (id, nom, n) in rencontres {
+            html.push_str(&format!(
+                "<li><a class=\"carte\" href=\"/personnage/{}\"><strong>{}</strong>\
+                 <div class=\"discret\">{n} information(s)</div></a></li>",
+                esc(id),
+                esc(nom)
+            ));
+        }
+        html.push_str("</ul>");
+    }
     page("Personnages", &html)
+}
+
+/// Ce que le joueur sait d'un personnage hors de son équipe : rien de la fiche.
+pub fn fiche_connue(nom: &str, connaissances: &[Connaissance]) -> String {
+    let mut html = format!("<h1>{}</h1><p class=\"sous-titre\">Ce que vous savez</p>", esc(nom));
+    for k in connaissances {
+        html.push_str(&format!(
+            "<article class=\"carte entree\"><div class=\"meta\">{}</div><div class=\"notes\">{}</div></article>",
+            date_utc(k.horodatage),
+            esc(&k.texte)
+        ));
+    }
+    page(nom, &html)
+}
+
+/// Les lieux connus du joueur : nom connu et ce qu'il en sait.
+pub fn lieux(lieux: &[(String, Vec<Connaissance>)]) -> String {
+    let mut html = String::from("<h1>Lieux</h1>");
+    if lieux.is_empty() {
+        html.push_str("<p class=\"discret\">Aucun lieu connu pour l'instant.</p>");
+    }
+    for (nom, infos) in lieux {
+        html.push_str(&format!("<h2>{}</h2>", esc(nom)));
+        for k in infos {
+            html.push_str(&format!(
+                "<article class=\"carte entree\"><div class=\"meta\">{}</div><div class=\"notes\">{}</div></article>",
+                date_utc(k.horodatage),
+                esc(&k.texte)
+            ));
+        }
+    }
+    page("Lieux", &html)
 }
 
 // ---- Fiche ---------------------------------------------------------------------
@@ -245,7 +300,7 @@ pub fn fiche(p: &Personnage) -> String {
     let part = if pp_max == 0 { 0 } else { pp * 100 / pp_max };
     let recup = match budget.heures_par_pp {
         Some(_) if matches!(p.espece, Espece::Ange | Espece::Demon) => {
-            "récupération : selon le barème du patron, et 1 PP par 24 h de repos complet".to_string()
+            "récupération : selon le barème du patron (1 PP par 24 h de repos complet à défaut)".to_string()
         }
         Some(h) => format!("récupération : 1 PP toutes les {h} h (et 1 PP par 24 h de repos complet)"),
         None => "aucun point de pouvoir".to_string(),
@@ -384,11 +439,11 @@ pub struct FiltresAffiches {
 
 pub fn journal(
     entrees: &[EntreeJournal],
-    noms_par_id: &dyn Fn(&str) -> String,
-    personnages: &[Personnage],
+    nom_par_id: &dyn Fn(&str) -> Option<String>,
+    choix_personnages: &[(String, String)],
     filtres: &FiltresAffiches,
 ) -> String {
-    let mut html = String::from("<h1>Journal de campagne</h1><form class=\"filtres\" method=\"get\" action=\"/journal\">");
+    let mut html = String::from("<h1>Journal</h1><p class=\"sous-titre\">Ce que vous avez vécu.</p><form class=\"filtres\" method=\"get\" action=\"/journal\">");
     html.push_str(&format!(
         "<input name=\"seance\" placeholder=\"Séance\" value=\"{}\" aria-label=\"Séance\">\
          <input name=\"categorie\" placeholder=\"Catégorie\" value=\"{}\" aria-label=\"Catégorie\">\
@@ -398,9 +453,9 @@ pub fn journal(
         esc(&filtres.categorie),
         esc(&filtres.contient)
     ));
-    for p in personnages {
-        let choisi = if p.id == filtres.personnage { " selected" } else { "" };
-        html.push_str(&format!("<option value=\"{}\"{choisi}>{}</option>", esc(&p.id), esc(&p.nom)));
+    for (id, nom) in choix_personnages {
+        let choisi = if *id == filtres.personnage { " selected" } else { "" };
+        html.push_str(&format!("<option value=\"{}\"{choisi}>{}</option>", esc(id), esc(nom)));
     }
     html.push_str("</select><button type=\"submit\">Filtrer</button></form>");
 
@@ -409,7 +464,12 @@ pub fn journal(
     }
     // Plus récentes d'abord.
     for e in entrees.iter().rev() {
-        let qui: Vec<String> = e.personnages.iter().map(|id| format!("<a href=\"/personnage/{}\">{}</a>", esc(id), esc(&noms_par_id(id)))).collect();
+        // Un personnage que le joueur ne connaît pas encore n'apparaît pas, même par son identifiant.
+        let qui: Vec<String> = e
+            .personnages
+            .iter()
+            .filter_map(|id| nom_par_id(id).map(|nom| format!("<a href=\"/personnage/{}\">{}</a>", esc(id), esc(&nom))))
+            .collect();
         let mut meta = vec![date_utc(e.horodatage)];
         if !e.seance.is_empty() {
             meta.push(esc(&e.seance));
@@ -488,29 +548,32 @@ fn texte_colonnes(action: &Action) -> String {
     }
 }
 
-fn jet_detaille(j: &JetUm) -> String {
+fn jet_detaille(j: &JetUm, masque: &Masque) -> String {
     let r = &j.jet;
+    let de_l_equipe = masque.jet_de_l_equipe(&j.libelle);
     let verdict = if r.reussi {
         "<span class=\"verdict reussi\">RÉUSSI</span>"
     } else {
         "<span class=\"verdict rate\">RATÉ</span>"
     };
-    let mut html = format!(
-        "<section class=\"carte\"><strong>{}</strong><div class=\"discret\">{} · ligne {}</div>",
-        esc(&j.libelle),
-        texte_colonnes(&j.action),
-        niveau_texte(j.action.niveau.valeur()),
-    );
-    html.push_str(&table_um(&j.action));
+    let mut html = format!("<section class=\"carte\"><strong>{}</strong>", esc(&masque.libelle(&j.libelle)));
+    if de_l_equipe {
+        html.push_str(&format!(
+            "<div class=\"discret\">{} · ligne {}</div>",
+            texte_colonnes(&j.action),
+            niveau_texte(j.action.niveau.valeur()),
+        ));
+        html.push_str(&table_um(&j.action));
+    }
+    let contre = if de_l_equipe { format!(" contre {}", texte_seuil(r.seuil)) } else { String::new() };
     html.push_str(&format!(
-        "<div>D666 = <b>{}</b> (xy {}, z {}) contre {} : {verdict} · unités <b>{}</b></div>",
+        "<div>D666 = <b>{}</b> (xy {}, z {}){contre} : {verdict} · unités <b>{}</b></div>",
         r.jet.valeur(),
         r.jet.xy(),
         r.jet.z,
-        texte_seuil(r.seuil),
         r.unites,
     ));
-    if !matches!(r.seuil, Seuil::Valeur(_)) {
+    if de_l_equipe && !matches!(r.seuil, Seuil::Valeur(_)) {
         html.push_str("<div class=\"discret\">Colonne hors de la table : aucun jet ne compte.</div>");
     }
     html.push_str("</section>");
@@ -536,39 +599,43 @@ fn tableau_decalages(action: &Action) -> String {
     )
 }
 
-fn etat_du_personnage(p: &Personnage) -> String {
+fn etat_du_personnage(p: &Personnage, complet: bool) -> String {
     let (etat, classe) = match p.sante().etat {
         EtatSante::Valide => ("Valide", ""),
         EtatSante::Inconscient => ("Inconscient", " alerte"),
         EtatSante::Coma => ("Dans le coma", " alerte"),
         EtatSante::Mort => ("Mort", " alerte"),
     };
-    format!(
-        "<span class=\"discret\">PP {}/{} · dommages {}</span> <span class=\"pastille{classe}\">{etat}</span>",
-        p.pp_courants(),
-        p.pp_max(),
-        p.dommages
-    )
+    let chiffres = if complet {
+        format!("<span class=\"discret\">PP {}/{} · dommages {}</span> ", p.pp_courants(), p.pp_max(), p.dommages)
+    } else {
+        String::new()
+    };
+    format!("{chiffres}<span class=\"pastille{classe}\">{etat}</span>")
 }
 
-/// Un nom du tour, avec son état actuel et une coche s'il a déjà agi.
-fn participant(nom: &str, personnages: &[Personnage], a_agi: &dyn Fn(&str) -> bool) -> String {
+/// Un nom du tour, avec son état actuel et une coche s'il a déjà agi. Seuls l'équipe du joueur
+/// montre PP et dommages : pour les autres, on ne voit que l'état apparent.
+fn participant(nom: &str, vue: &Vue, masque: &Masque, a_agi: &dyn Fn(&str) -> bool) -> String {
     let coche = if a_agi(nom) { " <span class=\"fait\" title=\"a déjà agi ce tour\">✓</span>" } else { "" };
-    let etat = personnages
+    let etat = vue
+        .equipe
         .iter()
-        .find(|p| p.nom == nom)
-        .map(|p| format!(" {}", etat_du_personnage(p)))
+        .map(|p| (p, true))
+        .chain(vue.autres.iter().map(|p| (p, false)))
+        .find(|(p, _)| p.nom == nom)
+        .map(|(p, complet)| format!(" {}", etat_du_personnage(p, complet)))
         .unwrap_or_default();
-    format!("<b>{}</b>{coche}{etat}", esc(nom))
+    format!("<b>{}</b>{coche}{etat}", esc(&masque.texte(nom)))
 }
 
-fn liste_rangs(titre: &str, rangs: &[Rang], personnages: &[Personnage], a_agi: &dyn Fn(&str) -> bool) -> String {
+fn liste_rangs(titre: &str, rangs: &[Rang], vue: &Vue, masque: &Masque, a_agi: &dyn Fn(&str) -> bool) -> String {
     if rangs.is_empty() {
         return String::new();
     }
     let mut html = format!("<h3>{titre}</h3><ol class=\"ordre\">");
     for r in rangs {
-        let noms: Vec<String> = r.personnages.iter().map(|n| participant(n, personnages, a_agi)).collect();
+        let noms: Vec<String> = r.personnages.iter().map(|n| participant(n, vue, masque, a_agi)).collect();
         let simultane = if noms.len() > 1 { " <span class=\"discret\">(simultanés)</span>" } else { "" };
         html.push_str(&format!("<li><span class=\"discret\">{}</span> · {}{simultane}</li>", r.valeur, noms.join(" ; ")));
     }
@@ -576,73 +643,119 @@ fn liste_rangs(titre: &str, rangs: &[Rang], personnages: &[Personnage], a_agi: &
     html
 }
 
-fn actions_du_tour(tour: &TourDeCombat) -> String {
+fn actions_du_tour(tour: &TourDeCombat, masque: &Masque) -> String {
     if tour.actions.is_empty() {
         return "<p class=\"discret\">Aucune action résolue pour l'instant.</p>".to_string();
     }
-    tour.actions.iter().map(|a| format!("<div class=\"acte\">{}</div>", esc(&a.resume))).collect()
+    tour.actions
+        .iter()
+        .map(|a| format!("<div class=\"acte\">{}</div>", esc(&masque.compte_rendu(&a.resume, a.cible.as_deref()))))
+        .collect()
 }
 
-fn combat(combat: &Combat, personnages: &[Personnage]) -> String {
+fn combat(combat: &Combat, vue: &Vue, masque: &Masque) -> String {
     let dernier = combat.tours.last().expect("un combat a au moins un tour");
     let a_agi = |nom: &str| dernier.actions.iter().any(|a| a.acteur == nom);
     let mut html = String::from("<h2>Combat</h2>");
     match &dernier.initiative {
         Some(init) => {
             html.push_str(&format!("<p class=\"sous-titre\">Tour {}</p>", dernier.numero));
-            html.push_str(&liste_rangs("Phase psychique (Volonté)", &init.psychique, personnages, &a_agi));
-            html.push_str(&liste_rangs("Phase physique (Agilité)", &init.physique, personnages, &a_agi));
+            html.push_str(&liste_rangs("Phase psychique (Volonté)", &init.psychique, vue, masque, &a_agi));
+            html.push_str(&liste_rangs("Phase physique (Agilité)", &init.physique, vue, masque, &a_agi));
             if !init.hors_combat.is_empty() {
-                let noms: Vec<String> = init.hors_combat.iter().map(|n| participant(n, personnages, &|_| false)).collect();
+                let noms: Vec<String> = init.hors_combat.iter().map(|n| participant(n, vue, masque, &|_| false)).collect();
                 html.push_str(&format!("<p class=\"discret\">Hors d'état d'agir : {}</p>", noms.join(", ")));
             }
-            if !init.departages.is_empty() {
-                let d: Vec<String> = init.departages.iter().map(|(n, v)| format!("{} {v}", esc(n))).collect();
+            // Les valeurs d'initiative et les départages révèlent la Volonté des adversaires : seuls
+            // ceux de l'équipe sont affichés.
+            let d: Vec<String> = init
+                .departages
+                .iter()
+                .filter(|(n, _)| masque.est_equipe(n))
+                .map(|(n, v)| format!("{} {v}", esc(n)))
+                .collect();
+            if !d.is_empty() {
                 html.push_str(&format!("<p class=\"discret\">Égalités de Volonté départagées au D66 : {}</p>", d.join(", ")));
             }
         }
         None => html.push_str("<p class=\"sous-titre\">Initiative non tirée</p>"),
     }
     html.push_str("<h3>Actions du tour</h3>");
-    html.push_str(&actions_du_tour(dernier));
+    html.push_str(&actions_du_tour(dernier, masque));
     let passes: Vec<&TourDeCombat> = combat.tours.iter().rev().skip(1).collect();
     for tour in passes {
         let titre = if tour.initiative.is_some() { format!("Tour {}", tour.numero) } else { "Avant l'initiative".to_string() };
         html.push_str(&format!(
             "<details class=\"tour-passe\"><summary>{titre} · {} action(s)</summary>{}</details>",
             tour.actions.len(),
-            actions_du_tour(tour)
+            actions_du_tour(tour, masque)
         ));
     }
     html
 }
 
-/// La page de jeu : table UM (action en attente ou dernier jet) et combat en cours.
+/// Formulaire qui laisse le joueur choisir son malus volontaire (0 à 3 colonnes) et lancer le dé.
+fn formulaire_lancer(action: &Action) -> String {
+    let mut html = String::from(
+        "<form class=\"lancer\" method=\"post\" action=\"/lancer\">\
+         <p class=\"discret\">Un malus volontaire décale la colonne vers la gauche mais s'ajoute aux unités si le jet réussit. \
+         Choisissez-le, lancez le dé, puis dites « lancé » au maître de jeu.</p><div class=\"actions\">",
+    );
+    for n in 0..=3u8 {
+        let decale = action.avec_modificateur(-i32::from(n));
+        html.push_str(&format!(
+            "<button type=\"submit\" name=\"malus\" value=\"{n}\"><b>Lancer{}</b><br>\
+             <span class=\"discret\">colonne {} · {} · {} %</span></button>",
+            if n == 0 { String::new() } else { format!(" avec malus {n} (+{n} unités)") },
+            decale.colonne(),
+            texte_seuil(decale.seuil()),
+            decale.seuil().pourcentage(),
+        ));
+    }
+    html.push_str("</div></form>");
+    html
+}
+
+/// La page de jeu : table UM (action à lancer ou dernier jet) et combat en cours.
 pub fn partie(
     resolution: Option<&EvenementDate>,
     jets_recents: &[EvenementDate],
     combat_en_cours: Option<&Combat>,
-    personnages: &[Personnage],
+    vue: &Vue,
 ) -> String {
+    let masque = vue.masque();
     let mut html = String::from("<h1>Partie</h1><h2>Table UM</h2>");
     match resolution.map(|e| &e.evenement) {
         Some(Evenement::Attente { libelle, action }) => {
             html.push_str(&format!(
                 "<section class=\"carte\"><strong>{}</strong>\
-                 <div><span class=\"pastille\">En attente du décalage</span> <span class=\"discret\">{} · ligne {}</span></div>",
-                esc(libelle),
+                 <div><span class=\"pastille\">À vous de lancer</span> <span class=\"discret\">{} · ligne {}</span></div>",
+                esc(&masque.libelle(libelle)),
                 texte_colonnes(action),
                 niveau_texte(action.niveau.valeur()),
             ));
             html.push_str(&table_um(action));
-            html.push_str("<p class=\"discret\">Annoncer le décalage de colonnes dans le chat avant le jet :</p>");
+            html.push_str(&formulaire_lancer(action));
+            html.push_str("<details><summary class=\"discret\">Ce que donnerait un décalage du MJ</summary>");
             html.push_str(&tableau_decalages(action));
-            html.push_str("</section>");
+            html.push_str("</details></section>");
+        }
+        Some(Evenement::DeJoueur { valeur, malus_volontaire }) => {
+            let malus = if *malus_volontaire == 0 {
+                "sans malus volontaire".to_string()
+            } else {
+                format!("avec un malus volontaire de {malus_volontaire}")
+            };
+            html.push_str(&format!(
+                "<section class=\"carte\"><span class=\"pastille\">Dé lancé</span> \
+                 <div class=\"de-lance\">D666 = <b>{valeur}</b></div>\
+                 <div class=\"discret\">{malus}. Dites « lancé » au maître de jeu : il résout l'action.</div></section>"
+            ));
         }
         Some(Evenement::Jets { jets }) => {
             html.push_str("<div class=\"grille\" style=\"grid-template-columns:1fr\">");
             for j in jets {
-                html.push_str(&jet_detaille(j));
+                html.push_str(&jet_detaille(j, &masque));
             }
             html.push_str("</div>");
         }
@@ -655,13 +768,19 @@ pub fn partie(
             if let Evenement::Jets { jets } = &e.evenement {
                 for j in jets {
                     let r = &j.jet;
+                    let de_l_equipe = masque.jet_de_l_equipe(&j.libelle);
+                    let (colonnes, seuil) = if de_l_equipe {
+                        (texte_colonnes(&j.action), format!(" ({})", texte_seuil(r.seuil)))
+                    } else {
+                        (String::new(), String::new())
+                    };
                     html.push_str(&format!(
                         "<div class=\"jet-compact\"><span>{}</span><span class=\"discret\">{}</span>\
-                         <span>D666 {} ({})</span><span class=\"verdict {}\">{}</span><span>unités {}</span></div>",
-                        esc(&j.libelle),
-                        texte_colonnes(&j.action),
+                         <span>D666 {}{}</span><span class=\"verdict {}\">{}</span><span>unités {}</span></div>",
+                        esc(&masque.libelle(&j.libelle)),
+                        colonnes,
                         r.jet.valeur(),
-                        texte_seuil(r.seuil),
+                        seuil,
                         if r.reussi { "reussi" } else { "rate" },
                         if r.reussi { "réussi" } else { "raté" },
                         r.unites,
@@ -673,7 +792,7 @@ pub fn partie(
     }
 
     match combat_en_cours {
-        Some(c) => html.push_str(&combat(c, personnages)),
+        Some(c) => html.push_str(&combat(c, vue, &masque)),
         None => html.push_str("<h2>Combat</h2><p class=\"discret\">Aucun combat en cours.</p>"),
     }
     page("Partie", &html)
@@ -700,6 +819,7 @@ mod tests {
                 .into(),
             patron: Some("Laurent".into()),
             pp: None,
+            pp_max_scenario: None,
             dommages: 2,
             equipement: vec!["Erendil".into()],
             notes: "ligne 1\nligne 2".into(),
@@ -784,11 +904,32 @@ mod tests {
     }
 
     #[test]
-    fn liste_vide_et_remplie() {
-        assert!(liste(&[]).contains("Aucun personnage"));
-        let html = liste(&[jean()]);
+    fn accueil_vide_equipe_et_rencontres() {
+        assert!(accueil(&[], &[]).contains("Aucun personnage"));
+        let html = accueil(&[jean()], &[("billy".into(), "le <batteur>".into(), 2)]);
         assert!(html.contains("href=\"/personnage/jean-de-lavenue\""));
-        assert!(html.contains("PP 7/7 · dommages 2"));
+        assert!(html.contains("PP 7/7 · dommages 2"), "l'équipe montre ses PP");
+        assert!(html.contains("le &lt;batteur&gt;") && html.contains("2 information(s)"));
+        assert!(!html.contains("Billy"), "le vrai nom n'apparaît jamais");
+        assert!(accueil(&[jean()], &[]).contains("Personne pour l'instant"));
+    }
+
+    #[test]
+    fn fiche_connue_et_lieux_n_affichent_que_les_connaissances() {
+        let k = |texte: &str| Connaissance {
+            id: 1,
+            horodatage: 1_792_939_573,
+            genre: "personnage".into(),
+            sujet: "billy".into(),
+            nom_connu: "le batteur".into(),
+            texte: texte.into(),
+        };
+        let html = fiche_connue("le batteur", &[k("Américain <b>")]);
+        assert!(html.contains("Américain &lt;b&gt;") && html.contains("Ce que vous savez"));
+        assert!(!html.contains("PP") && !html.contains("Force"), "aucune donnée de fiche");
+        assert!(lieux(&[]).contains("Aucun lieu connu"));
+        let html = lieux(&[("Le Gibus".into(), vec![k("Club.")])]);
+        assert!(html.contains("<h2>Le Gibus</h2>") && html.contains("Club."));
     }
 
     #[test]
@@ -799,10 +940,13 @@ mod tests {
             seance: "Séance 1".into(),
             categorie: "scene".into(),
             texte: texte.into(),
-            personnages: vec!["jean-de-lavenue".into()],
+            personnages: vec!["jean-de-lavenue".into(), "inconnu-secret".into()],
+            visible: true,
         };
         let entrees = vec![entree(1, "Premier"), entree(2, "Second <b>")];
-        let html = journal(&entrees, &|_| "Jean De Lavenue".into(), &[jean()], &FiltresAffiches::default());
+        let nom = |id: &str| (id == "jean-de-lavenue").then(|| "Jean De Lavenue".to_string());
+        let html = journal(&entrees, &nom, &[("jean-de-lavenue".into(), "Jean De Lavenue".into())], &FiltresAffiches::default());
+        assert!(!html.contains("inconnu-secret"), "un personnage non rencontré n'est pas cité");
         assert!(html.find("Second").unwrap() < html.find("Premier").unwrap());
         assert!(html.contains("Second &lt;b&gt;"));
         assert!(html.contains("<a href=\"/personnage/jean-de-lavenue\">Jean De Lavenue</a>"));
@@ -831,31 +975,49 @@ mod tests {
         assert!(!html.contains("lu\">") && !html.contains("col-fin"));
     }
 
+    fn vue_vide() -> Vue {
+        Vue::nouvelle(vec![], vec![])
+    }
+
     #[test]
     fn partie_sans_rien_a_afficher() {
-        let html = partie(None, &[], None, &[]);
+        let html = partie(None, &[], None, &vue_vide());
         assert!(html.contains("Aucun jet pour l'instant") && html.contains("Aucun combat en cours"));
     }
 
     #[test]
-    fn partie_action_en_attente_propose_les_decalages() {
+    fn partie_action_en_attente_propose_de_lancer_avec_un_malus_volontaire() {
         let attente = EvenementDate {
             id: 1,
             horodatage: 0,
             evenement: Evenement::Attente { libelle: "Jean <b>".into(), action: action_ag5_niveau1(0) },
         };
-        let html = partie(Some(&attente), &[], None, &[]);
-        assert!(html.contains("En attente du décalage"));
+        let html = partie(Some(&attente), &[], None, &vue_vide());
+        assert!(html.contains("À vous de lancer"));
         assert!(html.contains("Jean &lt;b&gt;"), "libellé échappé");
-        // Colonnes -3 à +3 autour de 13 ; le décalage 0 est marqué.
-        assert!(html.contains("<th class=\"actuel\">0</th>") && html.contains("<th>-3</th>") && html.contains("<th>+3</th>"));
-        assert!(html.contains("<td>10</td>") && html.contains("<td>16</td>"));
+        // Quatre boutons : malus volontaire de 0 à 3, colonnes 13, 12, 11, 10.
+        assert!(html.contains("action=\"/lancer\"") && html.contains("method=\"post\""));
+        for n in 0..=3 {
+            assert!(html.contains(&format!("name=\"malus\" value=\"{n}\"")), "bouton {n}");
+        }
+        assert!(html.contains("colonne 13") && html.contains("colonne 10"));
+        assert!(html.contains("Lancer avec malus 3 (+3 unités)"));
+        // Le tableau des décalages du MJ reste disponible mais replié.
+        assert!(html.contains("<details><summary") && html.contains("<th>-3</th>") && html.contains("<th>+3</th>"));
+    }
+
+    #[test]
+    fn partie_de_lance_attend_le_maitre_de_jeu() {
+        let de = EvenementDate { id: 2, horodatage: 0, evenement: Evenement::DeJoueur { valeur: 464, malus_volontaire: 2 } };
+        let html = partie(Some(&de), &[], None, &vue_vide());
+        assert!(html.contains("D666 = <b>464</b>") && html.contains("malus volontaire de 2"));
+        assert!(html.contains("Dites « lancé »") && !html.contains("action=\"/lancer\""), "plus de bouton une fois lancé");
     }
 
     fn jet(v: u16, decalage: i32) -> JetUm {
         let action = action_ag5_niveau1(decalage);
         JetUm {
-            libelle: "Jean : Esquive".into(),
+            libelle: "Jean De Lavenue : Esquive".into(),
             action,
             jet: insmv_regles::evaluer(&action, insmv_regles::D666::depuis_valeur(v).unwrap()),
         }
@@ -865,7 +1027,7 @@ mod tests {
     fn partie_jet_resolu_et_historique() {
         let resolu = |id, v| EvenementDate { id, horodatage: 0, evenement: Evenement::Jets { jets: vec![jet(v, -2)] } };
         let (ancien, recent) = (resolu(1, 666), resolu(2, 111));
-        let html = partie(Some(&recent), &[ancien, recent.clone()], None, &[]);
+        let html = partie(Some(&recent), &[ancien, recent.clone()], None, &Vue::nouvelle(vec![jean()], vec![]));
         assert!(html.contains("colonne de base 13 → colonne 11 (décalage -2)"));
         assert!(html.contains("D666 = <b>111</b>") && html.contains("contre ≤ 62"));
         assert!(html.contains("verdict reussi\">RÉUSSI"));
@@ -894,23 +1056,49 @@ mod tests {
                 TourDeCombat { numero: 2, initiative: Some(initiative), actions: vec![acte("Jean De Lavenue", "Jean frappe")] },
             ],
         };
-        let html = partie(None, &[], Some(&combat_), &[blesse]);
+        let vue = Vue::nouvelle(vec![blesse, zombi()], vec![]);
+        let html = partie(None, &[], Some(&combat_), &vue);
         assert!(html.contains("Tour 2"));
         assert!(html.contains("Phase psychique") && html.contains("Phase physique"));
         let jean_ordre = html.find("<b>Jean De Lavenue</b> <span class=\"fait\"").expect("Jean a agi");
-        assert!(jean_ordre < html.find("Zombi").unwrap(), "ordre d'agilité");
-        assert!(html.contains("PP 5/7") || html.contains("dommages 3"), "état courant de la fiche");
+        assert!(jean_ordre < html.find("un inconnu").unwrap(), "ordre d'agilité");
+        assert!(html.contains("dommages 3"), "état courant de la fiche de l'équipe");
+        // Un adversaire : nom masqué, ni PP ni dommages.
+        assert!(!html.contains("Zombi"), "vrai nom jamais affiché : {html}");
+        assert!(html.contains("un inconnu"));
         assert!(html.contains("(simultanés)"));
         assert!(html.contains("Hors d'état d'agir"));
         assert!(html.contains("<div class=\"acte\">Jean frappe</div>"));
         assert!(html.contains("<summary>Tour 1 · 1 action(s)</summary>") && html.contains("tour un &lt;i&gt;"));
-        assert!(!html.contains("Zombi</b> <span class=\"fait\""), "Zombi n'a pas agi au tour 2");
+        assert!(!html.contains("un inconnu</b> <span class=\"fait\""), "l'adversaire n'a pas agi au tour 2");
+    }
+
+    fn zombi() -> Personnage {
+        let mut p = jean();
+        p.nom = "Zombi".into();
+        p.role = Role::Pnj;
+        p.espece = Espece::MortVivant;
+        p.pouvoirs.clear();
+        p.dommages = 4;
+        p.finaliser();
+        p
+    }
+
+    #[test]
+    fn jets_d_un_adversaire_n_affichent_ni_ligne_ni_seuil() {
+        let vue = Vue::nouvelle(vec![jean(), zombi()], vec![]);
+        let mut j = jet(111, 0);
+        j.libelle = "Zombi : Agilité 5 (talent Esquive +1)".into();
+        let resolu = EvenementDate { id: 1, horodatage: 0, evenement: Evenement::Jets { jets: vec![j] } };
+        let html = partie(Some(&resolu), &[], None, &vue);
+        assert!(html.contains("un inconnu") && !html.contains("Esquive") && !html.contains("<table class=\"um\">"));
+        assert!(html.contains("D666 = <b>111</b>") && !html.contains(" contre "));
     }
 
     #[test]
     fn journal_conserve_les_filtres_dans_le_formulaire() {
         let f = FiltresAffiches { seance: "S\"1".into(), personnage: "jean-de-lavenue".into(), ..Default::default() };
-        let html = journal(&[], &|id| id.into(), &[jean()], &f);
+        let html = journal(&[], &|id| Some(id.into()), &[("jean-de-lavenue".into(), "Jean".into())], &f);
         assert!(html.contains("value=\"S&quot;1\""));
         assert!(html.contains("value=\"jean-de-lavenue\" selected"));
         assert!(html.contains("Aucune entrée"));

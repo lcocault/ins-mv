@@ -35,6 +35,9 @@ pub struct Pouvoir {
     /// Texte de la règle dans le livre (ou introduction de sa catégorie).
     #[serde(default)]
     pub description: Option<String>,
+    /// Entrée de la section « maison » (créée pour le jeu, absente du livre).
+    #[serde(default)]
+    pub maison: bool,
 }
 
 impl Pouvoir {
@@ -74,6 +77,9 @@ pub struct Talent {
     pub malus_demon: Option<i32>,
     /// Caractéristiques conseillées (abréviations FO, PR, VO, PE, AG, AP).
     pub caracteristiques: Vec<String>,
+    /// Entrée de la section « maison » (créée pour le jeu, absente du livre).
+    #[serde(default)]
+    pub maison: bool,
 }
 
 impl Talent {
@@ -114,6 +120,9 @@ pub struct Arme {
     pub coups: Option<String>,
     pub talent: String,
     pub notes: Vec<NoteArme>,
+    /// Entrée de la section « maison » (créée pour le jeu, absente du livre).
+    #[serde(default)]
+    pub maison: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -129,8 +138,29 @@ pub struct Protection {
 static ARMES: OnceLock<Vec<Arme>> = OnceLock::new();
 static PROTECTIONS: OnceLock<Vec<Protection>> = OnceLock::new();
 
+/// Section « maison » : armes, talents et pouvoirs que le livre n'imprime pas mais que le jeu
+/// utilise (le livre laisse au MJ le droit d'en créer). Chaque entrée est marquée `maison`.
+#[derive(Debug, Default, Deserialize)]
+struct Maison {
+    #[serde(default)]
+    armes: Vec<Arme>,
+    #[serde(default)]
+    talents: Vec<Talent>,
+    #[serde(default)]
+    pouvoirs: Vec<Pouvoir>,
+}
+
+fn maison() -> &'static Maison {
+    static MAISON: OnceLock<Maison> = OnceLock::new();
+    MAISON.get_or_init(|| serde_json::from_str(include_str!("../donnees/maison.json")).expect("maison.json valide"))
+}
+
 pub fn armes() -> &'static [Arme] {
-    ARMES.get_or_init(|| serde_json::from_str(include_str!("../donnees/armes.json")).expect("armes.json valide"))
+    ARMES.get_or_init(|| {
+        let mut armes: Vec<Arme> = serde_json::from_str(include_str!("../donnees/armes.json")).expect("armes.json valide");
+        armes.extend(maison().armes.iter().cloned());
+        armes
+    })
 }
 
 pub fn protections() -> &'static [Protection] {
@@ -159,13 +189,19 @@ static TALENTS: OnceLock<Vec<Talent>> = OnceLock::new();
 
 pub fn pouvoirs() -> &'static [Pouvoir] {
     POUVOIRS.get_or_init(|| {
-        serde_json::from_str(include_str!("../donnees/pouvoirs.json")).expect("pouvoirs.json valide")
+        let mut pouvoirs: Vec<Pouvoir> =
+            serde_json::from_str(include_str!("../donnees/pouvoirs.json")).expect("pouvoirs.json valide");
+        pouvoirs.extend(maison().pouvoirs.iter().cloned());
+        pouvoirs
     })
 }
 
 pub fn talents() -> &'static [Talent] {
     TALENTS.get_or_init(|| {
-        serde_json::from_str(include_str!("../donnees/talents.json")).expect("talents.json valide")
+        let mut talents: Vec<Talent> =
+            serde_json::from_str(include_str!("../donnees/talents.json")).expect("talents.json valide");
+        talents.extend(maison().talents.iter().cloned());
+        talents
     })
 }
 
@@ -233,11 +269,30 @@ mod tests {
     #[test]
     fn chaque_livre_a_216_pouvoirs_numerotes_plus_des_speciaux() {
         for livre in [Livre::Ange, Livre::Demon] {
-            let numerotes = pouvoirs().iter().filter(|p| p.livre == livre && p.code.is_some()).count();
-            let speciaux = pouvoirs().iter().filter(|p| p.livre == livre && p.code.is_none()).count();
+            let numerotes = pouvoirs().iter().filter(|p| p.livre == livre && !p.maison && p.code.is_some()).count();
+            let speciaux = pouvoirs().iter().filter(|p| p.livre == livre && !p.maison && p.code.is_none()).count();
             assert_eq!(numerotes, 216, "{livre:?}");
             assert_eq!(speciaux, 10, "{livre:?}");
         }
+    }
+
+    #[test]
+    fn section_maison_marquee() {
+        // Armes, talents et pouvoirs créés pour le jeu : marqués, et jamais confondus avec le livre.
+        for nom in ["Revolver cal.38", "Pistolet automatique", "Griffes de goule"] {
+            let a = arme_par_nom(nom, None);
+            assert_eq!(a.len(), 1, "{nom}");
+            assert!(a[0].maison, "{nom}");
+        }
+        assert!(arme_par_nom("Revolver cal.44", None)[0].maison == false, "les armes du livre ne sont pas maison");
+        for nom in ["Déguisement", "Intimidation", "Fouille", "Observation"] {
+            assert!(talent_par_nom(nom).unwrap().maison, "{nom}");
+        }
+        assert!(!talent_par_nom("Esquive").unwrap().maison);
+        let suicide = pouvoirs_par_nom(Livre::Demon, "Suicide");
+        assert_eq!(suicide.len(), 1);
+        assert!(suicide[0].maison && suicide[0].code.is_none());
+        assert_eq!(suicide[0].cout_fixe(), Some(8));
     }
 
     #[test]
@@ -290,7 +345,7 @@ mod tests {
 
     #[test]
     fn armes_du_livre() {
-        assert_eq!(armes().len(), 28);
+        assert_eq!(armes().iter().filter(|a| !a.maison).count(), 28);
         let epee = arme_par_nom("epee longue", None);
         assert_eq!(epee.len(), 1);
         assert_eq!((epee[0].puissance, epee[0].precision, epee[0].talent.as_str()), (Some(2), 0, "Arme de contact"));

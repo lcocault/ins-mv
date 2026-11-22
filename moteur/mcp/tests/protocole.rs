@@ -101,6 +101,7 @@ fn expose_les_outils() {
             "ajuster_pp",
             "annoncer_action",
             "attaquer",
+            "attaques_simultanees",
             "chercher_pouvoir",
             "chercher_talent",
             "conflit_personnages",
@@ -112,6 +113,7 @@ fn expose_les_outils() {
             "noter_journal",
             "resoudre_action",
             "resoudre_conflit",
+            "reveler",
             "soigner_semaines",
             "supprimer_personnage",
             "terminer_combat",
@@ -263,7 +265,7 @@ fn combat_complet_via_le_protocole() {
     // Attaque : les dommages annoncés sont ceux qui sont persistés sur la fiche du défenseur.
     let attaque = texte(&reponses[5]);
     assert!(attaque["resume"].as_str().unwrap().contains("Jean attaque Zombi"));
-    let annonces = match attaque["dommages"]["total"].as_u64() {
+    let annonces = match attaque["dommages"]["appliques"].as_u64() {
         Some(total) if attaque["arbitrage_mj"] == false => total,
         _ => 0,
     };

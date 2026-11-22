@@ -128,6 +128,7 @@ mod tests {
             pouvoirs: vec![],
             patron: None,
             pp: None,
+            pp_max_scenario: None,
             dommages: 0,
             equipement: vec![],
             notes: String::new(),

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Pilote le serveur Web de la fiche de personnage (lecture seule).
+# Pilote le serveur Web du joueur (pages de partie, fiches, lieux, journal).
 # Usage : scripts/web.sh start | stop | restart | status | logs
 set -u
 

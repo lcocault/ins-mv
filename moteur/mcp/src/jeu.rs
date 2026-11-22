@@ -63,6 +63,10 @@ pub struct CreationParams {
     /// Remplace une fiche existante du même nom au lieu d'échouer.
     #[serde(default)]
     pub remplacer: bool,
+    /// PP maximum imprimé dans le scénario pour un PNJ, qui remplace le calcul de création
+    /// (Volonté + un point par tirage). Exige une `exception` motivée.
+    #[serde(default)]
+    pub pp_max: Option<u32>,
 }
 
 #[derive(Debug, Serialize)]
@@ -84,10 +88,17 @@ pub fn creer_personnage(c: &Campagne, p: CreationParams) -> Result<SortieCreatio
         pouvoirs: p.pouvoirs,
         patron: p.patron,
         pp: None,
+        pp_max_scenario: p.pp_max,
         dommages: 0,
         equipement: p.equipement,
         notes: p.notes,
     };
+    if let Some(pp) = p.pp_max {
+        match p.exception.as_deref().map(str::trim).filter(|e| !e.is_empty()) {
+            None => return Err(format!("`pp_max` ({pp}) remplace le calcul des PP : fournir une `exception` motivée")),
+            Some(motif) => perso.notes.push_str(&format!("{}PP maximum du scénario : {pp} ({motif}).", if perso.notes.is_empty() { "" } else { "\n" })),
+        }
+    }
     perso.finaliser();
     let problemes = controler(&perso);
     let par = |g: Gravite| -> Vec<String> {
@@ -301,6 +312,34 @@ pub fn soigner_semaines(c: &Campagne, nom: &str, semaines: u32) -> Result<EtatPe
     .map(|(p, ())| EtatPersonnage::from(&p))
 }
 
+// ---- Dé du joueur ----------------------------------------------------------------------
+
+/// Le dé que le joueur a lancé sur la page Web et son malus volontaire. Refuse s'il n'a pas lancé.
+fn de_du_joueur(c: &Campagne) -> Result<(D666, u8), String> {
+    let evenement = c
+        .de_joueur_disponible()
+        .map_err(erreur)?
+        .ok_or("le joueur n'a pas encore lancé le dé : il doit cliquer sur « Lancer » sur la page Partie, puis te le dire")?;
+    match evenement.evenement {
+        Evenement::DeJoueur { valeur, malus_volontaire } => {
+            Ok((D666::depuis_valeur(valeur).map_err(|e| e.to_string())?, malus_volontaire))
+        }
+        _ => Err("dé du joueur illisible".into()),
+    }
+}
+
+/// Source de dés qui rend d'abord les faces du dé du joueur, puis passe la main à la source normale.
+struct DesAvecJoueur<'a, S: SourceDes> {
+    avant: std::collections::VecDeque<u8>,
+    ensuite: &'a mut S,
+}
+
+impl<S: SourceDes> SourceDes for DesAvecJoueur<'_, S> {
+    fn d6(&mut self) -> u8 {
+        self.avant.pop_front().unwrap_or_else(|| self.ensuite.d6())
+    }
+}
+
 // ---- Tests sur fiche ------------------------------------------------------------------
 
 fn un() -> u8 {
@@ -336,6 +375,10 @@ pub struct TestParams {
     /// PP dépensés pour cette action (ex. coût d'un pouvoir), prélevés avant le jet.
     #[serde(default)]
     pub cout_pp: Option<u32>,
+    /// Utilise le dé que le joueur a lancé sur la page Web (et son malus volontaire) à la place
+    /// d'un tirage du serveur. Refusé tant que le joueur n'a pas lancé.
+    #[serde(default)]
+    pub de_joueur: bool,
 }
 
 #[derive(Debug, Serialize)]
@@ -382,9 +425,18 @@ pub fn tester_personnage(
     t: &TestParams,
     source: &mut impl SourceDes,
 ) -> Result<SortieTest, String> {
+    let mut t = t.clone();
+    let de = if t.de_joueur {
+        let (de, malus) = de_du_joueur(c)?;
+        t.malus_volontaire = malus;
+        Some(de)
+    } else {
+        None
+    };
+    let t = &t;
     let (action, description) = preparer(c, t)?;
     let (pp_depenses, pp_restants) = prelever_pp(c, t)?;
-    let jet = evaluer(&action, D666::tirer(source));
+    let jet = evaluer(&action, de.unwrap_or_else(|| D666::tirer(source)));
     afficher_jets(c, vec![JetUm { libelle: format!("{} : {description}", t.nom), action, jet }]);
     Ok(SortieTest { description, pp_depenses, pp_restants, action: decrire_action(jet) })
 }
@@ -404,14 +456,26 @@ pub fn conflit_personnages(
     defenseur: &TestParams,
     source: &mut impl SourceDes,
 ) -> Result<SortieConflitPersonnages, String> {
+    // Le dé du joueur ne sert qu'à l'attaquant (qui est lancé en premier).
+    let mut attaquant = attaquant.clone();
+    let de = if attaquant.de_joueur {
+        let (de, malus) = de_du_joueur(c)?;
+        attaquant.malus_volontaire = malus;
+        Some(de)
+    } else {
+        None
+    };
+    let attaquant = &attaquant;
     // Tout est validé avant de toucher aux PP : un conflit invalide ne consomme rien.
     let (action_a, desc_a) = preparer(c, attaquant)?;
     let (action_d, desc_d) = preparer(c, defenseur)?;
     let mut sorties = Vec::new();
     let mut jets_affiches = Vec::new();
-    for (t, action, description) in [(attaquant, action_a, desc_a), (defenseur, action_d, desc_d)] {
+    for (t, action, description, de) in
+        [(attaquant, action_a, desc_a, de), (defenseur, action_d, desc_d, None)]
+    {
         let (pp_depenses, pp_restants) = prelever_pp(c, t)?;
-        let jet = evaluer(&action, D666::tirer(source));
+        let jet = evaluer(&action, de.unwrap_or_else(|| D666::tirer(source)));
         jets_affiches.push(JetUm { libelle: format!("{} : {description}", t.nom), action, jet });
         sorties.push(SortieTest { description, pp_depenses, pp_restants, action: decrire_action(jet) });
     }
@@ -452,6 +516,10 @@ pub struct UsagePouvoirParams {
     /// Décalage de colonnes du MJ pour la défense de la cible.
     #[serde(default)]
     pub modificateur_defense: i32,
+    /// Utilise le dé que le joueur a lancé sur la page Web (et son malus volontaire) pour le jet
+    /// d'usage du pouvoir. Refusé tant que le joueur n'a pas lancé.
+    #[serde(default)]
+    pub de_joueur: bool,
 }
 
 #[derive(Debug, Serialize)]
@@ -516,6 +584,7 @@ pub fn utiliser_pouvoir(
         malus_volontaire: p.malus_volontaire,
         malus_sans_talent: None,
         cout_pp: Some(cout),
+        de_joueur: p.de_joueur,
     };
     let regle = entree.and_then(|e| e.description.clone());
     let (code, nom) = (possede.code, possede.nom.clone());
@@ -539,6 +608,7 @@ pub fn utiliser_pouvoir(
             malus_volontaire: 0,
             malus_sans_talent: None,
             cout_pp: None,
+            de_joueur: false,
         };
         let conflit = conflit_personnages(c, &attaque, &defense, source)?;
         let pp_restants = conflit.attaquant.pp_restants;
@@ -640,6 +710,19 @@ pub struct AttaqueParams {
     /// Applique les dommages à la fiche du défenseur. Défaut : oui.
     #[serde(default = "vrai")]
     pub appliquer: bool,
+    /// Utilise le dé que le joueur a lancé sur la page Web (et son malus volontaire) pour le jet
+    /// d'attaque. Refusé tant que le joueur n'a pas lancé.
+    #[serde(default)]
+    pub de_joueur: bool,
+    /// Le joueur (ou un partenaire) déclare vouloir TUER. Sans cela, un Ange ou son partenaire qui
+    /// frappe un humain le neutralise : dommages plafonnés à l'évanouissement (règle maison D-017).
+    /// Sans effet sur les créatures surnaturelles et sur les attaques d'un PNJ ennemi.
+    #[serde(default)]
+    pub tuer: bool,
+    /// Niveau du pouvoir Invisibilité de la cible quand elle est invisible mais que l'attaquant
+    /// la situe : malus de 1 + niveau colonnes (livre, pouvoir 261).
+    #[serde(default)]
+    pub invisibilite: Option<u8>,
 }
 
 fn vrai() -> bool {
@@ -690,10 +773,15 @@ fn resume_attaque(r: &ResultatAttaque, att: &str, def: &str) -> String {
             "{} unités + {} puissance + {} Force - {} protection",
             d.unites, d.puissance, d.bonus_force, d.protection
         );
-        lignes.push(if r.arbitrage_mj {
-            format!("Si le MJ donne l'avantage à l'attaquant : {} dommage(s) ({detail}).", d.total)
+        let neutralise = if d.neutralise && d.appliques < d.total {
+            format!(" ; neutralisé : {} appliqué(s) sur {}", d.appliques, d.total)
         } else {
-            format!("Dommages : {} ({detail}).", d.total)
+            String::new()
+        };
+        lignes.push(if r.arbitrage_mj {
+            format!("Si le MJ donne l'avantage à l'attaquant : {} dommage(s) ({detail}{neutralise}).", d.appliques)
+        } else {
+            format!("Dommages : {} ({detail}{neutralise}).", d.appliques)
         });
     }
     lignes.join("\n")
@@ -703,16 +791,31 @@ fn jet_um(nom: &str, detail: &insmv_regles::combat::DetailJet) -> JetUm {
     JetUm { libelle: format!("{nom} : {}", detail.description), action: detail.action, jet: detail.jet }
 }
 
-pub fn attaquer(
+/// Une attaque dont les jets sont faits mais dont les dommages ne sont pas encore appliqués.
+struct AttaqueResolue {
+    att: Personnage,
+    def: Personnage,
+    resultat: ResultatAttaque,
+    appliquer: bool,
+}
+
+/// Charge les fiches et fait tous les jets (attaque, défense), sans rien modifier dans la base.
+fn resoudre_sans_appliquer(
     c: &Campagne,
     p: &AttaqueParams,
     source: &mut impl SourceDes,
-) -> Result<SortieAttaque, String> {
+) -> Result<AttaqueResolue, String> {
     let att = c.charger(&p.attaquant).map_err(erreur)?;
     let def = c.charger(&p.defenseur).map_err(erreur)?;
     if att.id == def.id {
         return Err("l'attaquant et le défenseur sont le même personnage".into());
     }
+    let (de_joueur, malus_volontaire) = if p.de_joueur {
+        let (de, malus) = de_du_joueur(c)?;
+        (Some(de), malus)
+    } else {
+        (None, p.malus_volontaire)
+    };
     let params = ParamsAttaque {
         talent: p.talent.clone(),
         caracteristique: carac_optionnelle(&p.caracteristique)?,
@@ -722,7 +825,7 @@ pub fn attaquer(
         precision: p.precision,
         circonstances: p.circonstances.clone(),
         modificateur: p.modificateur,
-        malus_volontaire: p.malus_volontaire,
+        malus_volontaire,
         malus_sans_talent: p.malus_sans_talent,
         armure_attaquant: p.armure_attaquant.clone(),
         defense: ParamsDefense {
@@ -735,12 +838,34 @@ pub fn attaquer(
         defense_impossible: p.defense_impossible,
         armure_defenseur: p.armure_defenseur.clone(),
         protection_supplementaire: p.protection_supplementaire,
+        tuer: p.tuer,
+        invisibilite: p.invisibilite,
     };
-    let resultat = resoudre_attaque(&att, &def, &params, source)?;
+    // Le jet d'attaque est le premier tirage de `resoudre_attaque` : on y place le dé du joueur.
+    let mut avec_joueur = DesAvecJoueur {
+        avant: de_joueur.map(|d| [d.x, d.y, d.z].into()).unwrap_or_default(),
+        ensuite: source,
+    };
+    let resultat = resoudre_attaque(&att, &def, &params, &mut avec_joueur)?;
+    Ok(AttaqueResolue { att, def, resultat, appliquer: p.appliquer })
+}
+
+/// Applique les dommages d'une attaque résolue, écrit le compte rendu et les événements.
+fn appliquer_attaque(
+    c: &Campagne,
+    a: AttaqueResolue,
+    source: &mut impl SourceDes,
+) -> Result<SortieAttaque, String> {
+    let AttaqueResolue { att, def, resultat, appliquer } = a;
     let mut resume = resume_attaque(&resultat, &att.nom, &def.nom);
 
-    let a_appliquer = resultat.dommages_a_appliquer();
-    let etat_defenseur = if p.appliquer && a_appliquer > 0 {
+    let mut a_appliquer = resultat.dommages_a_appliquer();
+    // Neutralisation : la marge se relit sur la fiche actuelle (un autre coup du même rang a pu l'entamer).
+    if resultat.dommages.as_ref().is_some_and(|d| d.neutralise) {
+        let actuel = c.charger(&def.nom).map_err(erreur)?;
+        a_appliquer = a_appliquer.min(insmv_regles::combat::marge_avant_evanouissement(&actuel));
+    }
+    let etat_defenseur = if appliquer && a_appliquer > 0 {
         let delta = i32::try_from(a_appliquer).map_err(|_| "dommages démesurés".to_string())?;
         let etat = ajuster_dommages(c, &def.nom, delta, source)?;
         resume.push_str(&format!(
@@ -767,6 +892,51 @@ pub fn attaquer(
         }),
     );
     Ok(SortieAttaque { attaquant: att.nom, defenseur: def.nom, resultat, resume, etat_defenseur })
+}
+
+pub fn attaquer(
+    c: &Campagne,
+    p: &AttaqueParams,
+    source: &mut impl SourceDes,
+) -> Result<SortieAttaque, String> {
+    let resolue = resoudre_sans_appliquer(c, p, source)?;
+    appliquer_attaque(c, resolue, source)
+}
+
+#[derive(Debug, Clone, Deserialize, JsonSchema)]
+pub struct AttaquesSimultaneesParams {
+    /// Les attaques d'un même rang d'initiative (mêmes valeurs d'Agilité : simultanées).
+    pub attaques: Vec<AttaqueParams>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct SortieSimultanee {
+    pub attaques: Vec<SortieAttaque>,
+}
+
+/// Rang simultané (D-021) : tous les jets sont faits avec l'état de début de rang, puis les
+/// dommages sont appliqués ensemble. Un personnage tué ou assommé à ce rang a donc quand même frappé,
+/// et deux adversaires peuvent se toucher mutuellement.
+pub fn attaques_simultanees(
+    c: &Campagne,
+    p: &AttaquesSimultaneesParams,
+    source: &mut impl SourceDes,
+) -> Result<SortieSimultanee, String> {
+    if p.attaques.len() < 2 {
+        return Err("un rang simultané compte au moins deux attaques ; pour une seule, utiliser `attaquer`".into());
+    }
+    if p.attaques.iter().filter(|a| a.de_joueur).count() > 1 {
+        return Err("un seul dé du joueur par rang : `de_joueur` ne peut servir qu'à une attaque".into());
+    }
+    let mut resolues = Vec::new();
+    for a in &p.attaques {
+        resolues.push(resoudre_sans_appliquer(c, a, source)?);
+    }
+    let mut sorties = Vec::new();
+    for r in resolues {
+        sorties.push(appliquer_attaque(c, r, source)?);
+    }
+    Ok(SortieSimultanee { attaques: sorties })
 }
 
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
@@ -972,6 +1142,10 @@ pub struct NoterParams {
     /// Noms des personnages concernés.
     #[serde(default)]
     pub personnages: Vec<String>,
+    /// Vrai pour une entrée que le joueur a le droit de lire sur la page Web (récit de ce qu'il a
+    /// vécu). Faux par défaut : notes du MJ, secrets, état réel des adversaires.
+    #[serde(default)]
+    pub visible: bool,
 }
 
 pub fn noter_journal(c: &Campagne, p: NoterParams) -> Result<EntreeJournal, String> {
@@ -985,8 +1159,44 @@ pub fn noter_journal(c: &Campagne, p: NoterParams) -> Result<EntreeJournal, Stri
         categorie: p.categorie,
         texte: p.texte,
         personnages: p.personnages.iter().map(|n| insmv_regles::personnage::identifiant(n)).collect(),
+        visible: p.visible,
     })
     .map_err(erreur)
+}
+
+#[derive(Debug, Clone, Deserialize, JsonSchema)]
+pub struct RevelerParams {
+    /// « personnage » ou « lieu ».
+    pub genre: String,
+    /// Nom ou identifiant du personnage, ou nom du lieu (le même nom à chaque fois pour un lieu).
+    pub sujet: String,
+    /// Nom sous lequel le joueur connaît le sujet (« le batteur américain », « la cave de la rue des
+    /// Lilas »). Ne mets jamais le vrai nom ni la nature tant que le joueur ne les a pas découverts.
+    /// Vide : on garde le nom déjà connu.
+    #[serde(default)]
+    pub nom_connu: String,
+    /// Ce que le joueur vient d'apprendre ou d'observer, sans secret ni information réservée au MJ.
+    pub texte: String,
+}
+
+/// Consigne ce que le joueur vient d'apprendre : la page Web du joueur n'affiche que cela
+/// pour les personnages hors de son équipe et pour les lieux.
+pub fn reveler(c: &Campagne, p: RevelerParams) -> Result<insmv_campagne::Connaissance, String> {
+    let genre = match p.genre.trim().to_lowercase().as_str() {
+        "personnage" | "pnj" => "personnage",
+        "lieu" => "lieu",
+        autre => return Err(format!("genre inconnu : « {autre} » (personnage ou lieu)")),
+    };
+    if p.texte.trim().is_empty() {
+        return Err("le texte est vide".into());
+    }
+    if p.sujet.trim().is_empty() {
+        return Err("le sujet est vide".into());
+    }
+    if genre == "personnage" {
+        c.charger(&p.sujet).map_err(erreur)?;
+    }
+    c.reveler(genre, &p.sujet, p.nom_connu.trim(), p.texte.trim()).map_err(erreur)
 }
 
 #[derive(Debug, Clone, Default, Deserialize, JsonSchema)]
@@ -1013,6 +1223,7 @@ pub fn lire_journal(c: &Campagne, p: LireJournalParams) -> Result<Vec<EntreeJour
         contient: p.contient,
         personnage: p.personnage,
         limite: p.limite.unwrap_or(20).clamp(1, 200),
+        visibles_seulement: false,
     })
     .map_err(erreur)
 }
@@ -1046,6 +1257,7 @@ mod tests {
             notes: String::new(),
             exception: None,
             remplacer: false,
+            pp_max: None,
         }
     }
 
@@ -1068,6 +1280,7 @@ mod tests {
             malus_volontaire: 0,
             malus_sans_talent: None,
             cout_pp: None,
+            de_joueur: false,
         }
     }
 
@@ -1357,14 +1570,16 @@ mod tests {
             seance: "Séance 1".into(),
             categorie: "pnj".into(),
             personnages: vec!["Paulo".into()],
+            visible: false,
         })
         .unwrap();
         assert_eq!(e.personnages, ["paulo"]);
+        assert!(!e.visible, "une entrée est réservée au MJ par défaut");
         let l = lire_journal(&c, LireJournalParams { personnage: Some("Paulo".into()), ..Default::default() }).unwrap();
         assert_eq!(l.len(), 1);
         let l = lire_journal(&c, LireJournalParams { contient: Some("zzz".into()), ..Default::default() }).unwrap();
         assert!(l.is_empty());
-        let vide = NoterParams { texte: " ".into(), seance: String::new(), categorie: String::new(), personnages: vec![] };
+        let vide = NoterParams { texte: " ".into(), seance: String::new(), categorie: String::new(), personnages: vec![], visible: false };
         assert!(noter_journal(&c, vide).is_err());
     }
 
@@ -1391,6 +1606,7 @@ mod tests {
             notes: String::new(),
             exception: None,
             remplacer: false,
+            pp_max: None,
         })
         .unwrap();
         creer_personnage(&c, CreationParams {
@@ -1405,6 +1621,7 @@ mod tests {
             notes: String::new(),
             exception: None,
             remplacer: false,
+            pp_max: None,
         })
         .unwrap();
         c
@@ -1430,6 +1647,10 @@ mod tests {
             armure_defenseur: None,
             protection_supplementaire: 0,
             appliquer: true,
+            de_joueur: false,
+            // Les tests de calcul supposent des dommages complets ; la neutralisation a les siens.
+            tuer: true,
+            invisibilite: None,
         }
     }
 
@@ -1596,6 +1817,7 @@ mod tests {
             malus_volontaire: 0,
             defense: None,
             modificateur_defense: 0,
+            de_joueur: false,
         }
     }
 
@@ -1672,5 +1894,138 @@ mod tests {
         assert!(un.resultats[0].description.as_deref().unwrap().contains("discuter"));
         let beaucoup = chercher_pouvoir(&ChercherPouvoirParams { livre: LivrePouvoirs::Ange, code: None, requete: Some("a".into()) }).unwrap();
         assert!(beaucoup.resultats.iter().all(|r| r.description.is_none()));
+    }
+
+    // ---- dé du joueur, journal visible, connaissances ----
+
+    fn jet_du_joueur(c: &Campagne, valeur: u16, malus: u8) {
+        c.emettre(&Evenement::DeJoueur { valeur, malus_volontaire: malus }).unwrap();
+    }
+
+    #[test]
+    fn de_joueur_refuse_tant_que_le_joueur_n_a_pas_lance() {
+        let c = campagne_de_combat();
+        let mut t = test("Jean", "VO");
+        t.de_joueur = true;
+        let err = tester_personnage(&c, &t, &mut SequenceDes::new([])).unwrap_err();
+        assert!(err.contains("pas encore lancé"), "{err}");
+    }
+
+    #[test]
+    fn de_joueur_remplace_le_tirage_applique_le_malus_et_se_consomme() {
+        let c = campagne_de_combat();
+        jet_du_joueur(&c, 214, 2);
+        let mut t = test("Jean", "VO");
+        t.de_joueur = true;
+        // Le source n'est pas sollicité : une séquence vide ferait paniquer.
+        let s = tester_personnage(&c, &t, &mut SequenceDes::new([])).unwrap();
+        assert_eq!(s.action.jet.jet.valeur(), 214);
+        assert!(s.description.len() > 0);
+        // Malus volontaire de 2 colonnes : il s'ajoute aux unités (4 + 2 = 6 si réussi).
+        assert!(!s.action.jet.reussi || s.action.jet.unites >= 4 + 2);
+        // Consommé : un second usage sans nouveau lancer est refusé.
+        assert!(tester_personnage(&c, &t, &mut SequenceDes::new([])).is_err());
+    }
+
+    #[test]
+    fn de_joueur_sert_de_jet_d_attaque_puis_la_defense_est_tiree() {
+        let c = campagne_de_combat();
+        jet_du_joueur(&c, 435, 0);
+        let mut a = coup_d_epee();
+        a.de_joueur = true;
+        // Seule la défense (666, ratée) est tirée par le serveur.
+        let s = attaquer(&c, &a, &mut SequenceDes::new([6, 6, 6])).unwrap();
+        assert_eq!(s.resultat.attaque.jet.jet.valeur(), 435);
+        assert!(s.resultat.attaque.jet.reussi);
+        assert!(c.de_joueur_disponible().unwrap().is_none(), "consommé par la résolution");
+    }
+
+    #[test]
+    fn reveler_exige_un_personnage_existant_et_un_genre_valide() {
+        let c = campagne_avec(&["Paulo"]);
+        let ok = reveler(
+            &c,
+            RevelerParams { genre: "personnage".into(), sujet: "Paulo".into(), nom_connu: "le concierge".into(), texte: "Boite.".into() },
+        )
+        .unwrap();
+        assert_eq!((ok.sujet.as_str(), ok.nom_connu.as_str()), ("paulo", "le concierge"));
+        let inconnu = RevelerParams { genre: "personnage".into(), sujet: "Fantome".into(), nom_connu: String::new(), texte: "x".into() };
+        assert!(reveler(&c, inconnu).is_err());
+        let lieu = RevelerParams { genre: "lieu".into(), sujet: "Le Balto".into(), nom_connu: "Le Balto".into(), texte: "PMU.".into() };
+        assert_eq!(reveler(&c, lieu).unwrap().genre, "lieu");
+        let mauvais = RevelerParams { genre: "objet".into(), sujet: "x".into(), nom_connu: String::new(), texte: "x".into() };
+        assert!(reveler(&c, mauvais).is_err());
+    }
+
+    // ---- neutralisation, rang simultané, PP de scénario ----
+
+    #[test]
+    fn par_defaut_un_ange_neutralise_un_humain_sauf_intention_de_tuer() {
+        let c = campagne_de_combat();
+        let (xy, z) = ([4, 3, 5], [6, 6, 6]); // attaque 435 (touche, 5 unités), défense 666 ratée
+        let des: Vec<u8> = xy.iter().chain(z.iter()).copied().collect();
+        let humain = |c: &Campagne| {
+            creer_personnage(c, CreationParams { nom: "Vigile".into(), espece: Espece::Humain, role: Role::Pnj, caracteristiques: carac(2, 3, 2, 1, 1, 1), talents: vec![TalentPossede { nom: "Esquive".into(), niveau: 0 }], pouvoirs: vec![], patron: None, equipement: vec![], notes: String::new(), exception: None, remplacer: true, pp_max: None }).unwrap();
+        };
+        humain(&c);
+        let mut coup = coup_d_epee();
+        coup.defenseur = "Vigile".into();
+        coup.tuer = false;
+        // 5 + 3 (épée +1) + 1 (Force) = 9 dommages calculés, 2 appliqués (humain FO2), puis D6 minutes d'inconscience.
+        let s = attaquer(&c, &coup, &mut SequenceDes::new(des.iter().copied().chain([4]))).unwrap();
+        assert!(s.resume.contains("neutralisé : 2 appliqué(s) sur 9"), "{}", s.resume);
+        let etat = s.etat_defenseur.unwrap();
+        assert_eq!((etat.dommages, etat.sante.etat), (2, EtatSante::Inconscient));
+
+        // Avec l'intention de tuer, le même coup tue.
+        humain(&c);
+        coup.tuer = true;
+        let s = attaquer(&c, &coup, &mut SequenceDes::new(des.iter().copied())).unwrap();
+        assert_eq!(s.etat_defenseur.unwrap().sante.etat, EtatSante::Mort);
+    }
+
+    #[test]
+    fn rang_simultane_applique_apres_tous_les_jets() {
+        let c = campagne_de_combat(); // Jean (Ange, FO4)
+        // Un adversaire de même Agilité qui tape fort : A attaque Jean et Jean attaque A, simultanément.
+        creer_personnage(&c, CreationParams {
+            nom: "Brute".into(), espece: Espece::Demon, role: Role::Pnj, caracteristiques: carac(5, 3, 4, 2, 2, 2),
+            talents: vec![TalentPossede { nom: "Corps à corps".into(), niveau: 2 }, TalentPossede { nom: "Esquive".into(), niveau: 0 }],
+            pouvoirs: vec![], patron: None, equipement: vec![], notes: String::new(), exception: Some("test".into()), remplacer: true, pp_max: None,
+        }).unwrap();
+        let mut jean = coup_d_epee();
+        jean.defenseur = "Brute".into();
+        let brute = AttaqueParams { attaquant: "Brute".into(), defenseur: "Jean".into(), talent: "Corps à corps".into(), arme: Some("Coup de poing".into()), bonus_puissance: 0, defense_impossible: true, ..coup_d_epee() };
+        // Jean : 116 (touche, 6 unités), défense de Brute 666 ratée → 6+3+1 = 10 dommages.
+        // Brute : 116 (touche, 6 unités), Jean ne peut pas répondre → 6-3+2 = 5 dommages.
+        let des = [1, 1, 6, 6, 6, 6, 1, 1, 6];
+        let s = attaques_simultanees(&c, &AttaquesSimultaneesParams { attaques: vec![jean, brute] }, &mut SequenceDes::new(des)).unwrap();
+        assert_eq!(s.attaques.len(), 2);
+        // Les deux se touchent : les jets n'ont pas dépendu des dommages de l'autre.
+        assert!(s.attaques.iter().all(|a| a.resultat.attaque.jet.reussi), "les deux touchent");
+        assert!(c.charger("Brute").unwrap().dommages >= 1 && c.charger("Jean").unwrap().dommages >= 1);
+        // Une seule attaque n'est pas un rang simultané.
+        let seule = AttaquesSimultaneesParams { attaques: vec![coup_d_epee()] };
+        assert!(attaques_simultanees(&c, &seule, &mut SequenceDes::new([])).is_err());
+    }
+
+    #[test]
+    fn pp_max_imprime_exige_une_exception_et_remplace_le_calcul() {
+        let c = Campagne::en_memoire().unwrap();
+        let mut p = CreationParams {
+            nom: "Billy".into(), espece: Espece::Demon, role: Role::Pnj, caracteristiques: carac(3, 5, 5, 2, 1, 2),
+            talents: vec![TalentPossede { nom: "Arme d'épaule".into(), niveau: 3 }],
+            pouvoirs: [346, 333, 261].map(|code| PouvoirPossede { code: Some(code), nom: String::new(), niveau: 0, limitation: false }).into(),
+            patron: Some("Furfur".into()), equipement: vec![], notes: String::new(), exception: None, remplacer: false, pp_max: Some(12),
+        };
+        let err = creer_personnage(&c, p.clone()).unwrap_err();
+        assert!(err.contains("exception"), "{err}");
+        p.exception = Some("PP imprimé au scénario".into());
+        let s = creer_personnage(&c, p).unwrap();
+        assert_eq!(s.pp_max, 12);
+        assert_eq!(s.personnage.pp_courants(), 12);
+        assert!(s.personnage.notes.contains("PP maximum du scénario : 12"));
+        // Le talent à +3 est accepté parce qu'il est porté par le pouvoir 346.
+        assert!(s.personnage.talents.iter().any(|t| t.niveau == 3));
     }
 }

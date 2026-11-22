@@ -93,6 +93,9 @@ pub enum Espece {
     Demon,
 }
 
+/// Repos complet : 1 PP par 24 heures quel que soit le barème de l'espèce.
+pub const REPOS_COMPLET_HEURES: u32 = 24;
+
 /// Budget de création d'une espèce (tableaux « Résumé »).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 pub struct Budget {
@@ -102,7 +105,9 @@ pub struct Budget {
     pub max_niveau_talent: u8,
     pub nb_pouvoirs: u32,
     pub max_niveau_pouvoir: u8,
-    /// Récupération : 1 PP toutes les n heures (hors repos complet : 1 PP / 24 h).
+    /// Récupération : 1 PP toutes les n heures (hors repos complet : 1 PP / 24 h). Pour un Ange ou
+    /// un Démon, 24 h est le plancher du repos complet : le vrai rythme est celui de son patron
+    /// ([`Espece::bareme_du_patron`]) ; les deux ne se cumulent pas (D-023).
     pub heures_par_pp: Option<u32>,
 }
 
@@ -126,6 +131,12 @@ impl Espece {
             Self::Familier => b(14, 4, 4, 3, 1, Some(6)),
             Self::Demon => b(18, 5, 10, 4, 2, Some(24)),
         }
+    }
+
+    /// Vrai si la récupération des PP suit le barème du patron (Archange ou Prince-Démon), avec
+    /// [`REPOS_COMPLET_HEURES`] par PP à défaut.
+    pub fn bareme_du_patron(self) -> bool {
+        matches!(self, Self::Ange | Self::Demon)
     }
 
     /// Table de pouvoirs applicable ; `None` pour les humains (aucun pouvoir).
@@ -200,6 +211,10 @@ pub struct Personnage {
     /// PP courants ; absent à la création (= maximum).
     #[serde(default)]
     pub pp: Option<u32>,
+    /// PP maximum imprimé dans un scénario pour un PNJ : il remplace le calcul de création
+    /// (D-024, errata E-004). Réservé aux PNJ dont le profil ne suit pas les règles de création.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pp_max_scenario: Option<u32>,
     /// Points de dommages subis et non encore guéris (effets : voir blessures).
     #[serde(default)]
     pub dommages: u32,
@@ -238,9 +253,12 @@ impl Personnage {
         self.pouvoirs.iter().map(|p| if p.limitation { 1 } else { u32::from(p.niveau) + 1 }).sum()
     }
 
-    /// Volonté + un point par tirage sur la table des pouvoirs (limitations comprises).
+    /// Volonté + un point par tirage sur la table des pouvoirs (limitations comprises), ou la valeur
+    /// imprimée dans le scénario pour un PNJ (`pp_max_scenario`).
     pub fn pp_max(&self) -> u32 {
-        if self.pouvoirs.is_empty() {
+        if let Some(imprime) = self.pp_max_scenario {
+            imprime
+        } else if self.pouvoirs.is_empty() {
             0
         } else {
             u32::from(self.caracteristiques.vo) + self.tirages()
@@ -450,6 +468,12 @@ fn trouver_pouvoir(livre: Livre, p: &PouvoirPossede) -> Result<&'static Pouvoir,
     }
 }
 
+/// Profil imprimé des goules du pouvoir 515 : FO2 AG3 AP2 VO1 PE2 PR2 (D-022).
+fn est_goule_du_livre(p: &Personnage) -> bool {
+    let c = &p.caracteristiques;
+    p.espece == Espece::MortVivant && (c.fo, c.ag, c.ap, c.vo, c.pe, c.pr) == (2, 3, 2, 1, 2, 2)
+}
+
 /// Vérifie une fiche finalisée par rapport aux règles de création.
 pub fn controler(p: &Personnage) -> Vec<Probleme> {
     use Gravite::*;
@@ -485,12 +509,31 @@ pub fn controler(p: &Personnage) -> Vec<Probleme> {
         std::cmp::Ordering::Equal => {}
     }
 
-    // Talents.
+    // Talents. Un talent à +3 ne s'achète pas : il est donné par un pouvoir 341 à 346 (un par pouvoir).
     let mut depense = 0;
     let mut vus = std::collections::HashSet::new();
+    let mut talents_plus_3 = 0;
+    let pouvoirs_34x = p
+        .pouvoirs
+        .iter()
+        .filter(|pv| pv.code.is_some_and(|c| (341..=346).contains(&c)) && !pv.limitation)
+        .count();
     for t in &p.talents {
         if !vus.insert(catalogue::normaliser(&t.nom)) {
             r.push(probleme(Structure, format!("talent « {} » en double", t.nom)));
+        }
+        if t.niveau == 3 {
+            talents_plus_3 += 1;
+            if talents_plus_3 > pouvoirs_34x {
+                r.push(probleme(
+                    Budget,
+                    format!("talent {} +3 hors pouvoir 34x (maximum +{} à la création)", t.nom, budget.max_niveau_talent),
+                ));
+            }
+            if catalogue::talent_par_nom(&t.nom).is_none() {
+                r.push(probleme(Avertissement, format!("talent « {} » absent du catalogue (création du MJ ?)", t.nom)));
+            }
+            continue;
         }
         match cout_talent(t.niveau) {
             Some(c) if t.niveau <= budget.max_niveau_talent => depense += c,
@@ -504,7 +547,10 @@ pub fn controler(p: &Personnage) -> Vec<Probleme> {
             r.push(probleme(Avertissement, format!("talent « {} » absent du catalogue (création du MJ ?)", t.nom)));
         }
     }
+    // Les goules du pouvoir 515 ont un profil imprimé : le budget de création ne les juge pas (D-022).
+    let profil_imprime = est_goule_du_livre(p);
     match depense.cmp(&budget.points_talents) {
+        _ if profil_imprime => {}
         std::cmp::Ordering::Greater => r.push(probleme(
             Budget,
             format!("talents : {depense} points dépensés pour un budget de {}", budget.points_talents),
@@ -522,6 +568,7 @@ pub fn controler(p: &Personnage) -> Vec<Probleme> {
             r.push(probleme(Budget, "les humains ne peuvent posséder de pouvoirs"));
         }
         None => {}
+        Some(_) if profil_imprime => {}
         Some(livre) => controler_pouvoirs(p, livre, &budget, &mut r),
     }
 
@@ -601,6 +648,7 @@ mod tests {
             pouvoirs: vec![],
             patron: None,
             pp: None,
+            pp_max_scenario: None,
             dommages: 0,
             equipement: vec![],
             notes: String::new(),
@@ -736,8 +784,66 @@ mod tests {
         p.finaliser();
         assert!(gravites(&p, Gravite::Budget).iter().any(|m| m.contains("8 points")));
 
+        // +3 sans pouvoir 34x : refusé avec un message clair.
         p.talents = vec![talent("Esquive", 3)];
-        assert!(!gravites(&p, Gravite::Structure).is_empty(), "+3 est invalide");
+        assert!(gravites(&p, Gravite::Budget).iter().any(|m| m.contains("hors pouvoir 34x")));
+        // +4 n'existe pas.
+        p.talents = vec![talent("Esquive", 4)];
+        assert!(!gravites(&p, Gravite::Structure).is_empty(), "+4 est invalide");
+    }
+
+    #[test]
+    fn talent_3_via_pouvoir_346() {
+        let mut p = fiche(Espece::Demon, carac(3, 5, 5, 2, 1, 2));
+        p.pouvoirs = vec![pouvoir(346, 0), pouvoir(333, 0), pouvoir(261, 1), pouvoir(412, 0)];
+        p.talents = vec![talent("Arme d'épaule", 3), talent("Esquive", 0), talent("Séduction", 1)];
+        p.finaliser();
+        let budget = gravites(&p, Gravite::Budget);
+        assert!(!budget.iter().any(|m| m.contains("+3")), "{budget:?}");
+        // Le +3 ne coûte aucun point : Esquive+0 (1) + Séduction+1 (2) = 3 sur 10.
+        assert!(gravites(&p, Gravite::Avertissement).iter().any(|m| m.contains("3 points dépensés sur 10")));
+        // Un deuxième talent à +3 sans second pouvoir 34x est refusé.
+        p.talents.push(talent("Esquive", 3));
+        p.talents.remove(1);
+        assert!(gravites(&p, Gravite::Budget).iter().any(|m| m.contains("hors pouvoir 34x")));
+    }
+
+    #[test]
+    fn pp_max_surcharge_pnj() {
+        let mut p = fiche(Espece::Demon, carac(3, 5, 5, 2, 1, 2));
+        p.pouvoirs = vec![pouvoir(346, 0), pouvoir(333, 0), pouvoir(261, 1), pouvoir(412, 0)];
+        p.finaliser();
+        assert_eq!(p.pp_max(), 5 + 5, "D-001 : VO 5 + 5 tirages");
+        p.pp_max_scenario = Some(12);
+        p.pp = None;
+        p.finaliser();
+        assert_eq!((p.pp_max(), p.pp_courants()), (12, 12), "le PP imprimé du scénario fait foi");
+        assert!(gravites(&p, Gravite::Structure).is_empty());
+    }
+
+    #[test]
+    fn goule_515_conforme() {
+        let mut g = fiche(Espece::MortVivant, carac(2, 1, 3, 2, 2, 2)); // FO2 VO1 AG3 AP2 PE2 PR2
+        g.talents = vec![talent("Corps à corps", 2), talent("Déguisement", 1), talent("Acrobatie", 0)];
+        g.finaliser();
+        assert!(gravites(&g, Gravite::Budget).is_empty() && gravites(&g, Gravite::Avertissement).is_empty());
+        // Un mort-vivant qui n'a pas le profil des goules reste jugé par le budget.
+        let mut autre = fiche(Espece::MortVivant, carac(2, 1, 3, 2, 2, 3));
+        autre.talents = g.talents.clone();
+        autre.finaliser();
+        assert!(!gravites(&autre, Gravite::Budget).is_empty());
+    }
+
+    #[test]
+    fn heures_par_pp_plancher_24_h() {
+        assert_eq!(REPOS_COMPLET_HEURES, 24);
+        for e in [Espece::Ange, Espece::Demon] {
+            assert!(e.bareme_du_patron(), "{e:?} : le rythme est celui du patron");
+            assert_eq!(e.budget().heures_par_pp, Some(REPOS_COMPLET_HEURES), "{e:?} : 24 h à défaut");
+        }
+        for e in [Espece::Serviteur, Espece::Soldat, Espece::MortVivant, Espece::Familier, Espece::Humain] {
+            assert!(!e.bareme_du_patron());
+        }
     }
 
     #[test]

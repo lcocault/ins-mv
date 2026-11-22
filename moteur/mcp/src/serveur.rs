@@ -15,7 +15,7 @@ use serde::Deserialize;
 
 use crate::jeu::{
     self, AttaqueParams, ChercherPouvoirParams, InitiativeParams, UsagePouvoirParams, CreationParams, LireJournalParams, NoterParams, TestParams,
-    TirerPouvoirParams,
+    TirerPouvoirParams, RevelerParams, AttaquesSimultaneesParams,
 };
 use crate::outils::{self, ActionParams};
 
@@ -171,9 +171,18 @@ impl ServeurMj {
     #[tool(description = "Résout une attaque physique entre deux personnages enregistrés : jet d'attaque, défense (Esquive par défaut, \
                           parade avec une arme possible), conflit, puis dommages = unités finales + puissance de l'arme + bonus de Force (contact, FO ≥ 4) \
                           - protection (armure, pouvoir Armure corporelle). Applique les dommages au défenseur et renvoie son état de santé. \
+                          Règle maison « neutraliser » : un Ange ou son partenaire qui frappe un humain le neutralise (dommages plafonnés à l'évanouissement) \
+                          sauf `tuer: true` ; `invisibilite` (niveau du pouvoir) applique le malus d'une cible invisible localisée ; circonstance `espace_confine`. \
                           Unités égales = « arbitrage_mj » : rien n'est appliqué, c'est au MJ de trancher. Les notes du livre sur l'arme sont transmises.")]
     async fn attaquer(&self, Parameters(p): Parameters<AttaqueParams>) -> Result<String, String> {
         self.avec(|c| jeu::attaquer(c, &p, &mut DesAleatoires::default()))
+    }
+
+    #[tool(description = "Résout plusieurs attaques d'un MÊME rang d'initiative (même Agilité : simultanées) : tous les jets sont faits avec l'état de début de rang, \
+                          puis les dommages sont appliqués ensemble. Un personnage tué ou assommé à ce rang a donc quand même frappé, et deux adversaires peuvent \
+                          se toucher mutuellement. Mêmes paramètres que `attaquer`, une entrée par attaque ; `de_joueur` ne peut servir qu'à une seule.")]
+    async fn attaques_simultanees(&self, Parameters(p): Parameters<AttaquesSimultaneesParams>) -> Result<String, String> {
+        self.avec(|c| jeu::attaques_simultanees(c, &p, &mut DesAleatoires::default()))
     }
 
     #[tool(description = "Utilise un pouvoir de la fiche : prélève son coût en PP (déduit du livre, ou `cout_pp` s'il est variable), \
@@ -190,10 +199,10 @@ impl ServeurMj {
         self.avec(|c| jeu::initiative(c, &p, &mut DesAleatoires::default()))
     }
 
-    #[tool(description = "Annonce une action sans la lancer : la table UM de l'interface Web montre la ligne et la colonne applicables, \
-                          et ce que donnerait chaque décalage de -3 à +3 colonnes (seuil et chances de réussite). À appeler avant \
-                          tester_personnage quand le joueur doit décider d'un décalage de colonnes (malus volontaire, circonstances). \
-                          Mêmes paramètres que tester_personnage ; ne prélève rien et ne lance aucun dé.")]
+    #[tool(description = "Propose un jet au JOUEUR sans le lancer : la page Web « Partie » affiche la table UM, la colonne de base et ce que donne chaque malus volontaire (0 à -3), \
+                          avec des boutons « Lancer ». Utilise-le pour toute action de son personnage. Puis ARRÊTE-TOI : écris ta narration jusqu'au jet et attends qu'il écrive « lancé ». \
+                          Résous ensuite l'action avec tester_personnage, conflit_personnages, attaquer ou utiliser_pouvoir en passant `de_joueur: true` (mêmes paramètres que ci-dessous, \
+                          sauf `malus_volontaire` qui vient de son choix). Mêmes paramètres que tester_personnage ; ne prélève rien et ne lance aucun dé.")]
     async fn annoncer_action(&self, Parameters(p): Parameters<TestParams>) -> Result<String, String> {
         self.avec(|c| jeu::annoncer_action(c, &p))
     }
@@ -267,8 +276,16 @@ impl ServeurMj {
 
     // ---- Journal ----
 
+    #[tool(description = "Consigne ce que le JOUEUR vient d'apprendre sur un personnage hors de son équipe ou sur un lieu (genre « personnage » ou « lieu »). \
+                          C'est tout ce que la page Web montre du sujet : appelle-le à chaque observation, rencontre ou indice, \
+                          avec `nom_connu` = le nom que le joueur connaît (« le batteur américain »), jamais le vrai nom, la nature, les PP ou un secret qu'il n'a pas découvert.")]
+    async fn reveler(&self, Parameters(p): Parameters<RevelerParams>) -> Result<String, String> {
+        self.avec(|c| jeu::reveler(c, p))
+    }
+
     #[tool(description = "Ajoute une entrée au journal de campagne (scène jouée, PNJ rencontré, lieu, intrigue, décision de règle...). \
-                          Le journal ne se réécrit pas : une correction est une nouvelle entrée.")]
+                          Le journal ne se réécrit pas : une correction est une nouvelle entrée. Par défaut l'entrée est réservée au MJ ; \
+                          `visible: true` la rend lisible par le joueur sur la page Web (récit de ce qu'il a vécu, sans secret).")]
     async fn noter_journal(&self, Parameters(p): Parameters<NoterParams>) -> Result<String, String> {
         self.avec(|c| jeu::noter_journal(c, p))
     }
