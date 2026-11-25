@@ -154,10 +154,43 @@ async fn routes_inconnues_et_ecritures_refusees() {
 }
 
 #[tokio::test]
+async fn chat_refuse_les_origines_externes_et_les_messages_vides() {
+    let (base, _c) = base_avec_jean("chat");
+    let requete = |origine: &str, hote: &str, message: &str| {
+        Request::post("/chat")
+            .header("origin", origine)
+            .header("host", hote)
+            .header("content-type", "application/x-www-form-urlencoded")
+            .body(Body::from(format!("message={message}")))
+            .unwrap()
+    };
+
+    let reponse = routeur(Etat::new(base.0.clone()))
+        .oneshot(requete("http://site-externe.invalid", "localhost", "bonjour"))
+        .await
+        .unwrap();
+    assert_eq!(reponse.status(), StatusCode::FORBIDDEN);
+
+    let reponse = routeur(Etat::new(base.0.clone()))
+        .oneshot(requete("http://rebind.invalid", "rebind.invalid", "bonjour"))
+        .await
+        .unwrap();
+    assert_eq!(reponse.status(), StatusCode::FORBIDDEN);
+
+    let reponse = routeur(Etat::new(base.0.clone()))
+        .oneshot(requete("http://localhost", "localhost", "%20%20"))
+        .await
+        .unwrap();
+    assert_eq!(reponse.status(), StatusCode::BAD_REQUEST);
+}
+
+#[tokio::test]
 async fn partie_suit_les_evenements_du_serveur_principal() {
     let (base, campagne) = base_avec_jean("partie");
     let (statut, vide) = get(&base, "/partie").await;
     assert_eq!(statut, StatusCode::OK);
+    assert!(vide.contains("Chat avec le maître de jeu"));
+    assert!(vide.contains("action=\"/chat\"") && vide.contains("Table UM"));
     assert!(vide.contains("Aucun jet pour l'instant") && vide.contains("Aucun combat en cours"));
 
     let action = insmv_regles::Action::new(
