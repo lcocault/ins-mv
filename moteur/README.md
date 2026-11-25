@@ -24,7 +24,7 @@ python3 -I outils/generer_catalogues.py        # régénère regles/donnees/*.js
 - Les écarts du livre sont dans `../maison/errata.md`, les interprétations du moteur dans
   `../maison/decisions.md` ; chacun est figé par un test.
 
-## Interface Web (lecture seule)
+## Interface Web
 
 ```bash
 scripts/web.sh start            # compile si besoin, démarre en arrière-plan : http://localhost:8787
@@ -35,11 +35,15 @@ Depuis Windows, double-cliquer sur `scripts/web-start.cmd`, `web-stop.cmd` ou `w
 (ils appellent le script dans WSL). `INSMV_WEB_PORT` change le port ; le PID et le journal
 sont dans `.run/` (ignoré par git).
 
-Page **Partie** (`/partie`) : table UM avec la ligne et la colonne de la dernière action (ou de l'action
+Page **Chat** (`/partie`) : conversation avec l'agent maître de jeu, table UM avec la ligne et la colonne de la dernière action (ou de l'action
 annoncée, avec les seuils pour chaque décalage de -3 à +3), jets récents, et combat en cours (ordre
 d'action du tour, qui a déjà agi, état des participants, fil des actions). Elle lit les événements que le
 serveur MCP écrit dans la table `evenement` (`annoncer_action`, tests, conflits, attaques, `initiative`,
 `terminer_combat`).
+
+La conversation utilise Claude Code (`claude` dans le `PATH`, ou un chemin personnalisé via
+`INSMV_CLAUDE`) et l'agent `.claude/agents/maitre-de-jeu.md`. Les outils MCP `mj` sont exécutés
+depuis la racine du dépôt. Le serveur Web reste limité à `127.0.0.1`; les autres pages sont en lecture seule.
 
 Liste des personnages, fiche (PP, dommages, caractéristiques, talents et pouvoirs avec seuil
 et chances de réussite sur la table UM) et journal filtrable. Elle lit la base en lecture seule :

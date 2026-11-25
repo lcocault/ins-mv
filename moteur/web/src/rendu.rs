@@ -9,6 +9,12 @@ use insmv_regles::personnage::{Carac, Espece, Personnage, Role};
 use insmv_regles::table_um::{caracteristique_de_la_colonne, lignes, NB_COLONNES};
 use insmv_regles::{Action, Caracteristique, NiveauTalent, Seuil};
 
+#[derive(Clone, Debug)]
+pub struct MessageChat {
+    pub joueur: bool,
+    pub contenu: String,
+}
+
 /// Échappe le texte pour l'insérer dans du HTML (contenu et attributs).
 pub fn esc(texte: &str) -> String {
     let mut sortie = String::with_capacity(texte.len());
@@ -103,6 +109,13 @@ tr:last-child td{border-bottom:0}
 .liste-persos a.carte:hover{border-color:var(--accent)}
 form.filtres{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 16px}
 form.filtres input,form.filtres select,form.filtres button{font:inherit;padding:6px 8px;border:1px solid var(--bord);border-radius:6px;background:var(--carte);color:var(--texte)}
+.chat{display:grid;gap:8px;max-height:45vh;overflow:auto;margin:8px 0 12px}
+.message{padding:10px 12px;border-radius:8px;white-space:pre-wrap;overflow-wrap:anywhere}
+.message.joueur{margin-left:10%;background:var(--accent-fond)}
+.message.agent{margin-right:10%;background:var(--carte);border:1px solid var(--bord)}
+form.chat-saisie{display:grid;gap:8px}
+form.chat-saisie textarea{font:inherit;padding:8px;border:1px solid var(--bord);border-radius:6px;background:var(--carte);color:var(--texte);resize:vertical}
+form.chat-saisie button{justify-self:end;font:inherit;padding:6px 14px;border:1px solid var(--accent);border-radius:6px;background:var(--accent);color:var(--carte);cursor:pointer}
 .entree{margin:0 0 10px}
 .entree .meta{color:var(--discret);font-size:13px}
 .um{min-width:640px;text-align:center;font-variant-numeric:tabular-nums}
@@ -132,12 +145,18 @@ const SCRIPT: &str = r#"
 (function(){
   var case_ = document.getElementById('auto'); if(!case_) return;
   var cle = 'insmv-auto', actif = false;
+  var chat = document.querySelector('.chat');
+  if(chat) chat.scrollTop = chat.scrollHeight;
   try { actif = localStorage.getItem(cle) === '1'; } catch (e) {}
   case_.checked = actif;
   var minuteur = null;
   function appliquer(){
     if (minuteur) { clearInterval(minuteur); minuteur = null; }
-    if (case_.checked) minuteur = setInterval(function(){ location.reload(); }, 5000);
+    if (case_.checked) minuteur = setInterval(function(){
+      var message = document.getElementById('message');
+      if (message && (document.activeElement === message || message.value.trim())) return;
+      location.reload();
+    }, 5000);
   }
   case_.addEventListener('change', function(){
     try { localStorage.setItem(cle, case_.checked ? '1' : '0'); } catch (e) {}
@@ -159,7 +178,7 @@ pub fn page(titre: &str, contenu: &str) -> String {
 </head>
 <body>
 <header class="site">
-<nav><a href="/partie">Partie</a><a href="/">Personnages</a><a href="/journal">Journal</a></nav>
+<nav><a href="/partie">Chat</a><a href="/">Personnages</a><a href="/journal">Journal</a></nav>
 <label><input type="checkbox" id="auto"> Actualiser toutes les 5 s</label>
 </header>
 <main>
@@ -623,8 +642,32 @@ pub fn partie(
     jets_recents: &[EvenementDate],
     combat_en_cours: Option<&Combat>,
     personnages: &[Personnage],
+    messages: &[MessageChat],
 ) -> String {
-    let mut html = String::from("<h1>Partie</h1><h2>Table UM</h2>");
+    let mut html = String::from(
+        "<h1>Chat avec le maître de jeu</h1><section class=\"chat\" aria-live=\"polite\">",
+    );
+    if messages.is_empty() {
+        html.push_str("<p class=\"discret\">Envoyez un message pour commencer la partie avec le maître de jeu.</p>");
+    } else {
+        for message in messages {
+            let (classe, auteur) = if message.joueur {
+                ("joueur", "Vous")
+            } else {
+                ("agent", "Maître de jeu")
+            };
+            html.push_str(&format!(
+                "<article class=\"message {classe}\"><strong>{auteur}</strong><div>{}</div></article>",
+                esc(&message.contenu),
+            ));
+        }
+    }
+    html.push_str(
+        "</section><form class=\"chat-saisie\" method=\"post\" action=\"/chat\">\
+         <label for=\"message\">Votre message</label>\
+         <textarea id=\"message\" name=\"message\" rows=\"3\" maxlength=\"8000\" required></textarea>\
+         <button type=\"submit\">Envoyer</button></form><h2>Table UM</h2>",
+    );
     match resolution.map(|e| &e.evenement) {
         Some(Evenement::Attente { libelle, action }) => {
             html.push_str(&format!(
@@ -676,7 +719,7 @@ pub fn partie(
         Some(c) => html.push_str(&combat(c, personnages)),
         None => html.push_str("<h2>Combat</h2><p class=\"discret\">Aucun combat en cours.</p>"),
     }
-    page("Partie", &html)
+    page("Chat", &html)
 }
 
 #[cfg(test)]
@@ -833,8 +876,21 @@ mod tests {
 
     #[test]
     fn partie_sans_rien_a_afficher() {
-        let html = partie(None, &[], None, &[]);
+        let html = partie(None, &[], None, &[], &[]);
         assert!(html.contains("Aucun jet pour l'instant") && html.contains("Aucun combat en cours"));
+    }
+
+    #[test]
+    fn partie_affiche_la_conversation_en_echappant_les_messages() {
+        let messages = [MessageChat {
+            joueur: true,
+            contenu: "<script>alert(1)</script>".into(),
+        }];
+        let html = partie(None, &[], None, &[], &messages);
+        assert!(html.contains("Chat avec le maître de jeu"));
+        assert!(html.contains("Vous"));
+        assert!(html.contains("&lt;script&gt;alert(1)&lt;/script&gt;"));
+        assert!(!html.contains("<script>alert"));
     }
 
     #[test]
@@ -844,7 +900,7 @@ mod tests {
             horodatage: 0,
             evenement: Evenement::Attente { libelle: "Jean <b>".into(), action: action_ag5_niveau1(0) },
         };
-        let html = partie(Some(&attente), &[], None, &[]);
+        let html = partie(Some(&attente), &[], None, &[], &[]);
         assert!(html.contains("En attente du décalage"));
         assert!(html.contains("Jean &lt;b&gt;"), "libellé échappé");
         // Colonnes -3 à +3 autour de 13 ; le décalage 0 est marqué.
@@ -865,7 +921,7 @@ mod tests {
     fn partie_jet_resolu_et_historique() {
         let resolu = |id, v| EvenementDate { id, horodatage: 0, evenement: Evenement::Jets { jets: vec![jet(v, -2)] } };
         let (ancien, recent) = (resolu(1, 666), resolu(2, 111));
-        let html = partie(Some(&recent), &[ancien, recent.clone()], None, &[]);
+        let html = partie(Some(&recent), &[ancien, recent.clone()], None, &[], &[]);
         assert!(html.contains("colonne de base 13 → colonne 11 (décalage -2)"));
         assert!(html.contains("D666 = <b>111</b>") && html.contains("contre ≤ 62"));
         assert!(html.contains("verdict reussi\">RÉUSSI"));
@@ -894,7 +950,7 @@ mod tests {
                 TourDeCombat { numero: 2, initiative: Some(initiative), actions: vec![acte("Jean De Lavenue", "Jean frappe")] },
             ],
         };
-        let html = partie(None, &[], Some(&combat_), &[blesse]);
+        let html = partie(None, &[], Some(&combat_), &[blesse], &[]);
         assert!(html.contains("Tour 2"));
         assert!(html.contains("Phase psychique") && html.contains("Phase physique"));
         let jean_ordre = html.find("<b>Jean De Lavenue</b> <span class=\"fait\"").expect("Jean a agi");
